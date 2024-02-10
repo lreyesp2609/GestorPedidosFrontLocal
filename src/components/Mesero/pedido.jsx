@@ -43,14 +43,13 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     if (resetForm) {
       form.resetFields();
       setResetForm(false);
-  
+
       // Restablecer valores específicos
       setClienteSeleccionado(null);
       setCantidadProductos({});
       setPrecioUnitario({});
     }
   }, [resetForm]);
-  
 
   const columnsClientes = [
     {
@@ -184,6 +183,18 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
 
   const handlePedidoSubmit = async (values) => {
     try {
+      // Validar que al menos un producto tenga una cantidad mayor que cero
+      const hasNonZeroQuantity = Object.values(cantidadProductos).some(
+        (cantidad) => cantidad > 0
+      );
+
+      if (!hasNonZeroQuantity) {
+        notification.error({
+          message: "Error",
+          description: "Debe agregar al menos un producto al pedido.",
+        });
+        return;
+      }
       const detalles_pedido = Object.keys(cantidadProductos).map(
         (idProducto) => ({
           id_producto: idProducto,

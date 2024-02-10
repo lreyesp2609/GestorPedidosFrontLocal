@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Table, Row, Col, Tooltip, Pagination, Modal } from "antd";
-import {
-  SmileOutlined,
-  ClockCircleOutlined,
-  UserOutlined,
-  CheckCircleOutlined,
-} from "@ant-design/icons";
+import { Table, Row, Col, Tooltip, Pagination, Modal, Button } from "antd";
 import imgmesas from "./res/imgmesas.png";
+import VerFacturaMesero from "./verfacturamesero";
 
 const FacturasMesero = () => {
   const { Column } = Table;
@@ -15,6 +10,8 @@ const FacturasMesero = () => {
   const [selectedMesa, setSelectedMesa] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mesaPedidos, setMesaPedidos] = useState([]);
+  const [facturaData, setFacturaData] = useState(null);
+  const [modalFacturaVisible, setModalFacturaVisible] = useState(false);
 
   useEffect(() => {
     fetchMesas();
@@ -47,24 +44,26 @@ const FacturasMesero = () => {
       }
       const data = await response.json();
       setMesaPedidos(data.pedidos_del_mesero);
+      setSelectedMesa(idMesa);
       setModalVisible(true);
     } catch (error) {
       console.error("Error al obtener los pedidos de la mesa:", error);
     }
   };
 
-  const renderEstadoIcon = (estado) => {
-    switch (estado) {
-      case "D":
-        return <SmileOutlined style={{ color: "green" }} />;
-      case "R":
-        return <ClockCircleOutlined style={{ color: "orange" }} />;
-      case "U":
-        return <UserOutlined style={{ color: "blue" }} />;
-      case "A":
-        return <CheckCircleOutlined style={{ color: "cyan" }} />;
-      default:
-        return null;
+  const handleVerFacturaClick = async (idPedido) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/Mesero/ver_factura/${idPedido}/`
+      );
+      if (!response.ok) {
+        throw new Error("No se pudo obtener la factura del pedido.");
+      }
+      const data = await response.json();
+      setFacturaData(data);
+      setModalFacturaVisible(true);
+    } catch (error) {
+      console.error("Error al obtener la factura del pedido:", error);
     }
   };
 
@@ -115,8 +114,24 @@ const FacturasMesero = () => {
             dataIndex="fecha_pedido"
             key="fecha_pedido"
           />
-          {/* Otras columnas que quieras mostrar */}
+          <Column
+            title="Acciones"
+            key="acciones"
+            render={(text, record) => (
+              <Button onClick={() => handleVerFacturaClick(record.id_pedido)}>
+                Ver Factura
+              </Button>
+            )}
+          />
         </Table>
+      </Modal>
+      <Modal
+        title={`Factura del pedido`}
+        visible={modalFacturaVisible}
+        onCancel={() => setModalFacturaVisible(false)}
+        footer={null}
+      >
+        {facturaData && <VerFacturaMesero facturaData={facturaData} />}
       </Modal>
     </div>
   );
