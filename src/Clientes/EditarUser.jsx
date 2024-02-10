@@ -3,9 +3,10 @@ import { useDropzone } from 'react-dropzone';
 import { Container, Row, Col, Form, Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser,  faMapMarkerAlt, faEye, faEyeSlash  } from '@fortawesome/free-solid-svg-icons';
+import { message } from 'antd';
+
 import Map2 from './Map2';
-import god from '../assets/images/god1.jpg'
-import NavBar from './NavBar';
+
 
 
 const EditarUser =()=>{
@@ -32,9 +33,7 @@ const EditarUser =()=>{
   const handleEditClick = () => {
     setIsEditing(true);
   };
-  const handleSaveClick = () => {
-    setIsEditing(false);
-  };
+ 
 
  
 
@@ -46,33 +45,77 @@ const EditarUser =()=>{
     setMostrarModal(false);
 
   };
-
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    const nombreUsuario = localStorage.getItem('username');
   
-    if (nombreUsuario) {
-      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${nombreUsuario}/`)
-        .then(response => response.json())
-        .then(data => {
-          setUserData(data.usuario);
-          
-          setLocationData({
-            latitud1: data.usuario?.ubicacion1?.latitud || 0,
-            longitud1: data.usuario?.ubicacion1?.longitud || 0,
-            latitud2: data.usuario?.ubicacion2?.latitud || 0,
-            longitud2: data.usuario?.ubicacion2?.longitud || 0,
-            latitud3: data.usuario?.ubicacion3?.latitud || 0,
-            longitud3: data.usuario?.ubicacion3?.longitud || 0,
-          });
-        })
-        .catch(error => console.error('Error al obtener datos del usuario:', error));
-    } else {
-      console.error('Nombre de usuario no encontrado en localStorage');
-    }
-  }, []);
+  
+  const [userData, setUserData] = useState(null);
+  const id_cuenta = localStorage.getItem('id_cuenta');
 
+
+const ObtenerUsuario = async () => {
+  
+  if (id_cuenta) {
+    fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+      .then(response => response.json())
+      .then(data => {
+        setUserData(data.usuario);
+        
+        setLocationData({
+          latitud1: data.usuario?.ubicacion1?.latitud || 0,
+          longitud1: data.usuario?.ubicacion1?.longitud || 0,
+          latitud2: data.usuario?.ubicacion2?.latitud || 0,
+          longitud2: data.usuario?.ubicacion2?.longitud || 0,
+          latitud3: data.usuario?.ubicacion3?.latitud || 0,
+          longitud3: data.usuario?.ubicacion3?.longitud || 0,
+        });
+      })
+      .catch(error => console.error('Error al obtener datos del usuario:', error));
+  } else {
+    console.error('Nombre de usuario no encontrado en localStorage');
+  }
+}
+  useEffect(()=>{
+    ObtenerUsuario()
+  },[]);
+ 
+  const handleSaveClick = async(values) => {
+    try{
+      
+      if (!values) {
+        console.error("Error: No se han proporcionado valores para la edición.");
+        return;
+      }
+  
+      // Desestructurar propiedades de values solo si values está definido
+      const { telefono, snombre, capellido, ruc_cedula, razon_social } = values;
+  
+      const formData = new FormData();
+      formData.append('ctelefono',telefono);
+      formData.append('snombre', snombre);
+      formData.append('capellido', capellido);
+      formData.append('ruc_cedula', ruc_cedula);
+      formData.append('crazon_social', razon_social);
+      const response = await fetch(
+        `http://127.0.0.1:8000/Login/editar_usuario/${id_cuenta}/`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+  
+      const data = await response.json();
+      if (response.ok) {
+        message.success("Usuario editado con exito");
+        setIsEditing(false);
+        ObtenerUsuario();
+      } else {
+        message.error(`Error al editar aviso: ${data.error}`);
+      }
+      }catch (error) {
+        console.error("Error en la solicitud de edición de aviso", error);
+        message.error("Error en la solicitud de edición de aviso");
+
+      }
+    }
  
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
@@ -210,8 +253,15 @@ Longitud: ${locationData.longitud1}`}
                         <div className="mt-4">
                         
                         <button
-                          
-                          onClick={handleSaveClick}
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevenir la recarga de la página
+                            handleSaveClick({
+                            telefono: userData.telefono,
+                            snombre: userData.snombre,
+                            capellido: userData.capellido,
+                            ruc_cedula: userData.ruc_cedula,
+                            razon_social: userData.razon_social
+                          })}}
                         >
                           Guardar Cambios
                         </button>
@@ -293,7 +343,7 @@ Longitud: ${locationData.longitud3}`}
                     </Row>    
                     </Form.Group>
 
-                    <Form.Group style={{ marginTop:'10px' }}>
+                    {/*<Form.Group style={{ marginTop:'10px' }}>
                  <Row>
                     <Col>
                     <Form.Label>Apellido</Form.Label>
@@ -304,9 +354,9 @@ Longitud: ${locationData.longitud3}`}
                     <Form.Control   />
                     </Col>
                   </Row>
-                    </Form.Group>
+                    </Form.Group> */}
                   </Form>
-                </Col>
+                    </Col>
         </Row>
         </Col>
           </Row>
