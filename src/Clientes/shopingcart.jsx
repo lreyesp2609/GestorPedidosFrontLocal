@@ -17,21 +17,20 @@ const ShoppingCart = () => {
   
   const [pagoCompletado, setPagoCompletado] = useState(false); 
   const [modoPago, setModoPago] = useState(null); 
+  const [modoPedido, setModoPedido] = useState(null); 
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
 
   const [locationData, setLocationData] = useState({
-    latitud1: 0,
-    longitud1: 0,
-    latitud2: 0,
-    longitud2: 0,
-    latitud3: 0,
-    longitud3: 0,
+    latitud: 0,
+    longitud: 0
   });
+
+  const id_cuenta = localStorage.getItem('id_cuenta');
   useEffect(() => {
-    const nombreUsuario = localStorage.getItem('username');
+    
   
-    if (nombreUsuario) {
-      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${nombreUsuario}/`)
+    if (id_cuenta) {
+      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
         .then(response => response.json())
         .then(data => {
           setUserData(data.usuario);
@@ -55,18 +54,45 @@ const ShoppingCart = () => {
     setModoPago(e.target.value);
   };
 
-
+  const handleModoPedidoChange = (e) => {
+    setModoPedido(e.target.value);
+  };
   const handleLocationChange = (location) => {
     setSelectedLocation(location);
     setShowElegirUbicacion(location === 'Otro');
+    let newLocationData = {};
+    console.log(`Cambiando a la ubicación: ${location}`);
 
-    setLocationData({
-      ...locationData,
-      latitud1: data.usuario?.ubicacion1?.latitud || 0,
-      longitud1: data.usuario?.ubicacion1?.longitud || 0,
-    });
+
+    switch (location) {
+      case 'Casa':
+        newLocationData = {
+          latitud: locationData.latitud1,
+          longitud: locationData.longitud1,
+        };
+        break;
+      case 'Trabajo':
+        newLocationData = {
+          latitud: locationData.latitud2,
+          longitud: locationData.longitud2,
+        };
+        break;
+      case 'Otro':
+        newLocationData = {
+          latitud: locationData.latitud3,
+          longitud: locationData.longitud3,
+        };
+        break;
+      default:
+        newLocationData = {
+          latitud: 0,
+          longitud: 0,
+        };
+    }
+    console.log('Nuevos datos de ubicación:', newLocationData);
+    setLocationData((prevLocationData) => ({ ...prevLocationData, ...newLocationData }));
   };
-
+  
 
   const handleShowCardForm = () => {
     setShowCardForm(true);
@@ -83,11 +109,7 @@ const ShoppingCart = () => {
       setMostrarModal(true);
     }
   };
-  const CerrarModalDespuesDePago = () => {
-    setMostrarModal(false);
-    setShowCardForm(false);
-    setPagoCompletado(true); 
-  };
+  
   const CerrarModal = () => {
     setMostrarModal(false);
     setShowCardForm(false); 
@@ -102,6 +124,32 @@ const ShoppingCart = () => {
     0
   );
 
+  const CerrarModalDespuesDePago = () => {
+    console.log('modoPedido:', modoPedido);
+
+    setMostrarModal(false);
+    setShowCardForm(false);
+    setPagoCompletado(true); 
+    fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      precio: totalPrice,
+      tipo_de_pedido: modoPedido,  // Ajusta según sea necesario
+      metodo_de_pago: modoPago,    // Ajusta según sea necesario
+      puntos: 0,  // Ajusta según sea necesario
+      estado_del_pedido: 'O',  // Ajusta según sea necesario
+    }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Respuesta del servidor:', data);
+      // Puedes manejar la respuesta según sea necesario
+    })
+    .catch(error => console.error('Error al realizar el pedido:', error));
+    }
   return (
     <>
       <div  style={{ maxWidth: '600px', margin: '0 auto', padding: '20px',}}>
@@ -149,24 +197,40 @@ const ShoppingCart = () => {
       </Modal.Header>
       <Row>
         <Col>
-          <h5>Hola ✌🏻 </h5>
+          <h5>Hola ✌🏻</h5>
           <span>Revisa tu dirección y forma de pago antes de comprar.</span>
-          <ButtonGroup style={{marginLeft:'10px',marginTop: '10px',width:'100%', 
-          marginBottom:'10px' }}>
-            <Button variant="outline-warning" 
-            onClick={() => handleLocationChange('Casa')}
-            style={{color:'rgb(255, 121, 32)'}}>Casa</Button>
-            <Button variant="outline-warning" 
-            onClick={() => handleLocationChange('Trabajo')}
-            style={{color:'rgb(255, 121, 32)'}}>Trabajo</Button>
-            <Button variant="outline-warning" 
-            onClick={() => handleLocationChange('Otro')}
-            style={{color:'rgb(255, 121, 32)'}}>Otro</Button>
-         </ButtonGroup>
-          <div>Dirección de entrega: {selectedLocation}</div>
-          <div>Latitud: {locationData[`latitud${selectedLocation === 'Casa' ? 1 : selectedLocation === 'Trabajo' ? 2 : 3}`]}</div>
-          <div>Longitud: {locationData[`longitud${selectedLocation === 'Casa' ? 1 : selectedLocation === 'Trabajo' ? 2 : 3}`]}</div>
-            
+          <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
+          <Radio.Group onChange={handleModoPedidoChange} value={modoPedido}>
+            <Col style={{marginLeft:'10px'}}>
+              <Row>
+                <Radio value="D">Domicilio</Radio>
+                <Radio value="R">Retirar</Radio>
+                <Radio value="L">Local</Radio>
+              </Row>
+            </Col>
+          </Radio.Group>
+          {modoPedido === 'D' && (
+          <>
+            <ButtonGroup style={{marginLeft:'10px',marginTop: '10px',width:'100%', 
+            marginBottom:'10px' }}>
+              <Button variant="outline-warning" 
+              onClick={() => handleLocationChange('Casa')}
+              style={{color:'rgb(255, 121, 32)'}}>Casa</Button>
+              <Button variant="outline-warning" 
+              onClick={() => handleLocationChange('Trabajo')}
+              style={{color:'rgb(255, 121, 32)'}}>Trabajo</Button>
+              <Button variant="outline-warning" 
+              onClick={() => handleLocationChange('Otro')}
+              style={{color:'rgb(255, 121, 32)'}}>Otro</Button>
+          </ButtonGroup>
+              <h5>Coordenadas de {selectedLocation}:</h5>
+              {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
+                `Latitud: ${locationData.latitud}, Longitud: ${locationData.longitud}`
+              ) : (
+                'Coordenadas no disponibles'
+              )}
+          </>
+          )}
             <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
               <Modal.Header closeButton style={{ borderBottom: 'none' }} />
               <Modal.Body>
@@ -192,7 +256,7 @@ const ShoppingCart = () => {
               </Row>
             </Col>
           </Radio.Group>
-         
+          
         </Col>
         <Col>
           <span>HOLA :D</span>
