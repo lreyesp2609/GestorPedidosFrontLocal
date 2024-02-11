@@ -20,12 +20,18 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
   const [resetForm, setResetForm] = useState(false);
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
+  const [combos, setCombos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 3;
   const [cantidadProductos, setCantidadProductos] = useState({});
+  const [cantidadCombos, setCantidadCombos] = useState({});
   const [precioUnitario, setPrecioUnitario] = useState({});
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const [currentProductPage, setCurrentProductPage] = useState(1);
+  const [currentComboPage, setCurrentComboPage] = useState(1);
+  const productPageSize = 3;
+  const comboPageSize = 3;
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
@@ -37,6 +43,11 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       .then((response) => response.json())
       .then((data) => setProductos(data.productos))
       .catch((error) => console.error("Error fetching productos:", error));
+
+    fetch("http://127.0.0.1:8000/combos/ver_combos/")
+      .then((response) => response.json())
+      .then((data) => setCombos(data.combos))
+      .catch((error) => console.error("Error fetching combos:", error));
   }, []);
 
   useEffect(() => {
@@ -47,50 +58,10 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       // Restablecer valores específicos
       setClienteSeleccionado(null);
       setCantidadProductos({});
+      setCantidadCombos({});
       setPrecioUnitario({});
     }
   }, [resetForm]);
-
-  const columnsClientes = [
-    {
-      title: "Cliente",
-      dataIndex: "snombre",
-      key: "cliente",
-      render: (text, record) => (
-        <>
-          <Avatar icon={<UserOutlined />} />
-          <span
-            style={{ marginLeft: 8 }}
-          >{`${record.snombre} ${record.capellido}`}</span>
-        </>
-      ),
-    },
-    {
-      title: "Teléfono",
-      dataIndex: "ctelefono",
-      key: "ctelefono",
-    },
-    {
-      title: "Acción",
-      key: "action",
-      render: (text, record) => (
-        <Button
-          type={
-            clienteSeleccionado &&
-            clienteSeleccionado.id_cliente === record.id_cliente
-              ? "default"
-              : "primary"
-          }
-          onClick={() => handleSelectCliente(record)}
-        >
-          {clienteSeleccionado &&
-          clienteSeleccionado.id_cliente === record.id_cliente
-            ? "Deseleccionar"
-            : "Seleccionar"}
-        </Button>
-      ),
-    },
-  ];
 
   const columnsProductos = [
     {
@@ -135,13 +106,69 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     },
   ];
 
+  const columnsCombos = [
+    // Columnas para la tabla de combos
+    {
+      title: "Nombre",
+      dataIndex: "nombrecb",
+      key: "nombrecb",
+    },
+    {
+      title: "Precio",
+      dataIndex: "preciounitario",
+      key: "preciounitario",
+    },
+    {
+      title: "Imagen",
+      dataIndex: "imagen",
+      key: "imagen",
+      render: (text) => (
+        <Avatar
+          src={`data:image/jpeg;base64,${text}`}
+          size={64}
+          shape="square"
+        />
+      ),
+    },
+    {
+      title: "Cantidad",
+      dataIndex: "id_combo",
+      key: "cantidad",
+      render: (idCombo) => (
+        <Input
+          type="number"
+          min={0}
+          value={cantidadCombos[idCombo] || 0}
+          onChange={(e) => handleCantidadChangeCombo(idCombo, e.target.value)}
+        />
+      ),
+    },
+  ];
+
+  const handleCantidadChangeCombo = (idCombo, cantidad) => {
+    setCantidadCombos((prevCantidadCombos) => ({
+      ...prevCantidadCombos,
+      [idCombo]: cantidad,
+    }));
+
+    const combo = combos.find((c) => c.id_combo === parseInt(idCombo));
+    if (combo) {
+      setPrecioUnitario((prevPrecioUnitario) => ({
+        ...prevPrecioUnitario,
+        [idCombo]: combo.preciounitario,
+      }));
+    }
+  };
+
   const handleCantidadChange = (idProducto, cantidad) => {
     setCantidadProductos((prevCantidadProductos) => ({
       ...prevCantidadProductos,
       [idProducto]: cantidad,
     }));
 
-    const producto = productos.find((p) => p.id_producto === idProducto);
+    const producto = productos.find(
+      (p) => p.id_producto === parseInt(idProducto)
+    );
     if (producto) {
       setPrecioUnitario((prevPrecioUnitario) => ({
         ...prevPrecioUnitario,
@@ -183,36 +210,53 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
 
   const handlePedidoSubmit = async (values) => {
     try {
-      // Validar que al menos un producto tenga una cantidad mayor que cero
-      const hasNonZeroQuantity = Object.values(cantidadProductos).some(
-        (cantidad) => cantidad > 0
-      );
+      // Validar que al menos un producto o combo tenga una cantidad mayor que cero
+      const hasNonZeroQuantity =
+        Object.values(cantidadProductos).some((cantidad) => cantidad > 0) ||
+        Object.values(cantidadCombos).some((cantidad) => cantidad > 0);
 
       if (!hasNonZeroQuantity) {
         notification.error({
           message: "Error",
-          description: "Debe agregar al menos un producto al pedido.",
+          description: "Debe agregar al menos un producto o combo al pedido.",
         });
         return;
       }
-      const detalles_pedido = Object.keys(cantidadProductos).map(
-        (idProducto) => ({
-          id_producto: idProducto,
-          cantidad: cantidadProductos[idProducto],
-          precio_unitario: precioUnitario[idProducto] || 0,
-          impuesto: 2.5,
-          descuento: 0.5,
-        })
-      );
+      const detalles_pedido = {
+        detalles_pedido: [
+          ...Object.keys(cantidadProductos).map((idProducto) => ({
+            id_producto: parseInt(idProducto),
+            cantidad: cantidadProductos[idProducto],
+            precio_unitario: precioUnitario[idProducto] || 0,
+            impuesto: 2.5,
+            descuento: 0.5,
+          })),
+          ...Object.keys(cantidadCombos).map((idCombo) => ({
+            id_combo: parseInt(idCombo),
+            cantidad: cantidadCombos[idCombo],
+            precio_unitario: combos.find(
+              (c) => c.id_combo === parseInt(idCombo)
+            ).preciounitario,
+            impuesto: 2.5,
+            descuento: 0.5,
+          })),
+        ],
+      };
 
-      const totalPedido = Object.keys(cantidadProductos).reduce(
-        (total, idProducto) => {
+      const totalPedido =
+        Object.keys(cantidadProductos).reduce((total, idProducto) => {
           const cantidad = cantidadProductos[idProducto];
           const precioUnitarioProducto = precioUnitario[idProducto] || 0;
           return total + cantidad * precioUnitarioProducto;
-        },
-        0
-      );
+        }, 0) +
+        Object.keys(cantidadCombos).reduce((total, idCombo) => {
+          const cantidad = cantidadCombos[idCombo];
+          const combo = combos.find((c) => c.id_combo === parseInt(idCombo));
+          if (combo) {
+            return total + cantidad * combo.preciounitario;
+          }
+          return total;
+        }, 0);
 
       const formData = new FormData();
       formData.append("id_mesa", idMesa);
@@ -225,7 +269,9 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       formData.append("estado_del_pedido", values.estado_del_pedido);
       formData.append("observacion_del_cliente", "Nada");
       formData.append("total_pedido", totalPedido);
-      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+
+      const detallesPedidoString = JSON.stringify(detalles_pedido);
+      formData.append("detalles_pedido", detallesPedidoString);
 
       const response = await fetch(
         "http://127.0.0.1:8000/Mesero/tomar_pedido/",
@@ -248,6 +294,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
         // Restablecer valores específicos
         setClienteSeleccionado(null);
         setCantidadProductos({});
+        setCantidadCombos({});
         setPrecioUnitario({});
 
         onClose();
@@ -275,14 +322,20 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     currentPage * pageSize
   );
 
-  const totalPedido = Object.keys(cantidadProductos).reduce(
-    (total, idProducto) => {
+  const totalPedido =
+    Object.keys(cantidadProductos).reduce((total, idProducto) => {
       const cantidad = cantidadProductos[idProducto];
       const precioUnitarioProducto = precioUnitario[idProducto] || 0;
       return total + cantidad * precioUnitarioProducto;
-    },
-    0
-  );
+    }, 0) +
+    Object.keys(cantidadCombos).reduce((total, idCombo) => {
+      const cantidad = cantidadCombos[idCombo];
+      const combo = combos.find((c) => c.id_combo === parseInt(idCombo));
+      if (combo) {
+        return total + cantidad * combo.preciounitario;
+      }
+      return total; // Retornar el total sin sumar nada si no se encuentra el combo
+    }, 0);
 
   return (
     <Modal
@@ -366,11 +419,35 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
         >
           <Input readOnly />
         </Form.Item>
+        <h3>Productos</h3> {/* Nuevo título para la sección de productos */}
         <Table
-          dataSource={productos}
+          dataSource={productos.slice(
+            (currentProductPage - 1) * productPageSize,
+            currentProductPage * productPageSize
+          )}
           columns={columnsProductos}
           rowKey="id_producto"
-          pagination={false}
+          pagination={{
+            current: currentProductPage,
+            pageSize: productPageSize,
+            total: productos.length,
+            onChange: (page) => setCurrentProductPage(page),
+          }}
+        />
+        <h3>Combos</h3> {/* Nuevo título para la sección de combos */}
+        <Table
+          dataSource={combos.slice(
+            (currentComboPage - 1) * comboPageSize,
+            currentComboPage * comboPageSize
+          )}
+          columns={columnsCombos}
+          rowKey="id_combo"
+          pagination={{
+            current: currentComboPage,
+            pageSize: comboPageSize,
+            total: combos.length,
+            onChange: (page) => setCurrentComboPage(page),
+          }}
         />
         <div style={{ marginTop: 16, textAlign: "right" }}>
           <strong>Total del Pedido: ${totalPedido.toFixed(2)}</strong>
@@ -379,5 +456,4 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     </Modal>
   );
 };
-
 export default RealizarPedidoMesa;
