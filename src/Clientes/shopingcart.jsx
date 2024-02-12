@@ -4,7 +4,9 @@ import {Card, Form,Modal, Button, Row,ButtonGroup,
   import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { CartContext } from "../context/CarritoContext";
-import { Radio } from 'antd';
+import { Radio, InputNumber } from 'antd';
+import { notification } from 'antd';
+
 import PayPal from "./Paypal";
 import Map2 from "./Map2";
 
@@ -17,6 +19,8 @@ const ShoppingCart = () => {
   
   const [pagoCompletado, setPagoCompletado] = useState(false); 
   const [modoPago, setModoPago] = useState(null); 
+  const [fraccionadoValue, setFraccionadoValue] = useState(0);
+
   const [modoPedido, setModoPedido] = useState(null); 
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
 
@@ -52,8 +56,12 @@ const ShoppingCart = () => {
 
   const handleModoPagoChange = (e) => {
     setModoPago(e.target.value);
-  };
+    setFraccionadoValue(1); // Reiniciar el valor al cambiar la opción de pago
 
+  };
+  const handleFraccionadoInputChange = (value) => {
+    setFraccionadoValue(value);
+  };
   const handleModoPedidoChange = (e) => {
     setModoPedido(e.target.value);
   };
@@ -123,33 +131,118 @@ const ShoppingCart = () => {
     (acc, curr) => acc + curr.quantity * curr.price,
     0
   );
+const PagarPorEfectivo =()=>{
+  if (id_cuenta) {
+    const detalles_pedido = cart.map(item => ({
+      id_producto: item.id,
+      cantidad_pedido: item.quantity,
+      costo_unitario: item.price,
+    }));
+
+
+    // Construye el cuerpo de la solicitud con los datos necesarios
+    const formData = new FormData();
+  
+    formData.append('precio', totalPrice);
+    formData.append('tipo_de_pedido', modoPedido);
+    formData.append('metodo_de_pago', 'E'); // Asumo que 'E' es el método de pago en efectivo
+    formData.append('puntos', 0); // Ajusta según sea necesario
+    formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
+    formData.append('impuesto', 0);
+    formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+    // Realiza la solicitud POST al backend
+    fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(responseData => {
+      // Maneja la respuesta del backend según sea necesario
+      if (responseData.success) {
+        console.log('Respuesta del servidor:', responseData);
+        console.log('Pedido realizado con éxito.');
+        notification.success({
+          message: 'Pedido Exitoso',
+          description: '¡El pedido se ha completado con éxito!',
+        });
+      } else {
+        console.error('Error al realizar el pedido:', responseData.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error en la solicitud:', error);
+    })
+    .finally(() => {
+      setCart([]);
+      setMostrarModal(false);
+    });
+  } else {
+    console.error('ID de cuenta no encontrado en localStorage');
+  }
+ 
+    
+};
+
+
+
+
 
   const CerrarModalDespuesDePago = () => {
-    console.log('modoPedido:', modoPedido);
-
-    setMostrarModal(false);
-    setShowCardForm(false);
-    setPagoCompletado(true); 
-    fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      precio: totalPrice,
-      tipo_de_pedido: modoPedido,  // Ajusta según sea necesario
-      metodo_de_pago: modoPago,    // Ajusta según sea necesario
-      puntos: 0,  // Ajusta según sea necesario
-      estado_del_pedido: 'O',  // Ajusta según sea necesario
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Respuesta del servidor:', data);
-      // Puedes manejar la respuesta según sea necesario
-    })
-    .catch(error => console.error('Error al realizar el pedido:', error));
+    if (id_cuenta) {
+      const detalles_pedido = cart.map(item => ({
+        id_producto: item.id,
+        cantidad_pedido: item.quantity,
+        costo_unitario: item.price,
+      }));
+  
+  
+      // Construye el cuerpo de la solicitud con los datos necesarios
+      const formData = new FormData();
+    
+      formData.append('precio', totalPrice);
+      formData.append('tipo_de_pedido', modoPedido);
+      formData.append('metodo_de_pago', 'E'); // Asumo que 'E' es el método de pago en efectivo
+      formData.append('puntos', 0); // Ajusta según sea necesario
+      formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
+      formData.append('impuesto', 0);
+      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      // Realiza la solicitud POST al backend
+      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(responseData => {
+        // Maneja la respuesta del backend según sea necesario
+        if (responseData.success) {
+          console.log('Respuesta del servidor:', responseData);
+          console.log('Pedido realizado con éxito.');
+          notification.success({
+            message: 'Pedido Exitoso',
+            description: '¡El pedido se ha completado con éxito!',
+          });
+        } else {
+          console.error('Error al realizar el pedido:', responseData.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error en la solicitud:', error);
+      })
+      .finally(() => {
+        setCart([]);
+        setMostrarModal(false);
+      });
+    } else {
+      console.error('ID de cuenta no encontrado en localStorage');
     }
+    }
+
+    const PagarPorFraccionado = () => {
+      // Aquí puedes realizar acciones específicas cuando se hace clic en el botón de fraccionado
+      // Puedes abrir el componente de PayPal con el valor de fraccionadoValue
+      console.log('Pagar por fraccionado con valor:', fraccionadoValue);
+    };
+  
   return (
     <>
       <div  style={{ maxWidth: '600px', margin: '0 auto', padding: '20px',}}>
@@ -248,9 +341,27 @@ const ShoppingCart = () => {
                     </div>
                   )}
                 <Radio value="E">Efectivo</Radio>
-                <Radio value="F">Fraccionado</Radio>
+                <Radio value="F">Fraccionado
+                {modoPago === 'F' && (
+              <>
+                <InputNumber
+                  min={0}
+                  value={fraccionadoValue}
+                  onChange={handleFraccionadoInputChange}
+                  style={{ marginLeft: '10px' }}
+                />
+                <Button
+                  style={{ marginLeft: '10px', marginTop: '10px', marginBottom: '10px' }}
+                  onClick={PagarPorFraccionado}
+                >
+                  Pagar: ${fraccionadoValue.toFixed(2)}
+                </Button>
+              </>
+            )}
+                </Radio>
                 <Button style={{ marginLeft: '10px', marginTop: '10px', marginBottom:'10px' }} 
-                  disabled={modoPago !== 'E'}>
+                  disabled={modoPago !== 'E'}
+                  onClick={PagarPorEfectivo}>
                   Pagar: ${totalPrice}
                 </Button>
               </Row>
