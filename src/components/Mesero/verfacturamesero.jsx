@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
 import { jsPDF } from "jspdf";
+import diseño from "./res/diseño.jpg";
 
 const VerFacturaMesero = ({ facturaData }) => {
   const [productos, setProductos] = useState([]);
   const [empresaInfo, setEmpresaInfo] = useState(null);
   const [logoEmpresa, setLogoEmpresa] = useState(null);
   const [combos, setCombos] = useState([]);
+  const [clienteData, setClienteData] = useState(null);
 
   useEffect(() => {
     fetchProductos();
     fetchEmpresaInfo();
     fetchCombos();
+    fetchClienteData();
   }, []);
 
   const fetchProductos = async () => {
@@ -67,26 +70,102 @@ const VerFacturaMesero = ({ facturaData }) => {
     }
   };
 
+  const fetchClienteData = async () => {
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/cliente/ver_clientes/"
+      );
+      if (!response.ok) {
+        throw new Error("No se pudo obtener la lista de clientes.");
+      }
+      const data = await response.json();
+      const cliente = data.clientes.find(
+        (cliente) => cliente.id_cliente === facturaData.id_cliente
+      );
+      if (cliente) {
+        setClienteData(cliente); // Establecer la información del cliente en el estado
+      }
+    } catch (error) {
+      console.error("Error al obtener la lista de clientes:", error);
+    }
+  };
+
   const generarFacturaPDF = () => {
     const doc = new jsPDF();
-  
-    // Definir el ancho de cada columna
+    const fontSize = 12; // Establece el tamaño de fuente deseado
+
+    // Establece el tamaño de fuente para todo el documento
+    doc.setFontSize(fontSize);
+    doc.addImage(
+      diseño,
+      "PNG",
+      0,
+      0,
+      doc.internal.pageSize.getWidth(),
+      doc.internal.pageSize.getHeight()
+    );
+
     const columnWidths = [80, 30, 30, 30, 30];
-  
-    // Agregar el nombre de la empresa y su logo al PDF
     if (empresaInfo && empresaInfo.enombre && logoEmpresa) {
-      doc.addImage(logoEmpresa, "JPEG", 10, 10, 30, 30); // Agregar el logo
-      doc.text(empresaInfo.enombre, 70, 30);
+      const logoWidth = 30; // Ancho del logo
+      const logoHeight = 30; // Alto del logo
+      const logoPositionX = 10; // Posición X del logo
+      const logoPositionY = 4; // Posición Y del logo
+      doc.addImage(
+        logoEmpresa,
+        "JPEG",
+        logoPositionX,
+        logoPositionY,
+        logoWidth,
+        logoHeight
+      );
+      // Establece la posición del texto del nombre de la empresa al lado del logo
+      const nombreEmpresaX = logoPositionX + logoWidth + 2; // Ajusta la distancia del texto al logo
+      const nombreEmpresaY = logoPositionY + logoHeight / 3; // Centra verticalmente el texto con respecto al logo
+      doc.setFont("helvetica", "bold"); // Establece el texto en negrita
+      doc.setFontSize(16); // Tamaño de fuente más grande para el nombre de la empresa
+      doc.text(empresaInfo.enombre, nombreEmpresaX, nombreEmpresaY);
+
+      // Calcular la altura del texto del nombre de la empresa
+      const nombreEmpresaHeight = fontSize / 2; // Suponiendo que la mitad del tamaño de la fuente es la altura del texto
+
+      // Ajustar la posición de la dirección para que esté alineada verticalmente con el nombre de la empresa
+      const direccionEmpresaX = nombreEmpresaX; // Misma posición X que el nombre de la empresa
+      const direccionEmpresaY = nombreEmpresaY + nombreEmpresaHeight; // Alineado verticalmente con el nombre de la empresa
+      doc.setFont("helvetica", "normal"); // Establece el texto en normal
+      doc.setFontSize(12); // Tamaño de fuente más pequeño para la dirección
+      doc.text(empresaInfo.direccion, direccionEmpresaX, direccionEmpresaY);
+
+      // Ajustar la posición del número de teléfono debajo de la dirección
+      const telefonoEmpresaX = direccionEmpresaX; // Misma posición X que la dirección
+      const telefonoEmpresaY = direccionEmpresaY + fontSize / 2; // Alineado verticalmente debajo de la dirección
+      doc.setFont("helvetica", "normal"); // Establece el texto en normal
+      doc.text(
+        `Teléfono: ${empresaInfo.etelefono}`,
+        telefonoEmpresaX,
+        telefonoEmpresaY
+      );
+
+      // Agregar una línea divisoria debajo del número de teléfono
+      const lineY = telefonoEmpresaY + 5; // Ajusta la posición de la línea debajo del texto del teléfono
+      doc.setLineWidth(0.5); // Establece el ancho de la línea
+      doc.line(telefonoEmpresaX, lineY, telefonoEmpresaX + 50, lineY); // Dibuja la línea
+      doc.setFontSize(12); // Restaura el tamaño de fuente
+
+      // Agregar el nombre del cliente debajo del logo de la empresa
+      if (clienteData) {
+        const clienteNombreY = lineY + 10; // Ajustar la posición verticalmente debajo de la línea
+        doc.setFont("helvetica", "bold"); // Establece el texto en negrita
+        doc.text(
+          `Cliente: ${clienteData.crazon_social}`,
+          logoPositionX,
+          clienteNombreY
+        );
+      }
     }
-  
-    // Agregar "Fecha de Emisión" en negrita
     doc.setFont("helvetica", "bold");
     doc.text(`Fecha de Emisión: ${facturaData.fecha_emision}`, 10, 70);
-  
-    // Definir la posición inicial para agregar contenido
     let yPos = 80;
-  
-    // Agregar los encabezados de la tabla al PDF
     const headers = [
       "Descripción",
       "Cantidad",
@@ -103,9 +182,7 @@ const VerFacturaMesero = ({ facturaData }) => {
         yPos
       );
     });
-    yPos += 10; // Incrementar la posición para la siguiente fila
-  
-    // Agregar los datos de la factura al PDF
+    yPos += 10;
     facturaData.detalles_factura.forEach((detalle) => {
       const producto = productos.find(
         (producto) => producto.id_producto === detalle.id_producto_id
@@ -114,11 +191,14 @@ const VerFacturaMesero = ({ facturaData }) => {
         (combo) => combo.id_combo === detalle.id_combo_id
       );
       if (producto || combo) {
-        // Ajustar el tamaño del texto para la descripción del producto o combo
         const descripcion =
-          producto?.nombreproducto || combo?.nombrecb || "Descripción no disponible";
+          producto?.nombreproducto ||
+          combo?.nombrecb ||
+          "Descripción no disponible";
         const fila = [
-          descripcion.length > 30 ? descripcion.substring(0, 30) + "..." : descripcion,
+          descripcion.length > 30
+            ? descripcion.substring(0, 30) + "..."
+            : descripcion,
           detalle.cantidad,
           detalle.precio_unitario,
           detalle.descuento,
@@ -127,9 +207,9 @@ const VerFacturaMesero = ({ facturaData }) => {
         fila.forEach((item, index) => {
           doc.setFont("helvetica", "normal");
           if (index === 0 && descripcion.length > 30) {
-            doc.setFontSize(8); // Reducir el tamaño de la letra si la descripción es grande
+            doc.setFontSize(8);
           } else {
-            doc.setFontSize(12); // Restaurar el tamaño de la letra para las demás celdas
+            doc.setFontSize(fontSize); // Establece el mismo tamaño de fuente
           }
           doc.text(
             item.toString(),
@@ -140,23 +220,18 @@ const VerFacturaMesero = ({ facturaData }) => {
             yPos
           );
         });
-        yPos += 10; // Incrementar la posición para la siguiente fila
+        yPos += 10;
       }
     });
-  
-    // Agregar "Total"
     doc.setFont("helvetica", "bold");
     doc.text(`Total: ${facturaData.total}`, 10, yPos + 10);
-  
     doc.save("factura.pdf");
   };
-  
 
-  // Definir las columnas de la tabla aquí
   const columns = [
     {
       title: "Descripción",
-      dataIndex: "id_producto_id", // Solo se puede definir un dataIndex por columna
+      dataIndex: "id_producto_id",
       key: "descripcion",
       render: (id_producto_id, record) => {
         const producto = productos.find(
@@ -165,11 +240,10 @@ const VerFacturaMesero = ({ facturaData }) => {
         if (producto) {
           return producto.nombreproducto;
         } else {
-          // Si no se encuentra el producto, puede ser un combo
           const combo = combos.find(
             (combo) => combo.id_combo === record.id_combo_id
           );
-          return combo ? combo.nombrecb : "Descripción no disponible"; // Utilizar el campo correcto 'nombrecb'
+          return combo ? combo.nombrecb : "Descripción no disponible";
         }
       },
     },
@@ -198,6 +272,7 @@ const VerFacturaMesero = ({ facturaData }) => {
   return (
     <div>
       <h3>Fecha de Emisión: {facturaData.fecha_emision}</h3>
+      {clienteData && <h3>Cliente: {clienteData.crazon_social}</h3>}{" "}
       <h3>Total: {facturaData.total}</h3>
       <Button type="primary" onClick={generarFacturaPDF}>
         Generar Factura
