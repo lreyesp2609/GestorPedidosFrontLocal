@@ -91,6 +91,7 @@ const MenuComandas = () => {
                     message: 'Pedido listo',
                     description: 'El pedido está completo',
                 });
+                obtenerPedidos();
             } else {
                 console.error('Error al enviar la lista de productos.');
                 notification.error({
@@ -102,26 +103,27 @@ const MenuComandas = () => {
             console.error('Error en la solicitud:', error);
         }
     };
+    const obtenerPedidos = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/Mesero/pedidos/');
+            const data = await response.json();
+            const pedidosOrdenados = data.pedidos.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
+            setPedidos(pedidosOrdenados);
+            console.log(data.pedidos);
+        } catch (error) {
+            console.error('Error al obtener la lista de pedidos', error);
+        }
+    };
 
     useEffect(() => {
-        const obtenerPedidos = async () => {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/Mesero/pedidos/');
-                const data = await response.json();
-                const pedidosOrdenados = data.pedidos.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
-                setPedidos(pedidosOrdenados);
-                console.log(data.pedidos);
-            } catch (error) {
-                console.error('Error al obtener la lista de pedidos', error);
-            }
-        };
-    
+        
+
         // Llama a obtenerPedidos inicialmente
         obtenerPedidos();
-    
+
         // Configura un intervalo para llamar a obtenerPedidos cada 5 segundos
         const intervalId = setInterval(obtenerPedidos, 5000);
-    
+
         // Limpia el intervalo cuando el componente se desmonta
         return () => clearInterval(intervalId);
     }, []);
@@ -172,6 +174,7 @@ const MenuComandas = () => {
         };
         fetchData();
     }, []);
+
 
     return (
         <div className='content' style={{ height: '100%', minHeight: '100vh' }}>
@@ -274,9 +277,21 @@ const MenuComandas = () => {
                                                     {pedido.detalle_pedido.map((detalle) => (
                                                         <tr key={detalle.id_producto}>
                                                             <td style={{ border: '1px solid #ddd', padding: '4px' }}>{detalle.nombreproducto}</td>
-                                                            <td style={{ border: '1px solid #ddd', padding: '4px' }}><Badge count={detalle.cantidad} showZero color='#faad14' /></td>
+                                                            <td style={{ border: '1px solid #ddd', padding: '4px' }}>{detalle.cantidad}</td>
                                                         </tr>
                                                     ))}
+                                                </tbody>
+                                            </table>
+                                            <br/>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{ border: '1px solid #ddd', padding: '4px' }}>Observación</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style={{ border: '1px solid #ddd', padding: '4px' }}>{pedido.observacion_del_cliente}</td>                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </Row>

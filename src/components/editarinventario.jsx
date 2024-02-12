@@ -271,7 +271,7 @@ const Inventario = () => {
                         </Col>
                         <Col md={24}>
                             <div className="table-responsive">
-                                <Table dataSource={inventario} columns={columns} rowKey="id_inventario" pagination={false} />
+                                <Table dataSource={inventario} columns={columns} rowKey="id_inventario" pagination={true} />
                             </div>
                         </Col>
                         <Col md={24}>

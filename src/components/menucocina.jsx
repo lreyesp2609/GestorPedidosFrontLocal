@@ -90,6 +90,10 @@ const MenuCocina = () => {
         console.log('LocalStorage limpiado.');
     };
 
+    const openNewWindow = () => {
+        window.open('/Comandas', '_blank');
+    };
+
 
 
     return (
@@ -133,6 +137,9 @@ const MenuCocina = () => {
                             style={{ height: '96%', width: '100%', margin: '16px', marginLeft: '2px', marginBottom: '16px', cursor: 'default' }}
                             className="text-center"
                         >
+                            <Button type="primary" onClick={openNewWindow}>
+                                Ver comandas
+                            </Button>
                             <Divider>Productos y artículos</Divider>
                             <Col md={12}>
                                 <Col md={12} style={{ padding: '1%' }}>
@@ -159,10 +166,10 @@ const MenuCocina = () => {
                                     <Row>
                                         <Col md={12}>
                                             <Divider>Tipos de productos</Divider>
-                                            <TipoProducto></TipoProducto>                                            
+                                            <TipoProducto></TipoProducto>
                                         </Col>
                                         <Col md={12}>
-                                            
+
                                         </Col>
                                     </Row>
                                 </Col>

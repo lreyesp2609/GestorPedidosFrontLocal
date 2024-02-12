@@ -96,6 +96,9 @@ const LoginForm = ({ onLogin }) => {
           } else if (rol === "M") {
             console.log("Redirigiendo a /homemesero");
             navigate("/homemesero"); // Utiliza navigate para redirigir a la ruta deseada
+          } else if (rol === "X") {
+            console.log("Redirigiendo a /cocina");
+            navigate("/cocina"); // Utiliza navigate para redirigir a la ruta deseada
           }
         } else {
           console.log("Error al obtener el rol");
