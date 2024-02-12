@@ -127,10 +127,7 @@ const MenuCocina = () => {
                     </Container>
                 </Navbar>
                 <Row>
-                    <Col md={3}>
-
-                    </Col>
-                    <Col md={9}>
+                    <Col md={12}>
                         <Card
                             hoverable
                             style={{ height: '96%', width: '100%', margin: '16px', marginLeft: '2px', marginBottom: '16px', cursor: 'default' }}

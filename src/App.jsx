@@ -27,6 +27,7 @@ import React, { useState } from 'react';
 import MenuMesero from "./components/Mesero/meseromenu";
 import { ShoppingCartProvider } from './context/CarritoContext';
 import MostrarMesas from "./Clientes/Reserva";
+import MenuComandas from "./components/menucomandas";
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -63,7 +64,8 @@ function App() {
               <Route path="/cocina" element={<MenuCocina/>} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-              <Route path="/Registro" element={<RegisterForm />} />
+              <Route path="/Registro" element={<RegisterForm/>} />
+              <Route path="/Comandas" element={<MenuComandas/>} />
             </Routes>
             </ShoppingCartProvider>
           </div>
