@@ -22,8 +22,6 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
   const [productos, setProductos] = useState([]);
   const [combos, setCombos] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3;
   const [cantidadProductos, setCantidadProductos] = useState({});
   const [cantidadCombos, setCantidadCombos] = useState({});
   const [precioUnitario, setPrecioUnitario] = useState({});
@@ -62,6 +60,26 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       setPrecioUnitario({});
     }
   }, [resetForm]);
+
+  const totalPedido =
+  Object.keys(cantidadProductos).reduce((total, idProducto) => {
+    const cantidad = cantidadProductos[idProducto];
+    const precioUnitarioProducto = precioUnitario[idProducto] || 0;
+    console.log(`Producto ${idProducto}: cantidad = ${cantidad}, precio unitario = ${precioUnitarioProducto}`);
+    return total + cantidad * precioUnitarioProducto;
+  }, 0) +
+  Object.keys(cantidadCombos).reduce((total, idCombo) => {
+    const cantidad = cantidadCombos[idCombo];
+    const combo = combos.find((c) => c.id_combo === parseInt(idCombo));
+    if (combo) {
+      console.log(`Combo ${idCombo}: cantidad = ${cantidad}, precio unitario = ${combo.preciounitario}`);
+      return total + cantidad * combo.preciounitario;
+    }
+    return total;
+  }, 0);
+
+console.log(`Total pedido: ${totalPedido}`);
+
 
   const columnsProductos = [
     {
@@ -190,24 +208,6 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     }
   };
 
-  const handleTipoPedidoChange = (value) => {
-    console.log("Tipo de pedido seleccionado:", value);
-    console.log(
-      "Cliente seleccionado:",
-      clienteSeleccionado ? clienteSeleccionado.id_cliente : "Ninguno"
-    );
-  };
-
-  const handleMetodoPagoChange = (value) => {
-    // Puedes manejar la lógica de cambio de método de pago aquí
-    console.log("Método de pago seleccionado:", value);
-  };
-
-  const handleEstadoPedidoChange = (value) => {
-    // Puedes manejar la lógica de cambio de estado del pedido aquí
-    console.log("Estado del pedido seleccionado:", value);
-  };
-
   const handlePedidoSubmit = async (values) => {
     try {
       // Validar que al menos un producto o combo tenga una cantidad mayor que cero
@@ -261,12 +261,12 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       const formData = new FormData();
       formData.append("id_mesa", idMesa);
       formData.append("id_cliente", values.id_cliente);
-      formData.append("tipo_de_pedido", values.tipo_de_pedido);
+      formData.append("tipo_de_pedido", "L");
       formData.append("metodo_de_pago", values.metodo_de_pago);
       formData.append("puntos", 3);
       formData.append("fecha_pedido", dayjs().format());
       formData.append("fecha_entrega", "2024-01-30 20:00:00");
-      formData.append("estado_del_pedido", values.estado_del_pedido);
+      formData.append("estado_del_pedido", "O");
       formData.append("observacion_del_cliente", "Nada");
       formData.append("total_pedido", totalPedido);
 
@@ -317,26 +317,6 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     onClose();
   };
 
-  const paginatedData = clientes.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const totalPedido =
-    Object.keys(cantidadProductos).reduce((total, idProducto) => {
-      const cantidad = cantidadProductos[idProducto];
-      const precioUnitarioProducto = precioUnitario[idProducto] || 0;
-      return total + cantidad * precioUnitarioProducto;
-    }, 0) +
-    Object.keys(cantidadCombos).reduce((total, idCombo) => {
-      const cantidad = cantidadCombos[idCombo];
-      const combo = combos.find((c) => c.id_combo === parseInt(idCombo));
-      if (combo) {
-        return total + cantidad * combo.preciounitario;
-      }
-      return total; // Retornar el total sin sumar nada si no se encuentra el combo
-    }, 0);
-
   return (
     <Modal
       visible={visible}
@@ -377,39 +357,15 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Tipo de pedido" name="tipo_de_pedido">
-          <Select
-            placeholder="Selecciona el tipo de pedido"
-            style={{ width: "100%" }}
-            onChange={handleTipoPedidoChange}
-          >
-            <Option value="D">A domicilio</Option>
-            <Option value="R">A retirar</Option>
-            <Option value="L">En local</Option>
-          </Select>
-        </Form.Item>
         <Form.Item label="Método de pago" name="metodo_de_pago">
           <Select
             placeholder="Selecciona el método de pago"
             style={{ width: "100%" }}
-            onChange={handleMetodoPagoChange}
           >
             <Option value="E">En efectivo</Option>
             <Option value="T">Transferencia</Option>
             <Option value="X">Tarjeta</Option>
             <Option value="F">Fraccionado</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label="Estado del pedido" name="estado_del_pedido">
-          <Select
-            placeholder="Selecciona el estado del pedido"
-            style={{ width: "100%" }}
-            onChange={handleEstadoPedidoChange}
-          >
-            <Option value="O">Ordenado</Option>
-            <Option value="P">En proceso</Option>
-            <Option value="C">En Camino</Option>
-            <Option value="E">Pedido Entregado</Option>
           </Select>
         </Form.Item>
         <Form.Item
