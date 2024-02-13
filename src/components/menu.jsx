@@ -35,12 +35,14 @@ import Mesas from "./editarmesa.jsx";
 import EditarBodegaForm from "./editarbodega.jsx";
 import Proveedores from "./proveedores.jsx";
 import Inventario from "./editarinventario.jsx";
+import Pagos from "./res/pagosempleado.png"
 import CrearRecompensaProductoForm from "./CrearRecompensaProducto.jsx";
 import Recompensa from "./recompensa.jsx";
 import EditarRecompensaProductoForm from "./EditarRecompensaProducto.jsx";
 import EditarAvisos from "./editaravisos.jsx";
 import imgreserva from "./res/imgreserva.png";
 import EditarReservacionesForm from "./EditarReservacion.jsx";
+import PagosE from "./pagose.jsx";
 
 const MenuG = () => {
   const { Meta } = Card;
@@ -57,6 +59,7 @@ const MenuG = () => {
   const tooltipTitle11 = "Agrega y gestiona tus inventarios";
   const tooltipTitle12 = "Prepara insumos y productos";
   const tooltipTitle13 = "Agrega y edita reservaciones";
+  const tooltipTitle14 = "Registra los pagos de tus empleados";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -407,6 +410,32 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Pagos empleados" color="#7C1818">
+                <Tooltip title={tooltipTitle14}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Pagos"
+                        src={Pagos}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("pagose")}
+                  >
+                    <Meta title={tooltipTitle14}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -568,6 +597,16 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <EditarReservacionesForm/>
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage == "pagose" && (
+          <>
+            <Divider>Pagos</Divider>
+            <Row>
+              <Col md={12}>
+                <PagosE/>
               </Col>
             </Row>
           </>
