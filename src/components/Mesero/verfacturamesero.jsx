@@ -83,7 +83,7 @@ const VerFacturaMesero = ({ facturaData }) => {
         (cliente) => cliente.id_cliente === facturaData.id_cliente
       );
       if (cliente) {
-        setClienteData(cliente); // Establecer la información del cliente en el estado
+        setClienteData(cliente);
       }
     } catch (error) {
       console.error("Error al obtener la lista de clientes:", error);
@@ -224,7 +224,20 @@ const VerFacturaMesero = ({ facturaData }) => {
       }
     });
     doc.setFont("helvetica", "bold");
+    // Después de agregar el texto del total
     doc.text(`Total: ${facturaData.total}`, 10, yPos + 10);
+    // Agregar el tipo de pedido y el método de pago debajo del total
+    doc.text(
+      `Tipo de Pedido: ${obtenerTipoDePedido(facturaData.tipo_de_pedido)}`,
+      10,
+      yPos + 20
+    );
+    doc.text(
+      `Método de Pago: ${obtenerMetodoDePago(facturaData.metodo_de_pago)}`,
+      10,
+      yPos + 30
+    );
+
     doc.save("factura.pdf");
   };
 
@@ -269,11 +282,42 @@ const VerFacturaMesero = ({ facturaData }) => {
     },
   ];
 
+  const obtenerTipoDePedido = (inicial) => {
+    switch (inicial) {
+      case "D":
+        return "A domicilio";
+      case "R":
+        return "A retirar";
+      case "L":
+        return "En local";
+      default:
+        return "";
+    }
+  };
+
+  const obtenerMetodoDePago = (inicial) => {
+    switch (inicial) {
+      case "E":
+        return "En efectivo";
+      case "T":
+        return "Transferencia";
+      case "X":
+        return "Tarjeta";
+      case "F":
+        return "Fraccionado";
+      default:
+        return "";
+    }
+  };
+
+  // Dentro del componente
   return (
     <div>
       <h3>Fecha de Emisión: {facturaData.fecha_emision}</h3>
-      {clienteData && <h3>Cliente: {clienteData.crazon_social}</h3>}{" "}
+      {clienteData && <h3>Cliente: {clienteData.crazon_social}</h3>}
       <h3>Total: {facturaData.total}</h3>
+      <h3>Tipo de Pedido: {obtenerTipoDePedido(facturaData.tipo_de_pedido)}</h3>
+      <h3>Método de Pago: {obtenerMetodoDePago(facturaData.metodo_de_pago)}</h3>
       <Button type="primary" onClick={generarFacturaPDF}>
         Generar Factura
       </Button>
