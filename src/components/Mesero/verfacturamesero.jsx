@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
 import { jsPDF } from "jspdf";
-import diseño from "./res/diseño.jpg";
+import diseño from "./res/diseño.png";
 
 const VerFacturaMesero = ({ facturaData }) => {
   const [productos, setProductos] = useState([]);
