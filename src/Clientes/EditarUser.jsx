@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser,  faMapMarkerAlt, faEye, faEyeSlash  } from '@fortawesome/free-solid-svg-icons';
 import { message } from 'antd';
 
-import Map2 from './Map2';
+import Map3 from './Map3';
 
 
 
@@ -13,6 +13,7 @@ const EditarUser =()=>{
   const [selectedImage, setSelectedImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false); 
   const [MostrarModal, setMostrarModal] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
 
   const [locationData, setLocationData] = useState({
     latitud1: 0,
@@ -23,13 +24,28 @@ const EditarUser =()=>{
     longitud3: 0,
   });
   
+
   const handleLocationSelect = (location) => {
-    setLocationData((prevLocation) => ({
-      ...prevLocation,
-      ...location,
+    setLocationData((prevLocationData) => ({
+      ...prevLocationData,
+      [`latitud${currentLocation}`]: location.latitud,
+      [`longitud${currentLocation}`]: location.longitud,
     }));
-    CerrarModal();
+    setMostrarModal(false);
   };
+  
+
+const handleSaveLocation = () => {
+  if (marker) {
+    setLocationData((prevLocationData) => ({
+      ...prevLocationData,
+      [`latitud${currentLocation}`]: marker.latitude,
+      [`longitud${currentLocation}`]: marker.longitude,
+    }));
+    setCurrentLocation((prevLocation) => (prevLocation % 3) + 1); // Cambiar a la siguiente ubicación (1, 2, 3)
+  }
+};
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -37,7 +53,8 @@ const EditarUser =()=>{
 
  
 
-  const HacerClick = () => {
+  const HacerClick = (location) => {
+    setCurrentLocation(location);
     setMostrarModal(true);
   };
 
@@ -244,7 +261,7 @@ Longitud: ${locationData.longitud1}`}
                     </Col>
                     <Col  lg={1}>
                       <FontAwesomeIcon
-                      onClick={HacerClick}
+                       onClick={() => HacerClick(1)}
                       icon={faMapMarkerAlt} size="2x"/>
                       </Col> 
                     </Row>
@@ -304,7 +321,7 @@ Longitud: ${locationData.longitud2}`}
                       </Col>
                       <Col  lg={1}>
                         <FontAwesomeIcon
-                        onClick={HacerClick}
+                         onClick={() => HacerClick(2)}
                         icon={faMapMarkerAlt} size="2x"/>
                         </Col>
                         <Form.Label>Direccion 3</Form.Label>
@@ -318,7 +335,7 @@ Longitud: ${locationData.longitud3}`}
                       </Col>
                       <Col  lg={1}>
                         <FontAwesomeIcon
-                        onClick={HacerClick}
+                         onClick={() => HacerClick(3)}
                         icon={faMapMarkerAlt} size="2x"/>
                         </Col>  
                       </Row>
@@ -367,7 +384,10 @@ Longitud: ${locationData.longitud3}`}
             <Modal.Header closeButton  style={{ borderBottom: 'none' }}>
             </Modal.Header>
             <Modal.Body>
-              <Map2  onLocationSelect={handleLocationSelect}/>
+            <Map3
+              onLocationSelect={handleLocationSelect}
+              onSaveLocation={handleSaveLocation}
+            />
             </Modal.Body>
           </Modal>
         )}

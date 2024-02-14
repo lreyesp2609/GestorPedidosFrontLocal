@@ -1,13 +1,18 @@
 import React, { useContext, useState, useEffect  } from "react";
+import Lottie from 'react-lottie';
 import {Card, Form,Modal, Button, Row,ButtonGroup,
-  Col} from 'react-bootstrap';
+  Col, Container} from 'react-bootstrap';
   import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { Radio, InputNumber } from 'antd';
 import { notification } from 'antd';
+import animationData from '../assets/lottis/B.json'; // Importa el archivo JSON de tu animación
+
 
 import PayPal from "./Paypal";
+import PayPal2 from "./Paypal2";
 import Map2 from "./Map2";
 
 const ShoppingCart = () => {
@@ -20,10 +25,31 @@ const ShoppingCart = () => {
   const [pagoCompletado, setPagoCompletado] = useState(false); 
   const [modoPago, setModoPago] = useState(null); 
   const [fraccionadoValue, setFraccionadoValue] = useState(0);
+  const [mostrarComponente, setMostrarComponente] = useState(false);
 
   const [modoPedido, setModoPedido] = useState(null); 
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
+  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
 
+  const lottieOptions = {
+    loop: true,
+    autoplay: !isAnimationPaused, 
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+    },
+  };
+  const toggleAnimation = () => {
+    setIsAnimationPaused(!isAnimationPaused);
+  };
+  const estiloTexto = {
+    marginTop: '200px',
+    fontSize: '24px', // Ajusta el tamaño del texto
+    textAlign: 'center',
+    fontFamily: 'Circular, sans-serif', // Cambia el estilo de letra
+    color: 'gray', // Cambia el color del texto
+    marginBottom:'270px'
+  };
   const [locationData, setLocationData] = useState({
     latitud: 0,
     longitud: 0
@@ -238,21 +264,30 @@ const PagarPorEfectivo =()=>{
     }
 
     const PagarPorFraccionado = () => {
-      // Aquí puedes realizar acciones específicas cuando se hace clic en el botón de fraccionado
-      // Puedes abrir el componente de PayPal con el valor de fraccionadoValue
+      setMostrarComponente(!mostrarComponente);
       console.log('Pagar por fraccionado con valor:', fraccionadoValue);
     };
   
   return (
     <>
-      <div  style={{ maxWidth: '600px', margin: '0 auto', padding: '20px',}}>
+      <div  >
         <div>
-          <div style={{ marginTop: '10px', fontSize: '18px' }}>Productos en el carrito: {quantity}</div>
+         
+         
           {cart.length > 0 ? (
           <>
+           <Container>
+<Row>
+           <Col md={9} style={{ border: '1px solid rgba(0, 0, 0, 0.74)',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+           
+            marginLeft: 0,  // Agrega esta línea para establecer el margen izquierdo a 0
+            paddingLeft: 0 
+            }}>
+           <h5 style={{ marginTop: '10px', fontSize: '18px', marginBottom:'30px', marginLeft:'10px' }}>Productos en el carrito: {quantity}</h5>
               <ul>
                 {cart.map((item) => (
-                  <li key={item.id} style={{ marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '10px', fontSize: '18px', 
+                  <div key={item.id} style={{ marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '10px', fontSize: '18px', 
                   marginTop:'10px'}}>
                     <img
                       src={`data:image/png;base64,${item.image}`} 
@@ -260,27 +295,54 @@ const PagarPorEfectivo =()=>{
                       style={{ width: '50px', height: '50px', marginRight: '10px' }}
                     />
                     {item.Name} - Cantidad: {item.quantity} - Precio: ${item.price}
-                  </li>
+                  </div>
                 ))}
               </ul>
+              </Col>
+       
+         <Col >
+          <Row>
+            <Col>
+         <div style={{ marginTop: '10px', fontSize: '18px' }}>Total: ${totalPrice}</div>
+         </Col>
+          </Row>
+          <Row>
+            <Col style={{marginTop:'400px'}}>
               <div style={{ marginTop: '10px', fontSize: '18px' }}>Total: ${totalPrice}</div>
-            <div style={{display: 'flex', justifyContent: 'end' }}>
-              <Button 
-              onClick={HacerClick}
-              style={{
-                marginTop: '20px',
-                padding: '10px',
-                fontSize: '16px',
-                backgroundColor: '#007bff',
-                color: '#fff',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >Hacer pedido</Button>
+                <div className="d-grid gap-2" >
+                  <Button 
+                  onClick={HacerClick}
+                  size="lg"
+                  style={{
+                    backgroundColor: '#131212',
+                    borderRadius: '8px',
+                    padding: '15px 30px',
+                    fontSize: '16px',
+                    color: '#fff',
+                    border: '1px solid #131212',
+                    transition: 'background-color 0.3s',  // Agrega una transición para suavizar el cambio de color
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = '#333'}  // Cambia el color al pasar el ratón
+                  onMouseOut={(e) => e.target.style.backgroundColor = '#000'}  // Restaura el color original al salir del ratón
+                >Hacer pedido</Button>
+          
             </div>
+            </Col>
+            </Row>
+            </Col>
+         
+        </Row>
+            </Container>
             </>
              ) : (
-              <div style={{ marginTop: '20px', fontSize: '18px' }}>No hay productos en el carrito.</div>
+              <div style={estiloTexto}>
+                    No hay productos en el carrito.
+                    <br/>
+                    <div onClick={toggleAnimation}>
+                      <Lottie options={lottieOptions} height={100} width={100}  />
+                    </div>
+
+              </div>
             )}
         </div>
       </div>
@@ -359,6 +421,11 @@ const PagarPorEfectivo =()=>{
               </>
             )}
                 </Radio>
+                {mostrarComponente && modoPago === 'F' && (
+                    <div style={{ marginLeft: '10px', marginTop: '10px' }}>
+                      <PayPal2 onSuccess={CerrarModalDespuesDePago} amount={fraccionadoValue}/>
+                    </div>
+                  )}
                 <Button style={{ marginLeft: '10px', marginTop: '10px', marginBottom:'10px' }} 
                   disabled={modoPago !== 'E'}
                   onClick={PagarPorEfectivo}>
@@ -370,7 +437,21 @@ const PagarPorEfectivo =()=>{
           
         </Col>
         <Col>
-          <span>HOLA :D</span>
+        <div>
+        <ul>
+            {cart.map((item) => (
+                  <li key={item.id} style={{ marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '10px', fontSize: '18px', 
+                  marginTop:'10px'}}>
+                    <img
+                      src={`data:image/png;base64,${item.image}`} 
+                      alt={`Imagen de ${item.Name}`}
+                      style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                    />
+                    {item.Name} - Cantidad: {item.quantity} - Precio: ${item.price}
+                  </li>
+                ))}
+              </ul>
+        </div>
         </Col>
       </Row>
  
