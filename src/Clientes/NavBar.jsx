@@ -25,12 +25,33 @@ const NavBar =()=>{
 
 
     const navbarStyle = {
-        backgroundColor: '#88b8df',  
+        backgroundColor: '#1c9e27', 
+        border: '3px solid #ff4e02', 
         borderRadius: '15px',
         margin: '10px',
         marginLeft: '10px',
       };
+   
+      
+      const estiloNavLink = {
+        fontSize: '18px',
+        borderRadius: '15px',
+        textDecoration: 'none',
+        color: 'black',
+        transition: 'background-color 0.3s, color 0.3s', // Agrega una transición suave
+        fontFamily: 'Arial, sans-serif',
+
+      };
     
+      const manejarMouseOver = (e) => {
+        e.target.style.backgroundColor = '#467c3d'; // Cambia el color de fondo al pasar el mouse
+        e.target.style.color = '#ffffff'; // Cambia el color del texto al pasar el mouse
+      };
+    
+      const manejarMouseOut = (e) => {
+        e.target.style.backgroundColor = ''; // Restaura el color de fondo al salir del mouse
+        e.target.style.color = 'black'; // Restaura el color del texto al salir del mouse
+      };
       const logoStyle = {
         width: '40px', 
         borderRadius: '50%', 
@@ -90,23 +111,45 @@ const NavBar =()=>{
     <Container>
     <Navbar.Collapse className="justify-content-end">
         <Nav className="ml-auto">
-          <Nav.Link onClick={() => MostrarComponente('Menu')}>Menú</Nav.Link>
-          {Logeado &&<NavDropdown title="Perfil">
-              <NavDropdown.Item onClick={() => MostrarComponente('Perfil')} style={{marginLeft: 'auto', fontSize: '14px' }}>Ver perfil</NavDropdown.Item>
+          <Nav.Link onClick={() => MostrarComponente('Menu')} 
+          style={estiloNavLink}
+          onMouseOver={manejarMouseOver}
+          onMouseOut={manejarMouseOut}>Menú</Nav.Link>
+          {Logeado &&<NavDropdown 
+            style={estiloNavLink}
+            onMouseOver={manejarMouseOver}
+            onMouseOut={manejarMouseOut}
+          title="Perfil">
+              <NavDropdown.Item onClick={() => MostrarComponente('Perfil')} style={{marginLeft: 'auto', fontSize: '18px' }}>Ver perfil</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item onClick={CerrarSesion}  style={{ fontSize: '14px' }}>
+              <NavDropdown.Item onClick={CerrarSesion}  style={{ fontSize: '18px' }}>
                 Cerrar sesion
               </NavDropdown.Item>
             </NavDropdown>}
-          {Logeado &&<Nav.Link onClick={() => MostrarComponente('Reserva')}>Reserva</Nav.Link>}
-          {Logeado && <Nav.Link>Puntos</Nav.Link>}
+          {Logeado &&<Nav.Link onClick={() => MostrarComponente('Reserva')}
+            style={estiloNavLink}
+            onMouseOver={manejarMouseOver}
+            onMouseOut={manejarMouseOut}
+          >Reserva</Nav.Link>}
+          {Logeado && <Nav.Link
+            style={estiloNavLink}
+            onMouseOver={manejarMouseOver}
+            onMouseOut={manejarMouseOut}
+          >Puntos</Nav.Link>}
 
-          {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit' }}
-          onClick={() => MostrarComponente('Carrito')}> <Nav.Link to="/Carrito">Carrito: 
-          <span>{quantity}</span></Nav.Link></Link>}
+          {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit', fontSize: '18px' }}
+          onClick={() => MostrarComponente('Carrito')}> <Nav.Link 
+          style={estiloNavLink}
+          onMouseOver={manejarMouseOver}
+          onMouseOut={manejarMouseOut}
+          to="/Carrito">Carrito:{quantity}</Nav.Link></Link>}
 
           
-          {!Logeado && <Nav.Link onClick={HacerClick}>Iniciar sesión</Nav.Link>}
+          {!Logeado && <Nav.Link onClick={HacerClick} 
+            style={estiloNavLink}
+            onMouseOver={manejarMouseOver}
+            onMouseOut={manejarMouseOut}
+          >Iniciar sesión</Nav.Link>}
     
         </Nav>
       </Navbar.Collapse>
