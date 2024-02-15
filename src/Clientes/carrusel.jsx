@@ -27,7 +27,7 @@ const Carrusel=() =>{
 
     <div style={{ margin: '20px', borderRadius: '15px', overflow: 'hidden' }}>
   
-    <Carousel fade>
+    <Carousel fade nextIcon={null} prevIcon={null}>
         {avisos.map((aviso) => (
     <Carousel.Item >
       <img 
