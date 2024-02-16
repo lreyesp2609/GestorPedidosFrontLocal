@@ -7,6 +7,8 @@ import LoginForm from '../components/login';
 import { Link } from 'react-router-dom';
 import RegistroForm from '../components/registro';
 import ShoppingCart from './shopingcart';
+import Historial from './Historial'
+import ValidarPedido from './Validarpedido';
 import Carrusel from './carrusel';
 import { CartContext } from "../context/CarritoContext";
 import EditarUser from "./EditarUser"
@@ -121,6 +123,8 @@ const NavBar =()=>{
             onMouseOut={manejarMouseOut}
           title="Perfil">
               <NavDropdown.Item onClick={() => MostrarComponente('Perfil')} style={{marginLeft: 'auto', fontSize: '18px' }}>Ver perfil</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => MostrarComponente('Historial')} style={{marginLeft: 'auto', fontSize: '18px' }}>Ver Historial</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => MostrarComponente('Pedido')} style={{marginLeft: 'auto', fontSize: '18px' }}>Validar pedido</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={CerrarSesion}  style={{ fontSize: '18px' }}>
                 Cerrar sesion
@@ -160,6 +164,8 @@ const NavBar =()=>{
   {ComponenteSeleccionado === 'Menu' && <ListProductos/>}
   {ComponenteSeleccionado === 'Perfil' && <EditarUser/>}
   {ComponenteSeleccionado === 'Carrito' && <ShoppingCart />}
+  {ComponenteSeleccionado === 'Historial' && <Historial />}
+  {ComponenteSeleccionado === 'Pedido' && <ValidarPedido/>}
   {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
   {ComponenteSeleccionado != 'Carrusel' && (
     

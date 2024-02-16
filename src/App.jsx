@@ -25,6 +25,7 @@ import MenuCocina from "./components/menucocina";
 import NavBar from "./Clientes/NavBar";
 import React, { useState } from 'react';
 import MenuMesero from "./components/Mesero/meseromenu";
+import ValidarPedido from "./Clientes/Validarpedido";
 import { ShoppingCartProvider } from './context/CarritoContext';
 import MostrarMesas from "./Clientes/Reserva";
 import MenuComandas from "./components/menucomandas";
@@ -49,7 +50,7 @@ function App() {
 
   return (
     <Router>
-      <Layout>
+  
         <Content>
           <div>
           <ShoppingCartProvider>
@@ -70,7 +71,7 @@ function App() {
             </ShoppingCartProvider>
           </div>
         </Content>
-      </Layout>
+      
     </Router>
   );
 }
