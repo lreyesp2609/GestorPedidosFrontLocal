@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, useEffect } from 'react';
 import {
   Container, Nav, Modal, Navbar, NavDropdown, Row,
@@ -14,6 +13,7 @@ import { CartContext } from "../context/CarritoContext";
 import EditarUser from "./EditarUser"
 import ListProductos from './ListaProductos';
 import Reserva from './Reserva';
+import HistorialPedidos from './facturasclientes';
 
 const NavBar = () => {
   const [cart, setCart] = useContext(CartContext);
@@ -181,6 +181,12 @@ const NavBar = () => {
                   onMouseOut={manejarMouseOut}
                   to="/Carrito">Carrito:{quantity}</Nav.Link></Link>}
 
+              {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit', fontSize: '18px' }}
+                onClick={() => MostrarComponente('HistorialPedidos')}> <Nav.Link
+                  style={estiloNavLink}
+                  onMouseOver={manejarMouseOver}
+                  onMouseOut={manejarMouseOut}
+                  to="/HistorialPedidos">Historial de Pedidos</Nav.Link></Link>}
 
               {!Logeado && <Nav.Link onClick={HacerClick}
                 style={estiloNavLink}
@@ -197,6 +203,7 @@ const NavBar = () => {
         {ComponenteSeleccionado === 'Menu' && <ListProductos />}
         {ComponenteSeleccionado === 'Perfil' && <EditarUser />}
         {ComponenteSeleccionado === 'Carrito' && <ShoppingCart />}
+        {ComponenteSeleccionado === 'HistorialPedidos' && <HistorialPedidos />}
         {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
         {ComponenteSeleccionado != 'Carrusel' && (
 
