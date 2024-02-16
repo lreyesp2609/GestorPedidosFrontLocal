@@ -21,10 +21,16 @@ const RealizarPedidoMesero = () => {
   useEffect(() => {
     fetch("http://127.0.0.1:8000/Mesas/ver_mesas/")
       .then((response) => response.json())
-      .then((data) => setMesas(data.mesas))
+      .then((data) => {
+        const filteredMesas = data.mesas.filter(
+          (mesa) =>
+            mesa.estado === "U" || mesa.estado === "A" || mesa.estado === "R"
+        );
+        setMesas(filteredMesas);
+        setTotal(filteredMesas.length);
+      })
       .catch((error) => console.error("Error al obtener las mesas:", error));
   }, []);
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
