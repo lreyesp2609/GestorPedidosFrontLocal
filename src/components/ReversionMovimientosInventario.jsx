@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal } from 'antd';
+import { Table, Button, Modal, Input } from 'antd';
 
 const MovimientosInventario = () => {
   const [movimientos, setMovimientos] = useState([]);
   const [detalleVisible, setDetalleVisible] = useState(false);
   const [detalleMovimiento, setDetalleMovimiento] = useState({});
+  const [reversionVisible, setReversionVisible] = useState(false);
+  const [reversionMotivo, setReversionMotivo] = useState('');
 
   useEffect(() => {
     // Llamada a la API para obtener los movimientos de inventario de tipo 'S'
@@ -43,6 +45,13 @@ const MovimientosInventario = () => {
         <Button type="link" onClick={() => showDetalle(record)}>Ver Detalles</Button>
       ),
     },
+    {
+      title: 'Acciones',
+      key: 'reversion',
+      render: (text, record) => (
+        <Button type="primary" onClick={() => showReversionModal(record)}>Reversión</Button>
+      ),
+    },
   ];
 
   const showDetalle = (record) => {
@@ -52,6 +61,28 @@ const MovimientosInventario = () => {
 
   const handleCloseDetalle = () => {
     setDetalleVisible(false);
+  };
+
+  const showReversionModal = (record) => {
+    setDetalleMovimiento(record);
+    setReversionVisible(true);
+  };
+
+  const handleCloseReversion = () => {
+    setReversionVisible(false);
+    setReversionMotivo('');
+  };
+
+  const handleReversion = () => {
+    // Aquí puedes hacer la llamada a la API para guardar la reversión con el motivo
+    // y el ID del movimiento
+    console.log('Motivo de Reversión:', reversionMotivo);
+    console.log('ID del Movimiento:', detalleMovimiento.id_movimiento);
+
+    // Luego de hacer la llamada a la API y guardar la reversión,
+    // puedes cerrar el modal de reversión
+    setReversionVisible(false);
+    setReversionMotivo('');
   };
 
   return (
@@ -77,6 +108,23 @@ const MovimientosInventario = () => {
             </li>
           ))}
         </ul>
+      </Modal>
+
+      <Modal
+        title="Reversión de Movimiento"
+        visible={reversionVisible}
+        onCancel={handleCloseReversion}
+        footer={[
+          <Button key="cancelar" onClick={handleCloseReversion}>
+            Cancelar
+          </Button>,
+          <Button key="revertir" type="primary" onClick={handleReversion}>
+            Revertir
+          </Button>
+        ]}
+      >
+        <p>Por favor, ingrese el motivo de la reversión:</p>
+        <Input value={reversionMotivo} onChange={e => setReversionMotivo(e.target.value)} />
       </Modal>
     </div>
   );
