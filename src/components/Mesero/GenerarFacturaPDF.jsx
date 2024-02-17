@@ -148,18 +148,17 @@ const GenerarFacturaPDF = ({
     });
 
     // Después de agregar los detalles de la factura, mostrar los datos en fila
-doc.setFont("helvetica", "bold");
-doc.text(`Total`, 10, yPos + 10);
-doc.text(`${facturaData.total}`, 10, yPos + 15);
-doc.text(`Descto`, 27, yPos + 10);
-doc.text(`${facturaData.descuento}`, 27, yPos + 15);
-doc.text(`Sub-Total`, 47, yPos + 10);
-doc.text(`${facturaData.subtotal}`, 47, yPos + 15);
-doc.text(`IVA 12%`, 76, yPos + 10);
-doc.text(`${facturaData.iva}`, 76, yPos + 15);
-doc.text(`A pagar`, 100, yPos + 10);
-doc.text(`${facturaData.a_pagar}`, 100, yPos + 15);
-
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total`, 10, yPos + 10);
+    doc.text(`${facturaData.total}`, 10, yPos + 15);
+    doc.text(`Descto`, 27, yPos + 10);
+    doc.text(`${facturaData.descuento}`, 27, yPos + 15);
+    doc.text(`Sub-Total`, 47, yPos + 10);
+    doc.text(`${facturaData.subtotal}`, 47, yPos + 15);
+    doc.text(`IVA 12%`, 76, yPos + 10);
+    doc.text(`${facturaData.iva}`, 76, yPos + 15);
+    doc.text(`A pagar`, 100, yPos + 10);
+    doc.text(`${facturaData.a_pagar}`, 100, yPos + 15);
 
     // Agregar el tipo de pedido y el método de pago debajo del total
     doc.text(
