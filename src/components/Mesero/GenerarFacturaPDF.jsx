@@ -29,18 +29,6 @@ const GenerarFacturaPDF = ({
       doc.text(texto, x, y);
     };
 
-    // Función para agregar un nuevo elemento de factura con formato específico
-    const agregarElementoConFormato = (texto, x, y, maxWidth) => {
-      const splitText = doc.splitTextToSize(texto, maxWidth);
-      doc.text(splitText, x, y);
-    };
-
-    // Función para agregar un divisor
-    const agregarDivisor = (y) => {
-      doc.setLineWidth(0.5);
-      doc.line(marginLeft, y, designWidth - marginLeft, y);
-    };
-
     // Agregar logo y nombre de la empresa
     if (empresaInfo && empresaInfo.enombre && logoEmpresa) {
       const logoWidth = 30; // Ajusta este valor para cambiar el ancho del logo
@@ -161,24 +149,44 @@ const GenerarFacturaPDF = ({
       direccionY
     );
 
-    const detalles = [
-      { texto: "Descripción", ancho: 60 },
-      { texto: "Cantidad", ancho: 20 },
-      { texto: "P.Unitario", ancho: 20 },
-      { texto: "Descuento", ancho: 20 },
-      { texto: "Valor", ancho: 20 },
+    // Agregar encabezados de la tabla
+    const encabezadosTabla = [
+      "Descripción",
+      "Cantidad",
+      "P.Unitario",
+      "Descuento",
+      "Valor",
     ];
+    doc.setFontSize(8); // Tamaño de fuente más pequeño
 
-    detalles.forEach((detalle, index) => {
-      const x =
-        marginLeft +
-        detalles.slice(0, index).reduce((acc, item) => acc + item.ancho, 0);
-      // Reducir el tamaño de fuente para los detalles
-      doc.setFontSize(8); // Tamaño de fuente más pequeño
-      agregarElementoConFormato(detalle.texto, x, yPos, detalle.ancho);
+    const encabezadosWidths = [60, 20, 20, 20, 20];
+
+    yPos += -7; // Incrementar la posición vertical para las filas de detalles
+
+    /// Calcular la posición inicial en X para centrar la tabla
+    const tableWidth = encabezadosWidths.reduce((acc, width) => acc + width, 0);
+    const startX = (doc.internal.pageSize.getWidth() - tableWidth) / 2;
+
+    // Agregar encabezados de la tabla
+    let currentX = startX;
+    encabezadosTabla.forEach((encabezado, index) => {
+      // Dibujar contorno
+      doc.rect(currentX, yPos, encabezadosWidths[index], 5);
+
+      // Agregar texto centrado en la celda
+      const textWidth =
+        (doc.getStringUnitWidth(encabezado) * doc.internal.getFontSize()) /
+        doc.internal.scaleFactor;
+      const textX = currentX + (encabezadosWidths[index] - textWidth) / 2;
+      doc.text(encabezado, textX, yPos + 3);
+
+      currentX += encabezadosWidths[index]; // Actualizar la posición X para la siguiente celda
     });
 
-    yPos += 10;
+    yPos += 5; // Incrementar la posición vertical para las filas de detalles
+
+    // Calcular la posición inicial en X para las filas de detalles
+    const detallesStartX = (doc.internal.pageSize.getWidth() - tableWidth) / 2;
 
     // Agregar cada fila de productos/combos
     facturaData.detalles_factura.forEach((detalle) => {
@@ -197,58 +205,153 @@ const GenerarFacturaPDF = ({
         const precioUnitario = detalle.precio_unitario;
         const descuento = detalle.descuento;
         const valor = detalle.valor;
-        const fila = [descripcion, cantidad, precioUnitario, descuento, valor];
-        fila.forEach((item, index) => {
-          const x =
-            marginLeft +
-            detalles.slice(0, index).reduce((acc, item) => acc + item.ancho, 0);
-          agregarElementoConFormato(
-            item.toString(),
-            x,
-            yPos,
-            detalles[index].ancho
-          );
+
+        // Detalles en celdas
+        const filaDetalles = [
+          [descripcion, 60], // Descripción
+          [cantidad, 20], // Cantidad
+          [precioUnitario, 20], // P.Unitario
+          [descuento, 20], // Descuento
+          [valor, 20], // Valor
+        ];
+
+        // Calcular la posición de inicio de la fila
+        let currentX = detallesStartX;
+        const cellHeight = 5; // Altura de la celda
+
+        // Agregar detalles como celdas y dibujar contorno
+        filaDetalles.forEach(([detalle, width]) => {
+          // Dibujar contorno
+          doc.rect(currentX, yPos, width, cellHeight);
+
+          // Agregar texto centrado
+          const textWidth =
+            (doc.getStringUnitWidth(detalle) * doc.internal.getFontSize()) /
+            doc.internal.scaleFactor;
+          const textX = currentX + (width - textWidth) / 2;
+          doc.text(detalle, textX, yPos + 3);
+
+          currentX += width; // Actualizar la posición X para la siguiente celda
         });
-        yPos += 10;
+
+        yPos += cellHeight; // Incrementar la posición vertical para la siguiente fila
       }
     });
 
     // Agregar totales y detalles adicionales
-    doc.setFontSize(16); // Restaurar el tamaño de fuente original
-    agregarElementoFactura(`Total`, marginLeft, yPos + 10);
-    agregarElementoFactura(`${facturaData.total}`, marginLeft + 80, yPos + 10);
-    agregarElementoFactura(`Descto`, marginLeft, yPos + 20);
+    doc.setFontSize(10); // Restaurar el tamaño de fuente original
+    agregarElementoFactura(`Total`, marginLeft + 5, yPos + 10);
+    agregarElementoFactura(`${facturaData.total}`, marginLeft + 25, yPos + 10);
+
+    agregarElementoFactura(`Descto`, marginLeft + 5, yPos + 20);
     agregarElementoFactura(
       `${facturaData.descuento}`,
-      marginLeft + 80,
+      marginLeft + 25,
       yPos + 20
     );
-    agregarElementoFactura(`Sub-Total`, marginLeft, yPos + 30);
+    agregarElementoFactura(`Sub-Total`, marginLeft + 3, yPos + 30);
     agregarElementoFactura(
       `${facturaData.subtotal}`,
-      marginLeft + 80,
+      marginLeft + 25,
       yPos + 30
     );
-    agregarElementoFactura(`IVA 12%`, marginLeft, yPos + 40);
-    agregarElementoFactura(`${facturaData.iva}`, marginLeft + 80, yPos + 40);
-    agregarElementoFactura(`A pagar`, marginLeft, yPos + 50);
+    agregarElementoFactura(`IVA 12%`, marginLeft + 5, yPos + 40);
+    agregarElementoFactura(`${facturaData.iva}`, marginLeft + 25, yPos + 40);
+
+    agregarElementoFactura(`A pagar`, marginLeft + 5, yPos + 50);
     agregarElementoFactura(
       `${facturaData.a_pagar}`,
-      marginLeft + 80,
+      marginLeft + 25,
       yPos + 50
     );
 
+    // Calcular el ancho y la altura del rectángulo
+    const rectWidth =
+      (Math.max(
+        doc.getStringUnitWidth(`Total: ${facturaData.total}`),
+        doc.getStringUnitWidth(`Descto: ${facturaData.descuento}`),
+        doc.getStringUnitWidth(`Sub-Total: ${facturaData.subtotal}`),
+        doc.getStringUnitWidth(`IVA 12%: ${facturaData.iva}`),
+        doc.getStringUnitWidth(`A pagar: ${facturaData.a_pagar}`)
+      ) *
+        16) /
+        doc.internal.scaleFactor +
+      1; // El ancho del rectángulo será el ancho máximo del texto más un margen
+    const rectHeight = yPos + 50 - (yPos + 4); // La altura del rectángulo será la altura total del texto
+
+    // Agregar contorno cuadrado
+    doc.rect(marginLeft, yPos + 5, rectWidth, rectHeight);
+
+    // Calcular el tamaño de cada celda
+    const cellHeight = rectHeight / 5; // El número 5 representa el número de celdas
+
+    // Agregar líneas horizontales para dividir en celdas
+    for (let i = 1; i < 5; i++) {
+      doc.line(
+        marginLeft,
+        yPos + 5 + i * cellHeight,
+        marginLeft + rectWidth,
+        yPos + 5 + i * cellHeight
+      );
+    }
+
+    // Agregar línea vertical para separar los nombres de los totales y los valores
+    const separatorX = marginLeft + 20; // Ajusta este valor para mover la línea vertical
+    doc.line(separatorX, yPos + 5, separatorX, yPos + 5 + rectHeight);
+
     // Agregar tipo de pedido y método de pago
-    agregarElementoFactura(
-      `Tipo de Pedido: ${obtenerTipoDePedido(facturaData.tipo_de_pedido)}`,
-      marginLeft,
-      yPos + 70
-    );
-    agregarElementoFactura(
-      `Método de Pago: ${obtenerMetodoDePago(facturaData.metodo_de_pago)}`,
-      marginLeft,
-      yPos + 80
-    );
+    const labels = ["Tipo de Pedido", "Método de Pago"];
+    const values = [
+      obtenerTipoDePedido(facturaData.tipo_de_pedido),
+      obtenerMetodoDePago(facturaData.metodo_de_pago),
+    ];
+
+    // Calcular el ancho y la altura del rectángulo
+    const rectWidthTotales =
+      (Math.max(
+        doc.getStringUnitWidth(`${labels[0]}: ${values[0]}`),
+        doc.getStringUnitWidth(`${labels[1]}: ${values[1]}`)
+      ) *
+        10) /
+        doc.internal.scaleFactor +
+      1; // El ancho del rectángulo será el ancho máximo del texto más un margen
+    const rectHeightTotales = 20; // Altura del rectángulo
+
+    // Agregar contorno cuadrado
+    doc.rect(marginLeft, yPos + 65, rectWidthTotales, rectHeightTotales);
+
+    // Calcular el tamaño de cada celda
+    const cellHeightTotales = rectHeightTotales / 2; // El número 2 representa el número de celdas
+
+    /*const separatorX2 = marginLeft + rectWidthTotales / 2; // La posición x del separador será el margen izquierdo más la mitad del ancho del rectángulo
+    doc.line(
+      separatorX2,
+      yPos + 65,
+      separatorX2,
+      yPos + 65 + rectHeightTotales
+    ); // Dibujar la línea desde el inicio hasta el final del rectángulo*/
+
+    // Agregar texto para tipo de pedido y método de pago
+    for (let i = 0; i < labels.length; i++) {
+      const labelWidth =
+        (doc.getStringUnitWidth(`${labels[i]}: ${values[i]}`) * 10) /
+        doc.internal.scaleFactor; // Calcular el ancho del texto
+      agregarElementoFactura(
+        `${labels[i]}: ${values[i]}`,
+        marginLeft + rectWidthTotales / 2 - labelWidth / 2,
+        yPos + 70 + i * 10
+      ); // Centrar el texto en la celda
+    }
+
+    // Agregar línea horizontal para dividir en celdas
+    for (let i = 1; i < 2; i++) {
+      doc.line(
+        marginLeft,
+        yPos + 65 + i * cellHeightTotales,
+        marginLeft + rectWidthTotales,
+        yPos + 65 + i * cellHeightTotales
+      );
+    }
 
     // Guardar el documento
     doc.save("factura.pdf");
