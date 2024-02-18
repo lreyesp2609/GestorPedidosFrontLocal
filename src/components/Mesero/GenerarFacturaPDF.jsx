@@ -1,111 +1,186 @@
 import React from "react";
 import { Button } from "antd";
 import { jsPDF } from "jspdf";
-import diseño from "./res/diseño.png";
+
 const GenerarFacturaPDF = ({
   empresaInfo,
   logoEmpresa,
-  clienteData,
   facturaData,
+  clienteData,
   productos,
   combos,
   obtenerTipoDePedido,
   obtenerMetodoDePago,
 }) => {
   const generarFacturaPDF = () => {
-    const doc = new jsPDF();
-    const fontSize = 12; // Establece el tamaño de fuente deseado
+    const doc = new jsPDF({
+      unit: "mm",
+      format: [215, 150], // Ancho: 21.5 cm, Alto: 15 cm
+    });
 
-    // Establece el tamaño de fuente para todo el documento
-    doc.setFontSize(fontSize);
-    doc.addImage(
-      diseño,
-      "PNG",
-      0,
-      0,
-      doc.internal.pageSize.getWidth(),
-      doc.internal.pageSize.getHeight()
-    );
+    // Definir diseño para el rollo de factura
+    const designWidth = 210; // Ancho del diseño
+    const designHeight = 297; // Alto del diseño
+    const marginLeft = 10; // Margen izquierdo
+    const marginTop = 10; // Margen superior
 
-    const columnWidths = [80, 30, 30, 30, 30];
+    // Función para agregar un nuevo elemento de factura al documento
+    const agregarElementoFactura = (texto, x, y) => {
+      doc.text(texto, x, y);
+    };
+
+    // Función para agregar un nuevo elemento de factura con formato específico
+    const agregarElementoConFormato = (texto, x, y, maxWidth) => {
+      const splitText = doc.splitTextToSize(texto, maxWidth);
+      doc.text(splitText, x, y);
+    };
+
+    // Función para agregar un divisor
+    const agregarDivisor = (y) => {
+      doc.setLineWidth(0.5);
+      doc.line(marginLeft, y, designWidth - marginLeft, y);
+    };
+
+    // Agregar logo y nombre de la empresa
     if (empresaInfo && empresaInfo.enombre && logoEmpresa) {
-      const logoWidth = 30; // Ancho del logo
-      const logoHeight = 30; // Alto del logo
-      const logoPositionX = 10; // Posición X del logo
-      const logoPositionY = 4; // Posición Y del logo
+      const logoWidth = 30; // Ajusta este valor para cambiar el ancho del logo
+      const logoHeight = 30; // Ajusta este valor para cambiar la altura del logo
+      const logoX = 7; // Nueva coordenada X para el logo (ajusta según sea necesario)
+      const logoY = marginTop + logoHeight / 2;
       doc.addImage(
         logoEmpresa,
         "JPEG",
-        logoPositionX,
-        logoPositionY,
+        logoX,
+        marginTop,
         logoWidth,
         logoHeight
       );
-      // Establece la posición del texto del nombre de la empresa al lado del logo
-      const nombreEmpresaX = logoPositionX + logoWidth + 2; // Ajusta la distancia del texto al logo
-      const nombreEmpresaY = logoPositionY + logoHeight / 3; // Centra verticalmente el texto con respecto al logo
-      doc.setFont("helvetica", "bold"); // Establece el texto en negrita
-      doc.setFontSize(16); // Tamaño de fuente más grande para el nombre de la empresa
-      doc.text(empresaInfo.enombre, nombreEmpresaX, nombreEmpresaY);
 
-      // Calcular la altura del texto del nombre de la empresa
-      const nombreEmpresaHeight = fontSize / 2; // Suponiendo que la mitad del tamaño de la fuente es la altura del texto
+      // Establecer un tamaño de fuente más grande para el logo y el nombre de la empresa
+      const fontSizeLogoEmpresa = 20; // Tamaño de fuente para el logo y el nombre de la empresa
+      doc.setFontSize(fontSizeLogoEmpresa);
 
-      // Ajustar la posición de la dirección para que esté alineada verticalmente con el nombre de la empresa
-      const direccionEmpresaX = nombreEmpresaX; // Misma posición X que el nombre de la empresa
-      const direccionEmpresaY = nombreEmpresaY + nombreEmpresaHeight; // Alineado verticalmente con el nombre de la empresa
-      doc.setFont("helvetica", "normal"); // Establece el texto en normal
-      doc.setFontSize(12); // Tamaño de fuente más pequeño para la dirección
-      doc.text(empresaInfo.direccion, direccionEmpresaX, direccionEmpresaY);
+      // Dividir el nombre de la empresa en dos partes
+      const nombreEmpresa = empresaInfo.enombre.split(" ");
+      const nombreEmpresaParte1 = nombreEmpresa
+        .slice(0, Math.ceil(nombreEmpresa.length / 2))
+        .join(" ");
+      const nombreEmpresaParte2 = nombreEmpresa
+        .slice(Math.ceil(nombreEmpresa.length / 2))
+        .join(" ");
 
-      // Ajustar la posición del número de teléfono debajo de la dirección
-      const telefonoEmpresaX = direccionEmpresaX; // Misma posición X que la dirección
-      const telefonoEmpresaY = direccionEmpresaY + fontSize / 2; // Alineado verticalmente debajo de la dirección
-      doc.setFont("helvetica", "normal"); // Establece el texto en normal
+      // Calcular la posición para centrar verticalmente las dos líneas
+      const totalLineHeight = 12; // Altura total del texto en dos líneas
+      const startY = logoY - totalLineHeight / 2;
+
+      // Calcular la posición horizontal para centrar cada parte del nombre
+      const nombreEmpresaParte1Width =
+        (doc.getStringUnitWidth(nombreEmpresaParte1) * 16) /
+        doc.internal.scaleFactor; // Ancho de la primera parte del nombre
+      const nombreEmpresaParte2Width =
+        (doc.getStringUnitWidth(nombreEmpresaParte2) * 16) /
+        doc.internal.scaleFactor; // Ancho de la segunda parte del nombre
+      const nombreEmpresaXParte1 =
+        logoX + logoWidth + 20 - nombreEmpresaParte1Width / 2;
+      const nombreEmpresaXParte2 =
+        logoX + logoWidth + 20 - nombreEmpresaParte2Width / 2;
+
+      doc.text(nombreEmpresaParte1, nombreEmpresaXParte1, startY);
       doc.text(
-        `Teléfono: ${empresaInfo.etelefono}`,
-        telefonoEmpresaX,
-        telefonoEmpresaY
+        nombreEmpresaParte2,
+        nombreEmpresaXParte2,
+        startY + totalLineHeight / 2
       );
 
-      // Agregar una línea divisoria debajo del número de teléfono
-      const lineY = telefonoEmpresaY + 5; // Ajusta la posición de la línea debajo del texto del teléfono
-      doc.setLineWidth(0.5); // Establece el ancho de la línea
-      doc.line(telefonoEmpresaX, lineY, telefonoEmpresaX + 50, lineY); // Dibuja la línea
-      doc.setFontSize(12); // Restaura el tamaño de fuente
+      // Calcular el ancho y la altura del rectángulo
+      const rectWidth =
+        Math.max(nombreEmpresaParte1Width, nombreEmpresaParte2Width) + 45; // Reducir el margen añadido al ancho
+      const rectHeight = totalLineHeight + logoHeight - 10; // Reducir el margen añadido a la altura
 
-      // Agregar el nombre del cliente debajo del logo de la empresa
-      if (clienteData) {
-        const clienteNombreY = lineY + 10; // Ajustar la posición verticalmente debajo de la línea
-        doc.setFont("helvetica", "bold"); // Establece el texto en negrita
-        doc.text(
-          `Cliente: ${clienteData.crazon_social}`,
-          logoPositionX,
-          clienteNombreY
-        );
-      }
+      // Agregar contorno cuadrado
+      doc.rect(logoX, marginTop, rectWidth, rectHeight);
+
+      // Restaurar el tamaño de fuente para el resto del documento
+      doc.setFontSize(16); // Tamaño de fuente para el resto del documento
     }
-    doc.setFont("helvetica", "bold");
-    doc.text(`Fecha de Emisión: ${facturaData.fecha_emision}`, 10, 70);
-    // Mostrar los detalles de la factura
-    let yPos = 80;
-    const headers = [
-      "Descripción",
-      "Cantidad",
-      "P.Unitario",
-      "Descuento", // Incluir el campo de descuento en los encabezados
-      "Valor",
+
+    // Agregar dirección de la empresa
+    if (empresaInfo && empresaInfo.direccion) {
+      const direccion = empresaInfo.direccion;
+      const lineasDireccion = direccion.split(/ y |(?=Quevedo)/); // Dividir la dirección en líneas por " y " o "Quevedo" (usando un lookahead)
+      const direccionY = marginTop + 9; // Ajusta la posición vertical según sea necesario
+      const fontSizeOriginal = doc.internal.getFontSize(); // Guardar el tamaño de fuente original
+      const fontSizeDireccion = 10; // Tamaño de fuente para la dirección
+
+      lineasDireccion.forEach((linea, index) => {
+        const width =
+          (doc.getStringUnitWidth(linea.trim()) * fontSizeDireccion) /
+          doc.internal.scaleFactor;
+        const nombreEmpresaParte2Width =
+          (doc.getStringUnitWidth(lineasDireccion[1]) * 16) /
+          doc.internal.scaleFactor; // Ancho de la segunda parte del nombre de la empresa
+        const offset = 35; // Valor adicional para ajustar la posición hacia la derecha
+        const x =
+          (doc.internal.pageSize.getWidth() +
+            nombreEmpresaParte2Width -
+            width +
+            offset) /
+          2; // Calcular la posición horizontal centrada respecto a la segunda parte del nombre de la empresa, con un ajuste hacia la derecha
+        const y = direccionY + index * 5; // Incrementar la posición vertical para cada línea
+        doc.setFontSize(fontSizeDireccion); // Establecer el tamaño de fuente para la dirección
+        agregarElementoFactura(linea.trim(), x, y); // Eliminar espacios en blanco al principio y al final de cada línea
+      });
+
+      doc.setFontSize(fontSizeOriginal); // Restaurar el tamaño de fuente original
+    }
+
+    // Agregar detalles de la factura
+    let yPos = marginTop + 75;
+
+    // Agregar fecha
+    const fechaEmisionY = marginTop + 40; // Establecer la posición vertical para la fecha de emisión
+    agregarElementoFactura(
+      `Fecha: ${facturaData.fecha_emision}`,
+      marginLeft,
+      fechaEmisionY
+    );
+
+    // Agregar nombre del cliente
+    const clienteY = marginTop + 50; // Establecer la posición vertical para el cliente
+    agregarElementoFactura(
+      `Cliente: ${clienteData.crazon_social}`,
+      marginLeft,
+      clienteY
+    );
+
+    // Agregar nombre de la direccion
+    const direccionY = marginTop + 60; // Establecer la posición vertical para direccion
+    agregarElementoFactura(
+      `Direccion: ${clienteData.crazon_social}`,
+      marginLeft,
+      direccionY
+    );
+
+    const detalles = [
+      { texto: "Descripción", ancho: 60 },
+      { texto: "Cantidad", ancho: 20 },
+      { texto: "P.Unitario", ancho: 20 },
+      { texto: "Descuento", ancho: 20 },
+      { texto: "Valor", ancho: 20 },
     ];
-    headers.forEach((header, index) => {
-      doc.setFont("helvetica", "bold");
-      doc.text(
-        header,
-        10 +
-          columnWidths.slice(0, index).reduce((acc, width) => acc + width, 0),
-        yPos
-      );
+
+    detalles.forEach((detalle, index) => {
+      const x =
+        marginLeft +
+        detalles.slice(0, index).reduce((acc, item) => acc + item.ancho, 0);
+      // Reducir el tamaño de fuente para los detalles
+      doc.setFontSize(8); // Tamaño de fuente más pequeño
+      agregarElementoConFormato(detalle.texto, x, yPos, detalle.ancho);
     });
+
     yPos += 10;
+
+    // Agregar cada fila de productos/combos
     facturaData.detalles_factura.forEach((detalle) => {
       const producto = productos.find(
         (producto) => producto.id_producto === detalle.id_producto_id
@@ -118,62 +193,67 @@ const GenerarFacturaPDF = ({
           producto?.nombreproducto ||
           combo?.nombrecb ||
           "Descripción no disponible";
-        const fila = [
-          descripcion.length > 30
-            ? descripcion.substring(0, 30) + "..."
-            : descripcion,
-          detalle.cantidad,
-          detalle.precio_unitario,
-          detalle.descuento, // Mostrar el descuento en la fila
-          detalle.valor,
-        ];
+        const cantidad = detalle.cantidad;
+        const precioUnitario = detalle.precio_unitario;
+        const descuento = detalle.descuento;
+        const valor = detalle.valor;
+        const fila = [descripcion, cantidad, precioUnitario, descuento, valor];
         fila.forEach((item, index) => {
-          doc.setFont("helvetica", "normal");
-          if (index === 0 && descripcion.length > 30) {
-            doc.setFontSize(8);
-          } else {
-            doc.setFontSize(fontSize); // Establece el mismo tamaño de fuente
-          }
-          doc.text(
+          const x =
+            marginLeft +
+            detalles.slice(0, index).reduce((acc, item) => acc + item.ancho, 0);
+          agregarElementoConFormato(
             item.toString(),
-            10 +
-              columnWidths
-                .slice(0, index)
-                .reduce((acc, width) => acc + width, 0),
-            yPos
+            x,
+            yPos,
+            detalles[index].ancho
           );
         });
         yPos += 10;
       }
     });
 
-    // Después de agregar los detalles de la factura, mostrar los datos en fila
-    doc.setFont("helvetica", "bold");
-    doc.text(`Total`, 10, yPos + 10);
-    doc.text(`${facturaData.total}`, 10, yPos + 15);
-    doc.text(`Descto`, 27, yPos + 10);
-    doc.text(`${facturaData.descuento}`, 27, yPos + 15);
-    doc.text(`Sub-Total`, 47, yPos + 10);
-    doc.text(`${facturaData.subtotal}`, 47, yPos + 15);
-    doc.text(`IVA 12%`, 76, yPos + 10);
-    doc.text(`${facturaData.iva}`, 76, yPos + 15);
-    doc.text(`A pagar`, 100, yPos + 10);
-    doc.text(`${facturaData.a_pagar}`, 100, yPos + 15);
-
-    // Agregar el tipo de pedido y el método de pago debajo del total
-    doc.text(
-      `Tipo de Pedido: ${obtenerTipoDePedido(facturaData.tipo_de_pedido)}`,
-      10,
+    // Agregar totales y detalles adicionales
+    doc.setFontSize(16); // Restaurar el tamaño de fuente original
+    agregarElementoFactura(`Total`, marginLeft, yPos + 10);
+    agregarElementoFactura(`${facturaData.total}`, marginLeft + 80, yPos + 10);
+    agregarElementoFactura(`Descto`, marginLeft, yPos + 20);
+    agregarElementoFactura(
+      `${facturaData.descuento}`,
+      marginLeft + 80,
+      yPos + 20
+    );
+    agregarElementoFactura(`Sub-Total`, marginLeft, yPos + 30);
+    agregarElementoFactura(
+      `${facturaData.subtotal}`,
+      marginLeft + 80,
       yPos + 30
     );
-    doc.text(
-      `Método de Pago: ${obtenerMetodoDePago(facturaData.metodo_de_pago)}`,
-      10,
-      yPos + 40
+    agregarElementoFactura(`IVA 12%`, marginLeft, yPos + 40);
+    agregarElementoFactura(`${facturaData.iva}`, marginLeft + 80, yPos + 40);
+    agregarElementoFactura(`A pagar`, marginLeft, yPos + 50);
+    agregarElementoFactura(
+      `${facturaData.a_pagar}`,
+      marginLeft + 80,
+      yPos + 50
     );
 
+    // Agregar tipo de pedido y método de pago
+    agregarElementoFactura(
+      `Tipo de Pedido: ${obtenerTipoDePedido(facturaData.tipo_de_pedido)}`,
+      marginLeft,
+      yPos + 70
+    );
+    agregarElementoFactura(
+      `Método de Pago: ${obtenerMetodoDePago(facturaData.metodo_de_pago)}`,
+      marginLeft,
+      yPos + 80
+    );
+
+    // Guardar el documento
     doc.save("factura.pdf");
   };
+
   return (
     <Button type="primary" onClick={generarFacturaPDF}>
       Generar Factura
