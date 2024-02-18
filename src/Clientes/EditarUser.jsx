@@ -98,9 +98,8 @@ const EditarUser = () => {
         );
         return;
       }
-
       // Desestructurar propiedades de values solo si values está definido
-      const { telefono, snombre, capellido, ruc_cedula, razon_social } = values;
+      const { telefono, snombre, capellido, ruc_cedula, razon_social,  } = values;
 
       const formData = new FormData();
       formData.append("ctelefono", telefono);
@@ -108,6 +107,8 @@ const EditarUser = () => {
       formData.append("capellido", capellido);
       formData.append("ruc_cedula", ruc_cedula);
       formData.append("crazon_social", razon_social);
+      formData.append('latitud', locationData.latitud1);
+      formData.append('longitud', locationData.longitud1);
       const response = await fetch(
         `http://127.0.0.1:8000/Login/editar_usuario/${id_cuenta}/`,
         {
@@ -129,6 +130,7 @@ const EditarUser = () => {
       message.error("Error en la solicitud de edición de aviso");
     }
   };
+  
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -259,13 +261,13 @@ const EditarUser = () => {
                       <Col>
                         <Form.Label>Nombre</Form.Label>
                         <Form.Control
-                          value={userData?.nombre_usuario || ""}
+                          value={userData?.snombre || ""}
                           readOnly={!isEditing}
                           onChange={(e) =>
                             isEditing &&
                             setUserData({
                               ...userData,
-                              nombre_usuario: e.target.value,
+                              snombre: e.target.value,
                             })
                           }
                         />
@@ -334,7 +336,9 @@ Longitud: ${locationData.longitud1}`}
                             capellido: userData.capellido,
                             ruc_cedula: userData.ruc_cedula,
                             razon_social: userData.razon_social,
+                           
                           });
+                          
                         }}
                       >
                         Guardar Cambios

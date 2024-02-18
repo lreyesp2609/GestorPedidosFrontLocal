@@ -150,6 +150,7 @@ const Pedidos = ({regresar}) => {
         formData.append('estado_del_pedido', 'O'); 
         formData.append('impuesto', 0);
         formData.append('estado_pago', 'En revisión');
+        formData.append('imagen', fileList[0]?.originFileObj || null);
         formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
         // Realiza la solicitud POST al backend
         fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
@@ -203,7 +204,7 @@ const Pedidos = ({regresar}) => {
         
           formData.append('precio', totalPrice);
           formData.append('tipo_de_pedido', modoPedido);
-          formData.append('metodo_de_pago', 'E'); // Asumo que 'E' es el método de pago en efectivo
+          formData.append('metodo_de_pago', 'T'); // Asumo que 'E' es el método de pago en efectivo
           formData.append('puntos', 0); // Ajusta según sea necesario
           formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
           formData.append('impuesto', 0);
@@ -238,7 +239,55 @@ const Pedidos = ({regresar}) => {
           console.error('ID de cuenta no encontrado en localStorage');
         }
         }
-    
+        const CerrarModalDespuesDePago2 = () => {
+          if (id_cuenta) {
+            const detalles_pedido = cart.map(item => ({
+              id_producto: item.id,
+              cantidad_pedido: item.quantity,
+              costo_unitario: item.price,
+            }));
+        
+        
+            // Construye el cuerpo de la solicitud con los datos necesarios
+            const formData = new FormData();
+          
+            formData.append('precio', totalPrice);
+            formData.append('tipo_de_pedido', modoPedido);
+            formData.append('metodo_de_pago', 'F'); // Asumo que 'E' es el método de pago en efectivo
+            formData.append('puntos', 0); // Ajusta según sea necesario
+            formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
+            formData.append('impuesto', 0);
+            formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+            // Realiza la solicitud POST al backend
+            fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+              method: 'POST',
+              body: formData,
+            })
+            .then(response => response.json())
+            .then(responseData => {
+              // Maneja la respuesta del backend según sea necesario
+              if (responseData.success) {
+                console.log('Respuesta del servidor:', responseData);
+                console.log('Pedido realizado con éxito.');
+                notification.success({
+                  message: 'Pedido Exitoso',
+                  description: '¡El pedido se ha completado con éxito!',
+                });
+              } else {
+                console.error('Error al realizar el pedido:', responseData.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error en la solicitud:', error);
+            })
+            .finally(() => {
+              setCart([]);
+              regresar();
+            });
+          } else {
+            console.error('ID de cuenta no encontrado en localStorage');
+          }
+          }
         const PagarPorFraccionado = () => {
           setMostrarComponente(!mostrarComponente);
           console.log('Pagar por fraccionado con valor:', fraccionadoValue);
@@ -446,7 +495,7 @@ return(
                 </div>
             {mostrarComponente && modoPago === 'F' && (
                     <div style={{ marginBottom:'122px',  width: '400px',  margin: '0 auto'   }}>
-                      <PayPal2 onSuccess={CerrarModalDespuesDePago} amount={fraccionadoValue}/>
+                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue}/>
                     </div>
                   )}
           

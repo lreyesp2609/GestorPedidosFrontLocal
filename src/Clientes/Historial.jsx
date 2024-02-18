@@ -44,8 +44,8 @@ return (
         key="estado_del_pedido"
         render={(estado) => (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Tag color={estado === 'O' ? 'blue' : 'default'}>
-              {estado === 'O' ? 'Ordenado' : estado}
+                <Tag color={estado === 'O' ? 'blue' : estado === 'P' ? 'purple' : estado === 'C' ? 'orange' : 'default'}>
+                {estado === 'O' ? 'Ordenado' : estado === 'P' ? 'En Proceso' : estado === 'C' ? 'En camino' : estado}
             </Tag>
             </div>
         )}
@@ -56,7 +56,9 @@ return (
         key="Pago"
         render={(estado) => (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Tag  color="blue">{estado}</Tag>
+                <Tag color={estado === 'En revisón' ? 'blue' : estado === 'Pagado' ? 'green' : estado === 'Denegado' ? 'red' : 'default'}>
+                {estado === 'En revisón' ? 'En revisón' : estado === 'Pagado' ? 'Pagado' : estado === 'Denegado' ? 'Denegado' : estado}
+                  </Tag>
             </div>
         )}
       />
