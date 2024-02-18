@@ -95,6 +95,8 @@ const MenuComandas = () => {
         fetchData();
     }, []);
 
+    
+
     const handleModal = () => {
         setModalVisible(!modalVisible);
     };
@@ -120,6 +122,47 @@ const MenuComandas = () => {
             onStartCronometro(pedido);
         });
     }, [pedidos]);
+    const enviarListaProductos = async (detallePedido, idp) => {
+        try {
+
+            const formData = new FormData();
+
+            // Agregar la lista de productos al FormData
+            detallePedido.forEach(detalle => {
+                formData.append('productos[]', JSON.stringify({
+                    id_producto: detalle.id_producto,
+                    cantidad: detalle.cantidad,
+                }));
+            });
+
+            // Agregar la bodega al FormData
+            formData.append('id_bodega', bodega);
+            formData.append('id_pedido', idp);
+
+            // Realizar la solicitud a tu endpoint con FormData
+            const response = await fetch('http://127.0.0.1:8000/producto/procesar_productos/', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log('Lista de productos enviada con éxito.');
+                notification.success({
+                    message: 'Pedido listo',
+                    description: 'El pedido está completo',
+                });
+                obtenerPedidos();
+            } else {
+                console.error('Error al enviar la lista de productos.');
+                notification.error({
+                    message: 'Error',
+                    description: 'Algo salió mal',
+                });
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+        }
+    };
 
     return (
         <div className='content' style={{ height: '100%', minHeight: '100vh' }}>
@@ -173,7 +216,7 @@ const MenuComandas = () => {
                 <Col md={12}>
                     <Row>
                         {pedidos.map((pedido) => (
-                            <Col md={2} key={pedido.id_pedido}>
+                            <Col md={3} key={pedido.id_pedido}>
                                 <Popconfirm
                                     title="Preparar pedido"
                                     description="¿Ya está listo el pedido?"

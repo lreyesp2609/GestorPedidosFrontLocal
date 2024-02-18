@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge, Tag, Segmented, Avatar, Checkbox, Popover, notification, Drawer, Divider, Watermark, message } from 'antd';
+import { Form, Popconfirm ,Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge, Tag, Segmented, Avatar, Checkbox, Popover, notification, Drawer, Divider, Watermark, message } from 'antd';
 import { Row, Col } from 'react-bootstrap';
-import { UploadOutlined, CalendarTwoTone, EditFilled, EyeOutlined } from '@ant-design/icons';
+import { UploadOutlined, CalendarTwoTone, EditFilled, EyeOutlined,DeleteFilled } from '@ant-design/icons';
 import imgproductos from './res/imgproductos.png';
 import categoriaproducto from './res/categoriaproducto.png';
 import tipoproducto from './res/tipoproducto.png'
@@ -337,6 +337,29 @@ const EditarProducto = () => {
         return categoria ? categoria.catnombre : '';
     };
 
+    const eliminarp = async (idpro) => {
+        try {
+          console.log('A');
+          const formData = new FormData();
+          console.log('B');
+          formData.append('id_producto', idpro);
+          console.log('C');
+          const response = await fetch(`http://127.0.0.1:8000/producto/EliminarProducto/`, {
+            method: 'POST',
+            body: formData,
+          });
+          console.log('D');
+    
+          if (response.ok) {
+            message.success('Unidad de medida eliminada con éxito');
+          } else {
+            message.error(response.error || 'Hubo un error al realizar la solicitud');
+          }
+        } catch (error) {
+          message.error('Hubo un error al realizar la solicitud'+error);
+        }
+      };
+
     const showModalContent = (producto) => {
         return (
             <Form form={form} onFinish={(values) => handleSaveEdit(producto.id_producto, values)}>
@@ -534,6 +557,20 @@ const EditarProducto = () => {
 
                                                                         </Tooltip>
                                                                     </Col >
+                                                                    <Col md={4}>
+                                                                        <Popconfirm
+                                                                            title="Eliminar este producto"
+                                                                            description="¿Estás seguro que deseas eliminar el producto"
+                                                                            onConfirm={() => eliminarp(producto.id_producto)}
+                                                                            onCancel={'cancel'}
+                                                                            okText="Yes"
+                                                                            cancelText="No"
+                                                                        >
+                                                                            <Button
+                                                                                icon={<DeleteFilled/>}
+                                                                            />
+                                                                        </Popconfirm>
+                                                                    </Col>
                                                                 </Row>
 
                                                             </Col>
