@@ -1,14 +1,15 @@
-import { Card, Modal, Button } from "react-bootstrap";
 import React, { useState, useEffect, useContext } from "react";
-import NavBar from "./NavBar";
-import Item from "./item2";
+import { Modal, Button, Card as AntCard } from "antd";
 import { CartContext } from "../context/CarritoContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+const { Meta } = AntCard;
 
 const ListProductos = () => {
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
-
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [cart, setCart] = useContext(CartContext);
 
   useEffect(() => {
     // Realizar la solicitud a la API al montar el componente
@@ -27,8 +28,6 @@ const ListProductos = () => {
     setShowModal(false);
     setSelectedProduct(null);
   };
-
-  const [cart, setCart] = useContext(CartContext);
 
   const addToCart = (productId) => {
     setCart((currItems) => {
@@ -75,13 +74,12 @@ const ListProductos = () => {
     return cart.find((item) => item.id === productId)?.quantity || 0;
   };
 
-  const quantityPerItem = getQuantityById();
-
   return (
     <>
       <div style={{ marginTop: "30px", marginLeft: "50px", display: "flex" }}>
         {products.map((product, index) => (
-          <Card
+          <AntCard
+            hoverable
             key={product.id}
             style={{
               width: "18rem",
@@ -89,31 +87,47 @@ const ListProductos = () => {
               marginRight: index < products.length - 1 ? "20px" : "0",
             }}
             onClick={() => handleCardClick(product)}
+            cover={
+              <img
+                alt={`Imagen de ${product.nombreproducto}`}
+                src={`data:image/png;base64,${product.imagenp}`}
+                style={{ width: "100%", height: "270px" }}
+              />
+            }
           >
-            <Card.Img
-              variant="top"
-              src={`data:image/png;base64,${product.imagenp}`}
-              alt={`Imagen de ${product.nombreproducto}`}
-              style={{ width: "100%", height: "270px" }}
-            />
-            <Card.Body>
-              <Card.Title>{product.nombreproducto}</Card.Title>
-              <Card.Text>{product.descripcionproducto}</Card.Text>
-              <Card.Text>{`$${product.preciounitario}`}</Card.Text>
-            </Card.Body>
-          </Card>
+            <Meta title={product.nombreproducto} description={product.descripcionproducto} />
+            <div style={{display:'flex'}}>
+            <p
+            style={{
+              marginTop:'10px',
+              width:'50px',
+              backgroundColor: "#0a2e02",
+              marginRight: '10px', 
+              color: "#fff",
+              borderRadius: "10px",
+              textAlign:'center',
+            }}
+            >{`$${product.preciounitario}`}</p>
+            <p
+            style={{
+              marginTop:'10px',
+              width:'50px',
+              backgroundColor: "#6e3700",
+              color: "#fff",
+              borderRadius: "10px",
+              textAlign:'center',
+            }}
+            >{`${product.puntosp}`}</p>
+            </div>
+          </AntCard>
         ))}
       </div>
 
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header style={{ borderBottom: "none" }} closeButton>
-          <Modal.Title>
-            {selectedProduct && selectedProduct.nombreproducto}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Modal visible={showModal} onCancel={handleCloseModal} footer={null}>
+        <div>
           {selectedProduct && (
             <>
+              <h5>{selectedProduct.nombreproducto}</h5>
               <img
                 src={`data:image/png;base64,${selectedProduct.imagenp}`}
                 alt={`Imagen de ${selectedProduct.nombreproducto}`}
@@ -122,60 +136,60 @@ const ListProductos = () => {
               <p>{selectedProduct.descripcionproducto}</p>
               <p>{`$${selectedProduct.preciounitario}`}</p>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                 {selectedProduct && (
                   <>
+                    
+
+                    {getQuantityById(selectedProduct.id_producto) === 0 ? (
+                      <Button style={{ 
+                        backgroundColor: "#022c01",
+                        color: "#fff",
+                        border:'none'
+                         }} 
+                         icon={<FontAwesomeIcon icon={faShoppingCart} />}
+                         onClick={() => addToCart(selectedProduct.id_producto)}>
+                         Añadir al carrito
+                      </Button>
+                    ) : (
+                      <Button
+                        style={{
+                          marginLeft: "1px",
+                          backgroundColor: "#050138",
+                          color: "#fff",
+                          border:'none'
+                        }}
+                        onClick={() => addToCart(selectedProduct.id_producto)}
+                      >
+                        + 
+                      </Button>
+                    )}
                     {getQuantityById(selectedProduct.id_producto) > 0 && (
                       <div
                         style={{
-                          padding: "4px",
-                          backgroundColor: "#686868",
+                          padding: "6px",
+                          width:'40px',
+                          marginLeft: "10px",
+                          backgroundColor: "#000000",
                           color: "#fff",
-                          borderRadius: "50px",
+                          borderRadius: "10px",
+                          textAlign:'center'
                         }}
                       >
                         {getQuantityById(selectedProduct.id_producto)}
                       </div>
                     )}
-
-                    {getQuantityById(selectedProduct.id_producto) === 0 ? (
-                      <Button
-                        style={{ border: "none" }}
-                        onClick={() => addToCart(selectedProduct.id_producto)}
-                      >
-                        + Añadir al carrito
-                      </Button>
-                    ) : (
-                      <Button
-                        style={{
-                          marginLeft: "10px",
-                          backgroundColor: "#004e0e",
-                          color: "#fff",
-                          border: "none",
-                        }}
-                        onClick={() => addToCart(selectedProduct.id_producto)}
-                      >
-                        + Añadir más
-                      </Button>
-                    )}
-
                     {getQuantityById(selectedProduct.id_producto) > 0 && (
                       <Button
                         style={{
                           marginLeft: "10px",
-                          backgroundColor: "#e20000",
+                          backgroundColor: "#A80000",
                           color: "#fff",
-                          border: "none",
+                          border:'none'
                         }}
                         onClick={() => removeItem(selectedProduct.id_producto)}
                       >
-                        - Quitar
+                        -
                       </Button>
                     )}
                   </>
@@ -183,7 +197,7 @@ const ListProductos = () => {
               </div>
             </>
           )}
-        </Modal.Body>
+        </div>
       </Modal>
     </>
   );
