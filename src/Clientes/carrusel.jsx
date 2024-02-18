@@ -6,7 +6,7 @@ import descar from './res/descargaapp.png'
 import imgsucur from './res/sucursales.png'
 import masvendidos from './res/maspedidos.png'
 import imgrecompensas from './res/recompensas.png'
-import Galeria from '../components/galeria'
+
 
 
 const Carrusel = () => {
@@ -259,7 +259,6 @@ const Carrusel = () => {
           </Card>
         </Col>
       </Row>
-      <Galeria imagenes={imagenes} />
     </>
   );
 }
