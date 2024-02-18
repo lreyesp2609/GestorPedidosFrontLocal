@@ -13,6 +13,7 @@ import {
   Avatar,
   Divider,
   Pagination,
+  Image,
   Drawer,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -78,6 +79,7 @@ const EditarAvisos = () => {
 
   const onClosep = () => {
     setOpenp(false);
+    obtenerAvisos();
   };
 
   const handleFinish = async (values) => {
@@ -127,7 +129,7 @@ const EditarAvisos = () => {
       render: (text, record) => (
         <Space size="middle">
           {record.imagen && (
-            <img
+            <Image
               src={base64ToUrl(record.imagen, "image/png")}
               alt={`Imagen para ${record.titulo}`}
               style={{ maxWidth: "100px" }}
@@ -192,7 +194,6 @@ const EditarAvisos = () => {
                       label="Título"
                       name="titulo"
                       rules={[
-                        { required: true, message: "Por favor, ingresa el título" },
                         {
                           max: 150,
                           message: "El título no puede tener más de 150 caracteres",
@@ -205,7 +206,6 @@ const EditarAvisos = () => {
                       label="Descripción"
                       name="descripcion"
                       rules={[
-                        { required: true, message: "Por favor, ingresa la descripción" },
                         {
                           max: 500,
                           message: "La descripción no puede tener más de 500 caracteres",

@@ -8,7 +8,7 @@ const base64ToUrl = (base64String, mimeType) => {
 };
 
 // Función para redimensionar la imagen
-const resizeImage = (file, maxWidth, maxHeight) => {
+/*const resizeImage = (file, maxWidth, maxHeight) => {
   return new Promise((resolve) => {
     const img = new Image();
     img.src = URL.createObjectURL(file);
@@ -30,7 +30,7 @@ const resizeImage = (file, maxWidth, maxHeight) => {
       }, file.type);
     };
   });
-};
+};*/
 
 const CrearAvisos = () => {
   const [form] = Form.useForm();
@@ -40,12 +40,12 @@ const CrearAvisos = () => {
     const { titulo, descripcion, imagen } = values;
 
     // Redimensionar la imagen antes de enviarla
-    const resizedImage = await resizeImage(imagen.file, 1050, 500);
+    //const resizedImage = await resizeImage(imagen.file, 1050, 500);
 
     const formData = new FormData();
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
-    formData.append('imagen', resizedImage);
+    formData.append('imagen', imagen.file);
 
     try {
       const response = await fetch('http://127.0.0.1:8000/avisos/crear/', {
@@ -65,7 +65,7 @@ const CrearAvisos = () => {
       message.error('Error en la solicitud de creación de aviso');
     }
   };
-  const resizeImage = (file, targetWidth, targetHeight) => {
+  /*const resizeImage = (file, targetWidth, targetHeight) => {
     return new Promise((resolve) => {
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
@@ -89,7 +89,7 @@ const CrearAvisos = () => {
         }, file.type);
       };
     });
-  };
+  };*/
   
 
 
@@ -145,7 +145,6 @@ const CrearAvisos = () => {
       <h3>Crear Nuevo Aviso</h3>
       <Form form={form} onFinish={onFinish} layout="vertical">
         <Form.Item label="Título" name="titulo" rules={[
-          { required: true, message: 'Por favor, ingresa el título' },
           { max: 150, message: 'El título no puede tener más de 150 caracteres' },
         ]}>
           <Input />
@@ -154,7 +153,6 @@ const CrearAvisos = () => {
           label="Descripción"
           name="descripcion"
           rules={[
-            { required: true, message: 'Por favor, ingresa la descripción' },
             { max: 500, message: 'La descripción no puede tener más de 500 caracteres' },
           ]}
         >
