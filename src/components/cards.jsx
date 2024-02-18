@@ -39,7 +39,7 @@ const LocationCard = () => {
             <Card key={sucursal.id_sucursal} style={{ width: '18rem', margin: '10px' }}>
               <Card.Img
                 variant="top"
-                src={sucursal.imagensucursal}
+                src={`data:image/png;base64,${sucursal.imagensucursal}`}
                 alt={`Imagen de la sucursal ${sucursal.id_sucursal}`}
                 style={cardImageStyle}
               />

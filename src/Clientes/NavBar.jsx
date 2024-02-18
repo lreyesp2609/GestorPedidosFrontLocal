@@ -21,6 +21,7 @@ import { CartContext } from "../context/CarritoContext";
 import EditarUser from "./EditarUser";
 import ListProductos from "./ListaProductos";
 import Reserva from "./Reserva";
+import LocationCard from "../components/cards";
 
 const NavBar = () => {
   const [cart, setCart] = useContext(CartContext);
@@ -270,7 +271,7 @@ const NavBar = () => {
         {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
         {ComponenteSeleccionado === "Pedido" && <ValidarPedido />}
         {ComponenteSeleccionado === "Historial" && <Historial />}
-        {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
+        {ComponenteSeleccionado === 'Reserva' && <LocationCard/>}
         {ComponenteSeleccionado != "Carrusel" && (
           <Row>
             <Col md={12}>
