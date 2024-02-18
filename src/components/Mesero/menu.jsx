@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserOutlined } from "@ant-design/icons";
-import { Image, Avatar, Card, Badge, Tooltip, Divider } from "antd";
+import { Image, Avatar, Card, Badge, Tooltip, Divider,Modal } from "antd";
 import {
   Container,
   Row,
@@ -18,8 +18,17 @@ import imgfacturas from "./res/imgfacturas.png"
 
 import RealizarPedidoMesero from "./pedidomesa";
 import FacturasMesero from "./facturasmesero";
+import RealizarPedidoLocal from "./pedidoslocal";
 
 const MenuM = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const showModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
   const { Meta } = Card;
   const tooltipTitle = "Realiza pedidos a las mesas";
   const tooltipTitle1 = "Gestiona tus facturas";
@@ -136,6 +145,17 @@ const MenuM = () => {
         )}
         {currentPage === "pedidos" && (
           <>
+            <Button
+              variant="success"
+              style={{
+                right: "16px",
+                bottom: "16px",
+                zIndex: 1000,
+              }}
+              onClick={showModal}
+            >
+              Realizar pedido
+            </Button>
             <Row>
               <Divider>Pedidos de mesas</Divider>
               <Col md={12}>
@@ -155,6 +175,12 @@ const MenuM = () => {
           </>
         )}
       </Row>
+      
+        <RealizarPedidoLocal
+         visible={modalVisible}
+         onClose={() => setModalVisible(false)}
+         />
+
     </>
   );
 };

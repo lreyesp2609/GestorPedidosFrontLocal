@@ -21,7 +21,7 @@ import { CartContext } from "../context/CarritoContext";
 import EditarUser from "./EditarUser";
 import ListProductos from "./ListaProductos";
 import Reserva from "./Reserva";
-import LocationCard from "../components/cards";
+import "../components/comanda.css";
 
 const NavBar = () => {
   const [cart, setCart] = useContext(CartContext);
@@ -130,187 +130,189 @@ const NavBar = () => {
 
   return (
     <>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merienda:wght@300..900&display=swap"
-        rel="stylesheet"
-      />
-      <Row style={{ background: "black", color: "white", height: "25px" }}>
-        <Col
-          md={12}
-          className="d-flex justify-content-center align-items-center"
-        >
-          {Direccion}
-        </Col>
-      </Row>
-      <Navbar expand="lg" style={navbarStyle}>
-        <Container>
-          <Navbar.Brand className="d-flex align-items-center">
-            <img
-              src={`data:image/png;base64,${logoEmpresa}`}
-              alt="Logo"
-              style={logoStyle}
-            />
-            <span
-              style={{
-                color: "white",
-                fontSize: "20px",
-                fontFamily: "Merienda",
-                marginLeft: "5px",
-              }}
-            >
-              {nombreEmpresa}
-            </span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        </Container>
-        <Container>
-          <Navbar.Collapse className="justify-content-end">
-            <Nav className="ml-auto">
-              <Nav.Link
-                onClick={() => MostrarComponente("Menu")}
-                style={estiloNavLink}
-                onMouseOver={manejarMouseOver}
-                onMouseOut={manejarMouseOut}
+      <div className='contentlight' style={{ height: '100%', minHeight: '100vh' }}>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merienda:wght@300..900&display=swap"
+          rel="stylesheet"
+        />
+        <Row style={{ background: "black", color: "white", height: "25px" }}>
+          <Col
+            md={12}
+            className="d-flex justify-content-center align-items-center"
+          >
+            {Direccion}
+          </Col>
+        </Row>
+        <Navbar expand="lg" style={navbarStyle}>
+          <Container>
+            <Navbar.Brand className="d-flex align-items-center" href="/">
+              <img
+                src={`data:image/png;base64,${logoEmpresa}`}
+                alt="Logo"
+                style={logoStyle}
+              />
+              <span
+                style={{
+                  color: "white",
+                  fontSize: "20px",
+                  fontFamily: "Merienda",
+                  marginLeft: "5px",
+                }}
               >
-                MENU
-              </Nav.Link>
-              {Logeado && (
-                <NavDropdown
-                  style={estiloNavLink}
-                  onMouseOver={manejarMouseOver}
-                  onMouseOut={manejarMouseOut}
-                  title="Perfil"
-                >
-                  <NavDropdown.Item
-                    onClick={() => MostrarComponente("Perfil")}
-                    style={{ marginLeft: "auto", fontSize: "18px" }}
-                  >
-                    Ver perfil
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    onClick={() => MostrarComponente("Historial")}
-                    style={{ marginLeft: "auto", fontSize: "18px" }}
-                  >
-                    Ver Historial
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    onClick={() => MostrarComponente("Pedido")}
-                    style={{ marginLeft: "auto", fontSize: "18px" }}
-                  >
-                    Validar pedido
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item
-                    onClick={CerrarSesion}
-                    style={{ fontSize: "18px" }}
-                  >
-                    Cerrar sesion
-                  </NavDropdown.Item>
-                </NavDropdown>
-              )}
-              {Logeado && (
+                {nombreEmpresa}
+              </span>
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          </Container>
+          <Container>
+            <Navbar.Collapse className="justify-content-end">
+              <Nav className="ml-auto">
                 <Nav.Link
-                  onClick={() => MostrarComponente("Reserva")}
+                  onClick={() => MostrarComponente("Menu")}
                   style={estiloNavLink}
                   onMouseOver={manejarMouseOver}
                   onMouseOut={manejarMouseOut}
                 >
-                  Reserva
+                  MENU
                 </Nav.Link>
-              )}
-              {Logeado && (
-                <Nav.Link
-                  style={estiloNavLink}
-                  onMouseOver={manejarMouseOver}
-                  onMouseOut={manejarMouseOut}
-                >
-                  Puntos
-                </Nav.Link>
-              )}
-
-              {Logeado && (
-                <Link
-                  style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                    fontSize: "18px",
-                  }}
-                  onClick={() => MostrarComponente("Carrito")}
-                >
-                  {" "}
+                {Logeado && (
+                  <NavDropdown
+                    style={estiloNavLink}
+                    onMouseOver={manejarMouseOver}
+                    onMouseOut={manejarMouseOut}
+                    title="Perfil"
+                  >
+                    <NavDropdown.Item
+                      onClick={() => MostrarComponente("Perfil")}
+                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                    >
+                      Ver perfil
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
+                      onClick={() => MostrarComponente("Historial")}
+                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                    >
+                      Ver Historial
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
+                      onClick={() => MostrarComponente("Pedido")}
+                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                    >
+                      Validar pedido
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item
+                      onClick={CerrarSesion}
+                      style={{ fontSize: "18px" }}
+                    >
+                      Cerrar sesion
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                )}
+                {Logeado && (
+                  <Nav.Link
+                    onClick={() => MostrarComponente("Reserva")}
+                    style={estiloNavLink}
+                    onMouseOver={manejarMouseOver}
+                    onMouseOut={manejarMouseOut}
+                  >
+                    Reserva
+                  </Nav.Link>
+                )}
+                {Logeado && (
                   <Nav.Link
                     style={estiloNavLink}
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
-                    to="/Carrito"
                   >
-                    Carrito:{quantity}
+                    Puntos
                   </Nav.Link>
-                </Link>
-              )}
-              {!Logeado && (
-                <Nav.Link
-                  onClick={HacerClick}
-                  style={estiloNavLink}
-                  onMouseOver={manejarMouseOver}
-                  onMouseOut={manejarMouseOut}
-                >
-                  INGRESAR
-                </Nav.Link>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      <div>
-        {ComponenteSeleccionado === "Carrusel" && <Carrusel />}
-        {ComponenteSeleccionado === "Menu" && <ListProductos />}
-        {ComponenteSeleccionado === "Perfil" && <EditarUser />}
-        {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
-        {ComponenteSeleccionado === "Pedido" && <ValidarPedido />}
-        {ComponenteSeleccionado === "Historial" && <Historial />}
-        {ComponenteSeleccionado === 'Reserva' && <LocationCard/>}
-        {ComponenteSeleccionado != "Carrusel" && (
-          <Row>
-            <Col md={12}>
-              <Button
-                variant="success"
-                style={{
-                  position: "fixed",
-                  right: "16px",
-                  bottom: "16px",
-                  zIndex: 1000,
-                }}
-                onClick={() => Regresar()}
-              >
-                Atrás
-              </Button>
-            </Col>
-          </Row>
-        )}
-      </div>
-      {/* Modal */}
-      <Modal show={MostrarModal} onHide={CerrarModal}>
-        <Modal.Header
-          closeButton
-          style={{ borderBottom: "none" }}
-        ></Modal.Header>
-        <Modal.Body>
-          <LoginForm onLogin={IniciarSesion} />
-        </Modal.Body>
-      </Modal>
+                )}
 
-      <Modal show={ModalRegistroVisible} onHide={CerrarModal}>
-        <Modal.Header
-          closeButton
-          style={{ borderBottom: "none" }}
-        ></Modal.Header>
-        <Modal.Body>
-          <RegistroForm onGoBackToLogin={RegresarAlLogin} />
-        </Modal.Body>
-      </Modal>
+                {Logeado && (
+                  <Link
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                      fontSize: "18px",
+                    }}
+                    onClick={() => MostrarComponente("Carrito")}
+                  >
+                    {" "}
+                    <Nav.Link
+                      style={estiloNavLink}
+                      onMouseOver={manejarMouseOver}
+                      onMouseOut={manejarMouseOut}
+                      to="/Carrito"
+                    >
+                      Carrito:{quantity}
+                    </Nav.Link>
+                  </Link>
+                )}
+                {!Logeado && (
+                  <Nav.Link
+                    onClick={HacerClick}
+                    style={estiloNavLink}
+                    onMouseOver={manejarMouseOver}
+                    onMouseOut={manejarMouseOut}
+                  >
+                    INGRESAR
+                  </Nav.Link>
+                )}
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+        <div>
+          {ComponenteSeleccionado === "Carrusel" && <Carrusel />}
+          {ComponenteSeleccionado === "Menu" && <ListProductos />}
+          {ComponenteSeleccionado === "Perfil" && <EditarUser />}
+          {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
+          {ComponenteSeleccionado === "Pedido" && <ValidarPedido />}
+          {ComponenteSeleccionado === "Historial" && <Historial />}
+          {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
+          {ComponenteSeleccionado != "Carrusel" && (
+            <Row>
+              <Col md={12}>
+                <Button
+                  variant="success"
+                  style={{
+                    position: "fixed",
+                    right: "16px",
+                    bottom: "16px",
+                    zIndex: 1000,
+                  }}
+                  onClick={() => Regresar()}
+                >
+                  Atrás
+                </Button>
+              </Col>
+            </Row>
+          )}
+        </div>
+        {/* Modal */}
+        <Modal show={MostrarModal} onHide={CerrarModal}>
+          <Modal.Header
+            closeButton
+            style={{ borderBottom: "none" }}
+          ></Modal.Header>
+          <Modal.Body>
+            <LoginForm onLogin={IniciarSesion} />
+          </Modal.Body>
+        </Modal>
+
+        <Modal show={ModalRegistroVisible} onHide={CerrarModal}>
+          <Modal.Header
+            closeButton
+            style={{ borderBottom: "none" }}
+          ></Modal.Header>
+          <Modal.Body>
+            <RegistroForm onGoBackToLogin={RegresarAlLogin} />
+          </Modal.Body>
+        </Modal>
+      </div>
     </>
   );
 };
