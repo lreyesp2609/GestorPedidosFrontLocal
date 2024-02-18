@@ -6,7 +6,7 @@ import descar from './res/descargaapp.png'
 import imgsucur from './res/sucursales.png'
 import masvendidos from './res/maspedidos.png'
 import imgrecompensas from './res/recompensas.png'
-
+import Galeria from '../components/galeria'
 
 
 const Carrusel = () => {
@@ -64,8 +64,8 @@ const Carrusel = () => {
 
   const buttonStyle = {
     marginTop:'10px',
-    width: '200px', // Ajusta el ancho según tus preferencias
     height: '40px', // Ajusta la altura según tus preferencias
+    width:'100%',
     backgroundColor: hovered ? 'black' : '#A80000',
     color: 'white',
     border: 'none',
@@ -77,7 +77,7 @@ const Carrusel = () => {
   };
   const buttonStyle2 = {
     marginTop:'10px',
-    width: '200px', // Ajusta el ancho según tus preferencias
+    width:'100%',
     height: '40px', // Ajusta la altura según tus preferencias
     backgroundColor: hovered2 ? 'black' : '#2E7651',
     color: 'white',
@@ -90,7 +90,7 @@ const Carrusel = () => {
   };
   const buttonStyle3 = {
     marginTop:'10px',
-    width: '200px', // Ajusta el ancho según tus preferencias
+    width:'100%',
     height: '40px', // Ajusta la altura según tus preferencias
     backgroundColor: hovered3 ? 'black' : '#0B4362',
     color: 'white',
@@ -103,7 +103,7 @@ const Carrusel = () => {
   };
   const buttonStyle4 = {
     marginTop:'10px',
-    width: '200px', // Ajusta el ancho según tus preferencias
+    width:'100%',
     height: '40px', // Ajusta la altura según tus preferencias
     backgroundColor: hovered4 ? 'black' : '#C03E62',
     color: 'white',
@@ -114,6 +114,12 @@ const Carrusel = () => {
     fontSize: '15px', // Ajusta el tamaño de la fuente según tus preferencias
     fontWeight: 'bold',
   };
+  const imagenes = [
+    { url: descar },
+    { url: imgsucur },
+    { url: 'https://www.santevet.es/uploads/images/es_ES/razas/gatocomuneuropeo.jpeg' },
+    {url:'https://static.wikia.nocookie.net/bokunoheroacademia/images/1/13/Ochaco_Uraraka_Traje_de_Heroe_actual.png/revision/latest/scale-to-width-down/249?cb=20200722000332&path-prefix=es'}
+  ];
 
   return (
     <>
@@ -135,8 +141,8 @@ const Carrusel = () => {
           ))}
         </Carousel>
       </div>
-      <Row>
-        <Col md={5} style={{ margin: 25, marginTop: 25 }}>
+      <Row style={{ marginTop: 20 }}>
+        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
 
           <Card
             hoverable
@@ -165,7 +171,7 @@ const Carrusel = () => {
             </button>
           </Card>
         </Col>
-        <Col md={5} style={{ margin: 25, marginTop: 25 }}>
+        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
 
           <Card
             hoverable
@@ -194,7 +200,7 @@ const Carrusel = () => {
             </button>
           </Card>
         </Col>
-        <Col md={5} style={{ margin: 25, marginTop: 25 }}>
+        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
 
           <Card
             hoverable
@@ -219,11 +225,11 @@ const Carrusel = () => {
               onMouseEnter={handleMouseEnter3}
               onMouseLeave={handleMouseLeave3}
             >
-             MÁS VENDIDOS
+             MAS VENDIDOS
             </button>
           </Card>
         </Col>
-        <Col md={5} style={{ margin: 25, marginTop: 25 }}>
+        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
 
           <Card
             hoverable
@@ -253,6 +259,7 @@ const Carrusel = () => {
           </Card>
         </Col>
       </Row>
+      <Galeria imagenes={imagenes} />
     </>
   );
 }
