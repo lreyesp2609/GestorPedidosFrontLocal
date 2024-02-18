@@ -351,7 +351,8 @@ const EditarProducto = () => {
           console.log('D');
     
           if (response.ok) {
-            message.success('Unidad de medida eliminada con éxito');
+            message.success('Producto eliminado con éxito');
+            fetchproducto(currentPage);
           } else {
             message.error(response.error || 'Hubo un error al realizar la solicitud');
           }
@@ -630,6 +631,20 @@ const EditarProducto = () => {
 
                                                                         </Tooltip>
                                                                     </Col >
+                                                                    <Col md={4}>
+                                                                        <Popconfirm
+                                                                            title="Eliminar este producto"
+                                                                            description="¿Estás seguro que deseas eliminar el producto"
+                                                                            onConfirm={() => eliminarp(producto.id_producto)}
+                                                                            onCancel={'cancel'}
+                                                                            okText="Yes"
+                                                                            cancelText="No"
+                                                                        >
+                                                                            <Button
+                                                                                icon={<DeleteFilled/>}
+                                                                            />
+                                                                        </Popconfirm>
+                                                                    </Col>
                                                                 </Row>
 
                                                             </Col>

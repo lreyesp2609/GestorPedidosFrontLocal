@@ -17,10 +17,6 @@ import { CartContext } from "../context/CarritoContext";
 import { Radio, InputNumber } from "antd";
 import { notification } from "antd";
 import animationData from "../assets/lottis/B.json"; // Importa el archivo JSON de tu animación
-
-import PayPal from "./Paypal";
-import PayPal2 from "./Paypal2";
-import Map3 from "./Map3";
 import Pedidos from "./pedido"
 
 const ShoppingCart = () => {
@@ -182,112 +178,14 @@ const ShoppingCart = () => {
     (acc, curr) => acc + curr.quantity * curr.price,
     0
   );
-  const PagarPorEfectivo = () => {
-    if (id_cuenta) {
-      const detalles_pedido = cart.map((item) => ({
-        id_producto: item.id,
-        cantidad_pedido: item.quantity,
-        costo_unitario: item.price,
-      }));
-
-      // Construye el cuerpo de la solicitud con los datos necesarios
-      const formData = new FormData();
-
-      formData.append("precio", totalPrice);
-      formData.append("tipo_de_pedido", modoPedido);
-      formData.append("metodo_de_pago", "E"); // Asumo que 'E' es el método de pago en efectivo
-      formData.append("puntos", 0); // Ajusta según sea necesario
-      formData.append("estado_del_pedido", "O"); // Ajusta según sea necesario
-      formData.append("impuesto", 0);
-      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-
-      // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((responseData) => {
-          // Maneja la respuesta del backend según sea necesario
-          if (responseData.success) {
-            console.log("Pedido realizado con éxito.");
-            notification.success({
-              message: "Pedido Exitoso",
-              description: "¡El pedido se ha completado con éxito!",
-            });
-          } else {
-            console.error("Error al realizar el pedido:", responseData.message);
-          }
-        })
-        .catch((error) => {
-          console.error("Error en la solicitud:", error);
-        })
-        .finally(() => {
-          setCart([]);
-          setMostrarModal(false);
-        });
-    } else {
-      console.error("ID de cuenta no encontrado en localStorage");
-    }
-  };
-
-  const CerrarModalDespuesDePago = () => {
-    if (id_cuenta) {
-      const detalles_pedido = cart.map((item) => ({
-        id_producto: item.id,
-        cantidad_pedido: item.quantity,
-        costo_unitario: item.price,
-      }));
-
-      // Construye el cuerpo de la solicitud con los datos necesarios
-      const formData = new FormData();
-
-      formData.append("precio", totalPrice);
-      formData.append("tipo_de_pedido", modoPedido);
-      formData.append("metodo_de_pago", "E"); // Asumo que 'E' es el método de pago en efectivo
-      formData.append("puntos", 0); // Ajusta según sea necesario
-      formData.append("estado_del_pedido", "O"); // Ajusta según sea necesario
-      formData.append("impuesto", 0);
-      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-      // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((responseData) => {
-          // Maneja la respuesta del backend según sea necesario
-          if (responseData.success) {
-            console.log("Respuesta del servidor:", responseData);
-            console.log("Pedido realizado con éxito.");
-            notification.success({
-              message: "Pedido Exitoso",
-              description: "¡El pedido se ha completado con éxito!",
-            });
-          } else {
-            console.error("Error al realizar el pedido:", responseData.message);
-          }
-        })
-        .catch((error) => {
-          console.error("Error en la solicitud:", error);
-        })
-        .finally(() => {
-          setCart([]);
-          setMostrarModal(false);
-        });
-    } else {
-      console.error("ID de cuenta no encontrado en localStorage");
-    }
-  };
-
-  const PagarPorFraccionado = () => {
-    setMostrarComponente(!mostrarComponente);
-    console.log("Pagar por fraccionado con valor:", fraccionadoValue);
-  };
+  
 
   return (
     <>
       <div>
+      {mostrarPedido ? (
+        <Pedidos/>
+      ):(
         <div>
           {cart.length > 0 ? (
             <>
@@ -393,170 +291,10 @@ const ShoppingCart = () => {
             </div>
           )}
         </div>
+           )}
       </div>
-
-      <Modal show={MostrarModal} onHide={CerrarModal} size="lg">
-        <Modal.Header
-          closeButton
-          style={{ borderBottom: "none" }}
-        ></Modal.Header>
-        <Row>
-          <Col>
-            <h5>Hola ✌🏻</h5>
-            <span>Revisa tu dirección y forma de pago antes de comprar.</span>
-            <div style={{ marginTop: "10px", fontSize: "18px" }}>
-              Seleccione como quiere recibir/retirar su pedido:
-            </div>
-            <Radio.Group onChange={handleModoPedidoChange} value={modoPedido}>
-              <Col style={{ marginLeft: "10px" }}>
-                <Row>
-                  <Radio value="D">Domicilio</Radio>
-                  <Radio value="R">Retirar</Radio>
-                  <Radio value="L">Local</Radio>
-                </Row>
-              </Col>
-            </Radio.Group>
-            {modoPedido === "D" && (
-              <>
-                <ButtonGroup
-                  style={{
-                    marginLeft: "10px",
-                    marginTop: "10px",
-                    width: "100%",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <Button
-                    variant="outline-warning"
-                    onClick={() => handleLocationChange("Casa")}
-                    style={{ color: "rgb(255, 121, 32)" }}
-                  >
-                    Casa
-                  </Button>
-                  <Button
-                    variant="outline-warning"
-                    onClick={() => handleLocationChange("Trabajo")}
-                    style={{ color: "rgb(255, 121, 32)" }}
-                  >
-                    Trabajo
-                  </Button>
-                  <Button
-                    variant="outline-warning"
-                    onClick={() => handleLocationChange("Otro")}
-                    style={{ color: "rgb(255, 121, 32)" }}
-                  >
-                    Otro
-                  </Button>
-                </ButtonGroup>
-                <h5>Coordenadas de {selectedLocation}:</h5>
-                {locationData.latitud !== undefined &&
-                locationData.longitud !== undefined
-                  ? `Latitud: ${locationData.latitud}, Longitud: ${locationData.longitud}`
-                  : "Coordenadas no disponibles"}
-              </>
-            )}
-            <Modal
-              show={showElegirUbicacion}
-              onHide={() => setShowElegirUbicacion(false)}
-              size="mg"
-            >
-              <Modal.Header closeButton style={{ borderBottom: "none" }} />
-              <Modal.Body>
-                <Map2 onLocationSelect={handleLocationChange} />
-              </Modal.Body>
-            </Modal>
-            <div style={{ marginTop: "10px", fontSize: "18px" }}>
-              Seleccione modo de pago:
-            </div>
-            <Radio.Group onChange={handleModoPagoChange} value={modoPago}>
-              <Col style={{ marginLeft: "10px" }}>
-                <Row>
-                  <Radio value="T">Transferencia/Tarjeta</Radio>
-                  {modoPago === "T" && (
-                    <div style={{ marginLeft: "10px", marginTop: "10px" }}>
-                      <PayPal onSuccess={CerrarModalDespuesDePago} />
-                    </div>
-                  )}
-                  <Radio value="E">Efectivo</Radio>
-                  <Radio value="F">
-                    Fraccionado
-                    {modoPago === "F" && (
-                      <>
-                        <InputNumber
-                          min={0}
-                          value={fraccionadoValue}
-                          onChange={handleFraccionadoInputChange}
-                          style={{ marginLeft: "10px" }}
-                        />
-                        <Button
-                          style={{
-                            marginLeft: "10px",
-                            marginTop: "10px",
-                            marginBottom: "10px",
-                          }}
-                          onClick={PagarPorFraccionado}
-                        >
-                          Pagar: ${fraccionadoValue.toFixed(2)}
-                        </Button>
-                      </>
-                    )}
-                  </Radio>
-                  {mostrarComponente && modoPago === "F" && (
-                    <div style={{ marginLeft: "10px", marginTop: "10px" }}>
-                      <PayPal2
-                        onSuccess={CerrarModalDespuesDePago}
-                        amount={fraccionadoValue}
-                      />
-                    </div>
-                  )}
-                  <Button
-                    style={{
-                      marginLeft: "10px",
-                      marginTop: "10px",
-                      marginBottom: "10px",
-                    }}
-                    disabled={modoPago !== "E"}
-                    onClick={PagarPorEfectivo}
-                  >
-                    Pagar: ${totalPrice}
-                  </Button>
-                </Row>
-              </Col>
-            </Radio.Group>
-          </Col>
-          <Col>
-            <div>
-              <ul>
-                {cart.map((item) => (
-                  <li
-                    key={item.id}
-                    style={{
-                      marginBottom: "10px",
-                      borderBottom: "1px solid #ccc",
-                      paddingBottom: "10px",
-                      fontSize: "18px",
-                      marginTop: "10px",
-                    }}
-                  >
-                    <img
-                      src={`data:image/png;base64,${item.image}`}
-                      alt={`Imagen de ${item.Name}`}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        marginRight: "10px",
-                      }}
-                    />
-                    {item.Name} - Cantidad: {item.quantity} - Precio: $
-                    {item.price}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Col>
-        </Row>
-      </Modal>
     </>
+           
   );
 };
 
