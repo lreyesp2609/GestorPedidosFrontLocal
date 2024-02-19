@@ -28,6 +28,25 @@ const MenuMesero = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [userData, setUserData] = useState(null);
+  const id_cuenta = localStorage.getItem("id_cuenta");
+
+  const ObtenerUsuario = async () => {
+    if (id_cuenta) {
+      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUserData(data.usuario);
+          console.log("Datos del usuario:", data.usuario); // Imprimir los datos del usuario por consola
+        })
+        .catch((error) =>
+          console.error("Error al obtener datos del usuario:", error)
+        );
+    } else {
+      console.error("Nombre de usuario no encontrado en localStorage");
+    }
+  };
   const obtenerInformacionEmpresa = async () => {
     try {
       const respuesta = await fetch(
