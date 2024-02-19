@@ -228,7 +228,7 @@ console.log(`Total pedido: ${totalPedido}`);
             id_producto: parseInt(idProducto),
             cantidad: cantidadProductos[idProducto],
             precio_unitario: precioUnitario[idProducto] || 0,
-            impuesto: 2.5,
+            impuesto: 0,
             descuento: 0.5,
           })),
           ...Object.keys(cantidadCombos).map((idCombo) => ({
@@ -237,7 +237,7 @@ console.log(`Total pedido: ${totalPedido}`);
             precio_unitario: combos.find(
               (c) => c.id_combo === parseInt(idCombo)
             ).preciounitario,
-            impuesto: 2.5,
+            impuesto: 0,
             descuento: 0.5,
           })),
         ],
