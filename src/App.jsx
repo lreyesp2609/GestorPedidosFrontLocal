@@ -31,6 +31,7 @@ import MostrarMesas from "./Clientes/Reserva";
 import MenuComandas from "./components/menucomandas";
 import MapaUbicacion from "./components/MapaUbicacion";
 import LocationCard from "./components/cards";
+import Sucursalescliente from "./Clientes/sucursales";
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -70,6 +71,7 @@ function App() {
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
               <Route path="/Registro" element={<RegisterForm/>} />
               <Route path="/Comandas" element={<MenuComandas/>} />
+              <Route path="/Sucursales" element={<Sucursalescliente/>} />
             </Routes>
             </ShoppingCartProvider>
           </div>

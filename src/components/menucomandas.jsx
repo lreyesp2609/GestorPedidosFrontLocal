@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserOutlined } from '@ant-design/icons';
-import { Container, Row, Col, Button, Form, Nav, Navbar, Dropdown} from 'react-bootstrap';
-import { notification, Avatar, Card, Popconfirm, Statistic, Select,Modal } from 'antd';
+import { Container, Row, Col, Button, Form, Nav, Navbar, Dropdown } from 'react-bootstrap';
+import { notification, Avatar, Card, Popconfirm, Statistic, Select, Modal } from 'antd';
 import MovimientosInventario from "./ReversionMovimientosInventario.jsx"; // Asegúrate de que la ruta del archivo sea correcta
 import "./comanda.css";
 
@@ -95,7 +95,7 @@ const MenuComandas = () => {
         fetchData();
     }, []);
 
-    
+
 
     const handleModal = () => {
         setModalVisible(!modalVisible);
@@ -196,7 +196,7 @@ const MenuComandas = () => {
             </div>
             <Row >
                 <Col md={3}><Button type="primary" onClick={handleModal} style={{ margin: '16px' }}>Ver últimos movimientos</Button></Col>
-                
+
                 <Col md={1} style={{ padding: '5px', margin: '2px' }}>
                     <Select
                         style={{ width: '100%', marginBottom: '16px' }}
@@ -210,7 +210,7 @@ const MenuComandas = () => {
                         ))}
                     </Select>
                 </Col>
-                
+
             </Row>
             <Row style={{ marginLeft: '2%' }}>
                 <Col md={12}>
@@ -296,7 +296,7 @@ const MenuComandas = () => {
                 onCancel={handleModal}
                 footer={null}
             >
-                <MovimientosInventario/>
+                <MovimientosInventario />
             </Modal>
         </div>
     );
