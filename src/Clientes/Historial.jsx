@@ -78,22 +78,18 @@ const Historial = () => {
   const fetchClienteData = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/cliente/ver_clientes/"
+        `http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`
       );
       if (!response.ok) {
-        throw new Error("No se pudo obtener la lista de clientes.");
+        throw new Error("No se pudo obtener la información del cliente.");
       }
       const data = await response.json();
-      const cliente = data.clientes.find(
-        (cliente) => cliente.id_cliente === facturaData.id_cliente
-      );
-      if (cliente) {
-        setClienteData(cliente);
-      }
+      setClienteData(data.usuario); // Establecer la información del cliente en el estado
     } catch (error) {
-      console.error("Error al obtener la lista de clientes:", error);
+      console.error("Error al obtener la información del cliente:", error);
     }
   };
+  
 
   const obtenerTipoDePedido = (inicial) => {
     switch (inicial) {
@@ -194,21 +190,53 @@ const Historial = () => {
           key="estado_del_pedido"
           render={(estado) => (
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <Tag color={estado === "O" ? "blue" : estado === 'P' ? 'purple' : estado === 'C' ? 'orange' : "default"}>
-                  {estado === "O" ? "Ordenado" : estado === 'P' ? 'En Proceso' : estado === 'C' ? 'En camino' : estado}
+              <Tag
+                color={
+                  estado === "O"
+                    ? "blue"
+                    : estado === "P"
+                    ? "purple"
+                    : estado === "C"
+                    ? "orange"
+                    : "default"
+                }
+              >
+                {estado === "O"
+                  ? "Ordenado"
+                  : estado === "P"
+                  ? "En Proceso"
+                  : estado === "C"
+                  ? "En camino"
+                  : estado}
               </Tag>
             </div>
-        )}
-      />
-       <Column
-        title="Estado del pago"
-        dataIndex="Pago"
-        key="Pago"
-        render={(estado) => (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Tag color={estado === 'En revisón' ? 'blue' : estado === 'Pagado' ? 'green' : estado === 'Denegado' ? 'red' : 'default'}>
-                {estado === 'En revisón' ? 'En revisón' : estado === 'Pagado' ? 'Pagado' : estado === 'Denegado' ? 'Denegado' : estado}
-                  </Tag>
+          )}
+        />
+        <Column
+          title="Estado del pago"
+          dataIndex="Pago"
+          key="Pago"
+          render={(estado) => (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Tag
+                color={
+                  estado === "En revisón"
+                    ? "blue"
+                    : estado === "Pagado"
+                    ? "green"
+                    : estado === "Denegado"
+                    ? "red"
+                    : "default"
+                }
+              >
+                {estado === "En revisón"
+                  ? "En revisón"
+                  : estado === "Pagado"
+                  ? "Pagado"
+                  : estado === "Denegado"
+                  ? "Denegado"
+                  : estado}
+              </Tag>
             </div>
           )}
         />

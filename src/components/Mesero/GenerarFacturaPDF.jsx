@@ -237,31 +237,45 @@ const GenerarFacturaPDF = ({
         yPos += cellHeight; // Incrementar la posición vertical para la siguiente fila
       }
     });
-
     // Agregar totales y detalles adicionales
     doc.setFontSize(10); // Restaurar el tamaño de fuente original
-    agregarElementoFactura(`Total`, marginLeft + 5, yPos + 10);
-    agregarElementoFactura(`${facturaData.total}`, marginLeft + 25, yPos + 10);
+    const marginRight = 10; // Margen derecho
 
-    agregarElementoFactura(`Descto`, marginLeft + 5, yPos + 20);
+    // Calcular la posición horizontal para los totales y detalles adicionales
+    const marginRightAdjusted = doc.internal.pageSize.getWidth() - marginRight;
+
+    agregarElementoFactura(`Total`, marginRightAdjusted - 36, yPos + 10);
+    agregarElementoFactura(
+      `${facturaData.total}`,
+      marginRightAdjusted - 15,
+      yPos + 10
+    );
+
+    agregarElementoFactura(`Descto`, marginRightAdjusted - 37, yPos + 20);
     agregarElementoFactura(
       `${facturaData.descuento}`,
-      marginLeft + 25,
+      marginRightAdjusted - 15,
       yPos + 20
     );
-    agregarElementoFactura(`Sub-Total`, marginLeft + 3, yPos + 30);
+
+    agregarElementoFactura(`Sub-Total`, marginRightAdjusted - 39, yPos + 30);
     agregarElementoFactura(
       `${facturaData.subtotal}`,
-      marginLeft + 25,
+      marginRightAdjusted - 15,
       yPos + 30
     );
-    agregarElementoFactura(`IVA 12%`, marginLeft + 5, yPos + 40);
-    agregarElementoFactura(`${facturaData.iva}`, marginLeft + 25, yPos + 40);
 
-    agregarElementoFactura(`A pagar`, marginLeft + 5, yPos + 50);
+    agregarElementoFactura(`IVA 12%`, marginRightAdjusted - 38, yPos + 40);
+    agregarElementoFactura(
+      `${facturaData.iva}`,
+      marginRightAdjusted - 15,
+      yPos + 40
+    );
+
+    agregarElementoFactura(`A pagar`, marginRightAdjusted - 38, yPos + 50);
     agregarElementoFactura(
       `${facturaData.a_pagar}`,
-      marginLeft + 25,
+      marginRightAdjusted - 15,
       yPos + 50
     );
 
@@ -279,8 +293,11 @@ const GenerarFacturaPDF = ({
       1; // El ancho del rectángulo será el ancho máximo del texto más un margen
     const rectHeight = yPos + 50 - (yPos + 4); // La altura del rectángulo será la altura total del texto
 
+    // Calcular la posición horizontal del rectángulo
+    const rectX = marginRightAdjusted - rectWidth;
+
     // Agregar contorno cuadrado
-    doc.rect(marginLeft, yPos + 5, rectWidth, rectHeight);
+    doc.rect(rectX, yPos + 5, rectWidth, rectHeight);
 
     // Calcular el tamaño de cada celda
     const cellHeight = rectHeight / 5; // El número 5 representa el número de celdas
@@ -288,15 +305,15 @@ const GenerarFacturaPDF = ({
     // Agregar líneas horizontales para dividir en celdas
     for (let i = 1; i < 5; i++) {
       doc.line(
-        marginLeft,
+        rectX,
         yPos + 5 + i * cellHeight,
-        marginLeft + rectWidth,
+        rectX + rectWidth,
         yPos + 5 + i * cellHeight
       );
     }
 
     // Agregar línea vertical para separar los nombres de los totales y los valores
-    const separatorX = marginLeft + 20; // Ajusta este valor para mover la línea vertical
+    const separatorX = rectX + 20; // Ajusta este valor para mover la línea vertical
     doc.line(separatorX, yPos + 5, separatorX, yPos + 5 + rectHeight);
 
     // Agregar tipo de pedido y método de pago
@@ -317,19 +334,15 @@ const GenerarFacturaPDF = ({
       1; // El ancho del rectángulo será el ancho máximo del texto más un margen
     const rectHeightTotales = 20; // Altura del rectángulo
 
+    // Definir la posición horizontal ajustada para el rectángulo de "Tipo de Pedido" y "Método de Pago"
+    const marginLeftTotales =
+      doc.internal.pageSize.getWidth() - rectWidthTotales - 10; // Ajuste la posición horizontal según sea necesario
+
     // Agregar contorno cuadrado
-    doc.rect(marginLeft, yPos + 65, rectWidthTotales, rectHeightTotales);
+    doc.rect(marginLeftTotales, yPos + 65, rectWidthTotales, rectHeightTotales);
 
     // Calcular el tamaño de cada celda
     const cellHeightTotales = rectHeightTotales / 2; // El número 2 representa el número de celdas
-
-    /*const separatorX2 = marginLeft + rectWidthTotales / 2; // La posición x del separador será el margen izquierdo más la mitad del ancho del rectángulo
-    doc.line(
-      separatorX2,
-      yPos + 65,
-      separatorX2,
-      yPos + 65 + rectHeightTotales
-    ); // Dibujar la línea desde el inicio hasta el final del rectángulo*/
 
     // Agregar texto para tipo de pedido y método de pago
     for (let i = 0; i < labels.length; i++) {
@@ -338,7 +351,7 @@ const GenerarFacturaPDF = ({
         doc.internal.scaleFactor; // Calcular el ancho del texto
       agregarElementoFactura(
         `${labels[i]}: ${values[i]}`,
-        marginLeft + rectWidthTotales / 2 - labelWidth / 2,
+        marginLeftTotales + rectWidthTotales / 2 - labelWidth / 2,
         yPos + 70 + i * 10
       ); // Centrar el texto en la celda
     }
@@ -346,12 +359,72 @@ const GenerarFacturaPDF = ({
     // Agregar línea horizontal para dividir en celdas
     for (let i = 1; i < 2; i++) {
       doc.line(
-        marginLeft,
+        marginLeftTotales,
         yPos + 65 + i * cellHeightTotales,
-        marginLeft + rectWidthTotales,
+        marginLeftTotales + rectWidthTotales,
         yPos + 65 + i * cellHeightTotales
       );
     }
+
+    /// Agregar firma cliente
+    const firmaClienteX = marginLeft + 20; // Posición X para la firma autorizada
+    const firmaClienteY = yPos + 20; // Posición Y para la firma autorizada
+    const firmaClienteWidth = 80; // Ancho del área de la firma autorizada
+
+    // Ancho deseado para la línea
+    const lineaWidth2 = 35;
+
+    // Calcular la posición X de la línea para que esté centrada con el texto
+    const textoFirmaCliente = "Firma Cliente";
+    const textofirmaClienteWidth =
+      (doc.getStringUnitWidth(textoFirmaCliente) * 12) /
+      doc.internal.scaleFactor; // Calcular el ancho del texto
+    const lineaX3 =
+      firmaClienteX +
+      (firmaClienteWidth - textofirmaClienteWidth - lineaWidth2) +0.5; // Alinear la línea con el texto
+    const lineaX4 = lineaX3 + lineaWidth2;
+
+    // Agregar línea para firmar
+    doc.line(lineaX3, firmaClienteY + 5, lineaX4, firmaClienteY + 5);
+
+    // Agregar texto para la firma autorizada
+    const textofirmaClienteX =
+      firmaClienteX + firmaClienteWidth / 2 - textofirmaClienteWidth / 2;
+    const textofirmaClienteY = firmaClienteY + 10; // Ajustar verticalmente el texto
+    doc.text(textoFirmaCliente, textofirmaClienteX, textofirmaClienteY);
+
+    // Agregar firma autorizada
+    const firmaAutorizadaX = marginLeft - 20; // Posición X para la firma autorizada
+    const firmaAutorizadaY = yPos + 20; // Posición Y para la firma autorizada
+    const firmaAutorizadaWidth = 80; // Ancho del área de la firma autorizada
+
+    // Ancho deseado para la línea
+    const lineaWidth = 35;
+
+    // Calcular la posición X de la línea para que esté centrada con el texto
+    const textoFirmaAutorizada = "Firma Autorizada";
+    const textoFirmaAutorizadaWidth =
+      (doc.getStringUnitWidth(textoFirmaAutorizada) * 12) /
+      doc.internal.scaleFactor; // Calcular el ancho del texto
+    const lineaX1 =
+      firmaAutorizadaX +
+      (firmaAutorizadaWidth - textoFirmaAutorizadaWidth - lineaWidth) + 7; // Alinear la línea con el texto
+    const lineaX2 = lineaX1 + lineaWidth;
+
+    // Agregar línea para firmar
+    doc.line(lineaX1, firmaAutorizadaY + 5, lineaX2, firmaAutorizadaY + 5);
+
+    // Agregar texto para la firma autorizada
+    const textoFirmaAutorizadaX =
+      firmaAutorizadaX +
+      firmaAutorizadaWidth / 2 -
+      textoFirmaAutorizadaWidth / 2;
+    const textoFirmaAutorizadaY = firmaAutorizadaY + 10; // Ajustar verticalmente el texto
+    doc.text(
+      textoFirmaAutorizada,
+      textoFirmaAutorizadaX,
+      textoFirmaAutorizadaY
+    );
 
     // Guardar el documento
     doc.save("factura.pdf");
