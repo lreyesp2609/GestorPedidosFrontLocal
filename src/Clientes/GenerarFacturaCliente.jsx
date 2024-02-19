@@ -431,7 +431,6 @@ const GenerarFacturaPDF = ({
     doc.save("factura.pdf");
   };
 
-
   // Llamar a la función de generación de PDF al renderizar este componente
   generarPDF();
 
