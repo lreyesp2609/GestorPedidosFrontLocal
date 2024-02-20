@@ -34,10 +34,33 @@ const FacturasMesero = () => {
     setCurrentPage(page);
   };
 
+  const [userData, setUserData] = useState(null);
+    const id_cuenta = localStorage.getItem("id_cuenta");
+
+    const ObtenerUsuario = async () => {
+      if (id_cuenta) {
+        fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+          .then((response) => response.json())
+          .then((data) => {
+            setUserData(data.mesero);
+            console.log("Datos del usuario:", data.mesero); // Imprimir los datos del usuario por consola
+          })
+          .catch((error) =>
+            console.error("Error al obtener datos del usuario:", error)
+          );
+      } else {
+        console.error("Nombre de usuario no encontrado en localStorage");
+      }
+    };
+    
+    useEffect(() => {
+      ObtenerUsuario();
+    }, []);
+
   const handleMesaClick = async (idMesa) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/Mesero/mesero/mesa/${idMesa}/pedidos/`
+        `http://127.0.0.1:8000/Mesero/mesero/${id_cuenta}/mesa/${idMesa}/pedidos/`
       );
       if (!response.ok) {
         throw new Error("No se pudo obtener los pedidos de la mesa.");
