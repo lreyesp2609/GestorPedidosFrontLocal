@@ -9,7 +9,7 @@ const MovimientosInventario = () => {
   const [reversionMotivo, setReversionMotivo] = useState('');
 
   useEffect(() => {
-    // Llamada a la API para obtener los movimientos de inventario de tipo 'S'
+    
     fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
       .then(response => {
         if (!response.ok) {
@@ -18,8 +18,8 @@ const MovimientosInventario = () => {
         return response.json();
       })
       .then(data => {
-        // Filtrar los movimientos de tipo 'S'
-        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'S');
+        
+        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'E' || movimiento.tipo_movimiento === 'P');
         setMovimientos(movimientosSalida);
       })
       .catch(error => {
@@ -46,7 +46,7 @@ const MovimientosInventario = () => {
       ),
     },
     {
-      title: 'Acciones',
+      title: 'Reversión',
       key: 'reversion',
       render: (text, record) => (
         <Button type="primary" onClick={() => showReversionModal(record)}>Reversión</Button>
@@ -74,15 +74,30 @@ const MovimientosInventario = () => {
   };
 
   const handleReversion = () => {
-    // Aquí puedes hacer la llamada a la API para guardar la reversión con el motivo
-    // y el ID del movimiento
-    console.log('Motivo de Reversión:', reversionMotivo);
-    console.log('ID del Movimiento:', detalleMovimiento.id_movimiento);
-
-    // Luego de hacer la llamada a la API y guardar la reversión,
-    // puedes cerrar el modal de reversión
-    setReversionVisible(false);
-    setReversionMotivo('');
+    // Hacer una solicitud POST a la API de reversiones de movimiento
+    fetch(`http://127.0.0.1:8000/Reversiones/reversion/${detalleMovimiento.id_movimiento}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ motivo: reversionMotivo }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al revertir el movimiento');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Respuesta de la API:', data);
+        // Si la respuesta es exitosa, puedes cerrar el modal de reversión
+        setReversionVisible(false);
+        setReversionMotivo('');
+      })
+      .catch(error => {
+        console.error('Error al revertir el movimiento:', error);
+        // Puedes mostrar un mensaje de error al usuario si la reversión falla
+      });
   };
 
   return (
