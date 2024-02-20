@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-import jsPDF from "jspdf";
-import GenerarFacturaCliente from "./GenerarFacturaCliente";
-import diseño from "./res/diseño.png";
+import { jsPDF } from "jspdf";
 
 const GenerarFacturaPDF = ({
   empresaInfo,
@@ -108,7 +105,7 @@ const GenerarFacturaPDF = ({
         const nombreEmpresaParte2Width =
           (doc.getStringUnitWidth(lineasDireccion[1]) * 16) /
           doc.internal.scaleFactor; // Ancho de la segunda parte del nombre de la empresa
-        const offset = 35; // Valor adicional para ajustar la posición hacia la derecha
+        const offset = 38; // Valor adicional para ajustar la posición hacia la derecha
         const x =
           (doc.internal.pageSize.getWidth() +
             nombreEmpresaParte2Width -
@@ -120,14 +117,73 @@ const GenerarFacturaPDF = ({
         agregarElementoFactura(linea.trim(), x, y); // Eliminar espacios en blanco al principio y al final de cada línea
       });
 
-      doc.setFontSize(fontSizeOriginal); // Restaurar el tamaño de fuente original
+      doc.setFontSize(10); // Establecer el tamaño de fuente
+
+      // Agregar texto "Contribuyente Negocio Popular" en una línea
+      const textoContribuyente1 = "Contribuyente Negocio";
+      const textoContribuyente1Width =
+        (doc.getStringUnitWidth(textoContribuyente1) * fontSizeOriginal) /
+        doc.internal.scaleFactor;
+      const contribuyenteX1 =
+        (doc.internal.pageSize.getWidth() - textoContribuyente1Width) / 2 + 55; // Ajustar la posición hacia la derecha
+      const contribuyenteY1 = direccionY + (lineasDireccion.length + 1) * 4; // Colocar el texto debajo de la dirección
+      agregarElementoFactura(
+        textoContribuyente1,
+        contribuyenteX1,
+        contribuyenteY1
+      );
+
+      // Agregar texto "Régimen RIMPE" en una línea
+      const textoContribuyente2 = " Popular Régimen RIMPE";
+      const textoContribuyente2Width =
+        (doc.getStringUnitWidth(textoContribuyente2) * fontSizeOriginal) /
+        doc.internal.scaleFactor;
+      const contribuyenteX2 =
+        (doc.internal.pageSize.getWidth() - textoContribuyente2Width) / 2 + 56; // Ajustar la posición hacia la derecha
+      const contribuyenteY2 = contribuyenteY1 + 5; // Ajustar la posición vertical
+      agregarElementoFactura(
+        textoContribuyente2,
+        contribuyenteX2,
+        contribuyenteY2
+      );
+
+      // No es necesario restablecer el tamaño de fuente aquí
     }
 
     // Agregar detalles de la factura
     let yPos = marginTop + 75;
+    doc.setFontSize(10); // Tamaño de fuente más pequeño
+    // Agregar fecha
+    // Obtener el código de factura
+    const codigoFactura = facturaData.codigo_factura;
+
+    // Dividir el código de factura en partes
+    const primeraParte = codigoFactura.substring(0, 3);
+    const segundaParte = codigoFactura.substring(3, 6);
+    const terceraParte = codigoFactura.substring(6);
+
+    // Crear el código de factura con guiones
+    const codigoFacturaFormateado = `${primeraParte}-${segundaParte}-${terceraParte}`;
+
+    // Calcular la posición horizontal para "Aut. S.R.I #"
+    const textoNotaVenta = `Nota de Venta: ${codigoFacturaFormateado}`;
+    const textoNotaVentaWidth =
+      (doc.getStringUnitWidth(textoNotaVenta) * 10) / doc.internal.scaleFactor;
+    const codigoAutorizacionX = marginLeft + textoNotaVentaWidth + 20; // Ajusta el espacio entre "Nota de Venta" y "Aut. S.R.I #"
+
+    // Agregar nota de venta
+    const notaVentaY = marginTop + 40; // Establecer la posición vertical para la nota de venta
+    agregarElementoFactura(textoNotaVenta, marginLeft, notaVentaY);
+
+    // Agregar Aut. S.R.I #
+    agregarElementoFactura(
+      `Aut. S.R.I # ${facturaData.codigo_autorizacion_sri}`,
+      codigoAutorizacionX,
+      notaVentaY
+    );
 
     // Agregar fecha
-    const fechaEmisionY = marginTop + 40; // Establecer la posición vertical para la fecha de emisión
+    const fechaEmisionY = marginTop + 45; // Establecer la posición vertical para la fecha de emisión
     agregarElementoFactura(
       `Fecha: ${facturaData.fecha_emision}`,
       marginLeft,
@@ -137,15 +193,15 @@ const GenerarFacturaPDF = ({
     // Agregar nombre del cliente
     const clienteY = marginTop + 50; // Establecer la posición vertical para el cliente
     agregarElementoFactura(
-      `Cliente: ${clienteData.crazon_social}`,
+      `Cliente: ${clienteData.razon_social}`,
       marginLeft,
       clienteY
     );
 
     // Agregar nombre de la direccion
-    const direccionY = marginTop + 60; // Establecer la posición vertical para direccion
+    const direccionY = marginTop + 55; // Establecer la posición vertical para direccion
     agregarElementoFactura(
-      `Direccion: ${clienteData.crazon_social}`,
+      `Direccion: ${clienteData.razon_social}`,
       marginLeft,
       direccionY
     );
@@ -240,7 +296,7 @@ const GenerarFacturaPDF = ({
     });
     // Agregar totales y detalles adicionales
     doc.setFontSize(10); // Restaurar el tamaño de fuente original
-    const marginRight = 10; // Margen derecho
+    const marginRight = 5; // Margen derecho
 
     // Calcular la posición horizontal para los totales y detalles adicionales
     const marginRightAdjusted = doc.internal.pageSize.getWidth() - marginRight;
@@ -382,7 +438,8 @@ const GenerarFacturaPDF = ({
       doc.internal.scaleFactor; // Calcular el ancho del texto
     const lineaX3 =
       firmaClienteX +
-      (firmaClienteWidth - textofirmaClienteWidth - lineaWidth2) +0.5; // Alinear la línea con el texto
+      (firmaClienteWidth - textofirmaClienteWidth - lineaWidth2) +
+      0.5; // Alinear la línea con el texto
     const lineaX4 = lineaX3 + lineaWidth2;
 
     // Agregar línea para firmar
@@ -409,7 +466,8 @@ const GenerarFacturaPDF = ({
       doc.internal.scaleFactor; // Calcular el ancho del texto
     const lineaX1 =
       firmaAutorizadaX +
-      (firmaAutorizadaWidth - textoFirmaAutorizadaWidth - lineaWidth) + 7; // Alinear la línea con el texto
+      (firmaAutorizadaWidth - textoFirmaAutorizadaWidth - lineaWidth) +
+      7; // Alinear la línea con el texto
     const lineaX2 = lineaX1 + lineaWidth;
 
     // Agregar línea para firmar
@@ -426,6 +484,33 @@ const GenerarFacturaPDF = ({
       textoFirmaAutorizadaX,
       textoFirmaAutorizadaY
     );
+
+    doc.setFontSize(8);
+    // Agregar pie de página con autorización
+    const autorizacionText = `Fecha Autorización: ${facturaData.autorizacion}\nNumeración: ${facturaData.numeracion}`;
+    // Calcular la posición horizontal para el pie de página con autorización
+    const marginLeftFooter = 10; // Margen izquierdo para el pie de página
+    const autorizacionTextWidth =
+      (doc.getStringUnitWidth(autorizacionText) * 10) /
+      doc.internal.scaleFactor;
+    const autorizacionX = marginLeftFooter; // Comenzar desde el margen izquierdo
+    const autorizacionY = doc.internal.pageSize.getHeight() - 10; // Ajusta la posición vertical según sea necesario
+    doc.text(autorizacionText, autorizacionX, autorizacionY);
+
+    // Calcular el ancho del texto de vencimiento
+    const vencimientoText = `Vencimiento: ${facturaData.vencimiento}`;
+    const vencimientoTextWidth =
+      (doc.getStringUnitWidth(vencimientoText) * 8) / doc.internal.scaleFactor; // Usar un tamaño de fuente de 8 para el texto de vencimiento
+
+    // Calcular la posición horizontal para el texto de vencimiento
+    const marginRightFooter = 10; // Margen derecho para el pie de página
+    const vencimientoX =
+      doc.internal.pageSize.getWidth() -
+      marginRightFooter -
+      vencimientoTextWidth;
+
+    // Agregar el texto de vencimiento al documento
+    doc.text(vencimientoText, vencimientoX, autorizacionY); // Utiliza la misma posición vertical que la autorización
 
     // Guardar el documento
     doc.save("factura.pdf");
