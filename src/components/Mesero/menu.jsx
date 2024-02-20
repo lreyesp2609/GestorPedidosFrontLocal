@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserOutlined } from "@ant-design/icons";
-import { Image, Avatar, Card, Badge, Tooltip, Divider,Modal } from "antd";
+import { Image, Card, Badge, Tooltip, Divider, Modal, Table } from "antd";
 import {
   Container,
   Row,
@@ -22,6 +22,8 @@ import RealizarPedidoLocal from "./pedidoslocal";
 
 const MenuM = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [pedidos, setPedidos] = useState([]);
+
   const showModal = () => {
     setModalVisible(true);
   };
@@ -32,9 +34,50 @@ const MenuM = () => {
   const { Meta } = Card;
   const tooltipTitle = "Realiza pedidos a las mesas";
   const tooltipTitle1 = "Gestiona tus facturas";
+  const tooltipTitle2 = "Gestiona tus pedidos";
+
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id_pedido",
+      key: "id_pedido",
+    },
+    {
+      title: "Precio",
+      dataIndex: "precio",
+      key: "precio"
+    },
+    {
+      title: "Fecha Pedido",
+      dataIndex: "fecha_pedido",
+      key: "fecha_pedido",
+    },
+    {
+      title: "Estado",
+      dataIndex: "estado_del_pedido",
+      key: "estado_del_pedido",
+      render: (estado_del_pedido) => (
+        <Badge
+          count={estado_del_pedido === 'O' ? 'Ordenado' : 'Preparado'}
+          style={{
+            backgroundColor: estado_del_pedido === 'O' ? '#f5222d' : '#52c41a',
+          }}
+        />
+      ),
+    },
+  ];
 
   const [currentPage, setCurrentPage] = useState("homemesero");
-
+  useEffect(() => {
+    // Llamada a la API para obtener los pedidos
+    fetch("http://127.0.0.1:8000/Mesero/listpedidos/")
+      .then((response) => response.json())
+      .then((data) => {
+        setPedidos(data.pedidos);
+        console.log(data.pedidos);
+      })
+      .catch((error) => console.error("Error fetching pedidos:", error));
+  }, []);
   const handleCardClick = (page) => {
     console.log("Clicked on:", page);
     setCurrentPage(page);
@@ -121,6 +164,25 @@ const MenuM = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col md={6}>
+              <div style={{ border: "1px solid #A4A4A4", borderRadius: '5px', minHeight: '100%' }}>
+                <Divider>Pedidos</Divider>
+                <Card>
+                  <p>Pedidos actuales:</p>
+                  <p>Pedidos pendientes:</p>
+                  <p>Pedidos listos:</p>
+                </Card>
+                <Divider>Pedidos</Divider>
+                <div className="table-responsive">
+                <Table
+                  columns={columns}
+                  dataSource={pedidos}
+                  rowKey="id_pedido"
+                />
+                </div>
+              </div>
+            </Col>
+
           </>
         )}
         {currentPage != "homemesero" && (
@@ -175,11 +237,11 @@ const MenuM = () => {
           </>
         )}
       </Row>
-      
-        <RealizarPedidoLocal
-         visible={modalVisible}
-         onClose={() => setModalVisible(false)}
-         />
+
+      <RealizarPedidoLocal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
 
     </>
   );
