@@ -23,6 +23,7 @@ import imgrecompensa from "./res/imgrecompensa.png";
 import imcocina from "./res/cocinar.png";
 import imgbodegas from "./res/imgbodegas.png";
 import imginventario from "./res/imginventario.png";
+import logosri from "./res/logosri.png";
 import Empresa from "./Empresa";
 import Empleados from "./empleados.jsx";
 import Sucursales from "./sucursales.jsx";
@@ -44,7 +45,6 @@ import imgreserva from "./res/imgreserva.png";
 import reverso from "./res/reverso.png";
 import EditarReservacionesForm from "./EditarReservacion.jsx";
 import PagosE from "./pagose.jsx";
-import MovimientosInventario from "./ReversionMovimientosInventario.jsx";
 
 const MenuG = () => {
   const { Meta } = Card;
@@ -62,7 +62,6 @@ const MenuG = () => {
   const tooltipTitle12 = "Prepara insumos y productos";
   const tooltipTitle13 = "Agrega y edita reservaciones";
   const tooltipTitle14 = "Registra los pagos de tus empleados";
-  const tooltipTitle15 = "Control de reversiones";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -439,32 +438,6 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
-            <Col xs={24} sm={12} md={5} lg={3}>
-              <Badge.Ribbon text="Reversiones" color="red">
-                <Tooltip title={tooltipTitle15}>
-                  <Card
-                    hoverable
-                    style={cardStyle}
-                    cover={
-                      <Image
-                        alt="reverso"
-                        src={reverso}
-                        style={{
-                          padding: "5%",
-                          height: "150px",
-                          width: "auto",
-                        }}
-                        preview={false}
-                      />
-                    }
-                    className="text-center"
-                    onClick={() => handleCardClick("reversiones")}
-                  >
-                    <Meta title={tooltipTitle15}></Meta>
-                  </Card>
-                </Tooltip>
-              </Badge.Ribbon>
-            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -636,16 +609,6 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <PagosE/>
-              </Col>
-            </Row>
-          </>
-        )}
-        {currentPage == "reversiones" && (
-          <>
-            <Divider>Reversiones</Divider>
-            <Row>
-              <Col md={12}>
-                <MovimientosInventario/>
               </Col>
             </Row>
           </>
