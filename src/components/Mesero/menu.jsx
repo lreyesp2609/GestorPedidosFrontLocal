@@ -48,9 +48,15 @@ const MenuM = () => {
       key: "precio"
     },
     {
-      title: "Fecha Pedido",
-      dataIndex: "fecha_pedido",
-      key: "fecha_pedido",
+      title: "Mesa Asociada",
+      dataIndex: "mesa_asociada",
+      key: "mesa_asociada",
+      render: (mesa_asociada) => (
+        <Badge
+        color={mesa_asociada ? '#F08C1E' : '#50B496'}
+        count={mesa_asociada ? mesa_asociada.observacion : 'Local'}
+      />
+      ),
     },
     {
       title: "Estado",
@@ -65,19 +71,42 @@ const MenuM = () => {
         />
       ),
     },
+    {
+      title: "Accion",
+      dataIndex: "estado_del_pedido",
+      key: "Accion",
+      render: (estado_del_pedido, record) => {
+        console.log(record.estado_del_pedido);
+        return estado_del_pedido === 'P' ? (
+          <Button onClick={() => handleConfirmarPedido(record.id_pedido)}>
+            Confirmar Pedido
+          </Button>
+        ) : null;
+      },
+    },
   ];
 
   const [currentPage, setCurrentPage] = useState("homemesero");
   useEffect(() => {
-    // Llamada a la API para obtener los pedidos
-    fetch("http://127.0.0.1:8000/Mesero/listpedidos/")
-      .then((response) => response.json())
-      .then((data) => {
-        setPedidos(data.pedidos);
-        console.log(data.pedidos);
-      })
-      .catch((error) => console.error("Error fetching pedidos:", error));
+    listpedidos();
+    const intervalId = setInterval(() => {
+      listpedidos();
+    }, 5000);
+
+    // Limpiar el intervalo cuando el componente se desmonta
+    return () => clearInterval(intervalId);
   }, []);
+
+  const listpedidos = () => {
+    fetch("http://127.0.0.1:8000/Mesero/listpedidos/")
+    .then((response) => response.json())
+    .then((data) => {
+      setPedidos(data.pedidos);
+      console.log(data.pedidos);
+    })
+    .catch((error) => console.error("Error fetching pedidos:", error));
+  }
+
   const handleCardClick = (page) => {
     console.log("Clicked on:", page);
     setCurrentPage(page);
@@ -105,6 +134,22 @@ const MenuM = () => {
 
   const openNewWindow = () => {
     window.open("/cocina", "_blank");
+  };
+  const handleConfirmarPedido = (idPedido) => {
+    // Lógica para confirmar el pedido
+    const formData = new FormData();
+    formData.append('id_pedido', idPedido);
+  
+    fetch('http://127.0.0.1:8000/Mesero/confirmarpedido/', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        listpedidos();
+      })
+      .catch(error => console.error('Error confirmando el pedido:', error));
   };
 
   return (
