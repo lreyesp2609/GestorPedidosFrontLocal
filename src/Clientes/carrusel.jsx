@@ -63,9 +63,9 @@ const Carrusel = () => {
   }, []); // Se ejecutará solo una vez al montar el componente
 
   const buttonStyle = {
-    marginTop:'10px',
+    marginTop: '10px',
     height: '40px', // Ajusta la altura según tus preferencias
-    width:'100%',
+    width: '100%',
     backgroundColor: hovered ? 'black' : '#A80000',
     color: 'white',
     border: 'none',
@@ -76,8 +76,8 @@ const Carrusel = () => {
     fontWeight: 'bold',
   };
   const buttonStyle2 = {
-    marginTop:'10px',
-    width:'100%',
+    marginTop: '10px',
+    width: '100%',
     height: '40px', // Ajusta la altura según tus preferencias
     backgroundColor: hovered2 ? 'black' : '#2E7651',
     color: 'white',
@@ -89,8 +89,8 @@ const Carrusel = () => {
     fontWeight: 'bold',
   };
   const buttonStyle3 = {
-    marginTop:'10px',
-    width:'100%',
+    marginTop: '10px',
+    width: '100%',
     height: '40px', // Ajusta la altura según tus preferencias
     backgroundColor: hovered3 ? 'black' : '#0B4362',
     color: 'white',
@@ -102,8 +102,8 @@ const Carrusel = () => {
     fontWeight: 'bold',
   };
   const buttonStyle4 = {
-    marginTop:'10px',
-    width:'100%',
+    marginTop: '10px',
+    width: '100%',
     height: '40px', // Ajusta la altura según tus preferencias
     backgroundColor: hovered4 ? 'black' : '#C03E62',
     color: 'white',
@@ -118,9 +118,11 @@ const Carrusel = () => {
     { url: descar },
     { url: imgsucur },
     { url: 'https://www.santevet.es/uploads/images/es_ES/razas/gatocomuneuropeo.jpeg' },
-    {url:'https://static.wikia.nocookie.net/bokunoheroacademia/images/1/13/Ochaco_Uraraka_Traje_de_Heroe_actual.png/revision/latest/scale-to-width-down/249?cb=20200722000332&path-prefix=es'}
+    { url: 'https://static.wikia.nocookie.net/bokunoheroacademia/images/1/13/Ochaco_Uraraka_Traje_de_Heroe_actual.png/revision/latest/scale-to-width-down/249?cb=20200722000332&path-prefix=es' }
   ];
-
+  const openSucursal = () => {
+    window.open('/sucursales', '_self');
+  };
   return (
     <>
 
@@ -161,7 +163,7 @@ const Carrusel = () => {
             }
             className="text-center"
           >
-            <spam style={{ fontWeight: 'bold', color: 'black',display:'block' }}>Lleva tus pedidos contigo, descarga la app ahora</spam>
+            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Lleva tus pedidos contigo, descarga la app ahora</spam>
             <button
               style={buttonStyle}
               onMouseEnter={handleMouseEnter}
@@ -190,11 +192,12 @@ const Carrusel = () => {
             }
             className="text-center"
           >
-            <spam style={{ fontWeight: 'bold', color: 'black',display:'block' }}>Encuentra tu sucursal más cercana</spam>
+            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Encuentra tu sucursal más cercana</spam>
             <button
               style={buttonStyle2}
               onMouseEnter={handleMouseEnter2}
               onMouseLeave={handleMouseLeave2}
+              onClick={openSucursal}
             >
               VER SUCURSALES
             </button>
@@ -219,13 +222,13 @@ const Carrusel = () => {
             }
             className="text-center"
           >
-            <spam style={{ fontWeight: 'bold', color: 'black',display:'block' }}>Descubre los favoritos de nuestros clientes</spam>
+            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Descubre los favoritos de nuestros clientes</spam>
             <button
               style={buttonStyle3}
               onMouseEnter={handleMouseEnter3}
               onMouseLeave={handleMouseLeave3}
             >
-             MAS VENDIDOS
+              MAS VENDIDOS
             </button>
           </Card>
         </Col>
@@ -248,13 +251,13 @@ const Carrusel = () => {
             }
             className="text-center"
           >
-            <spam style={{ fontWeight: 'bold', color: 'black',display:'block' }}>Más compras, más regalos: canjea tus puntos</spam>
+            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Más compras, más regalos: canjea tus puntos</spam>
             <button
               style={buttonStyle4}
               onMouseEnter={handleMouseEnter4}
               onMouseLeave={handleMouseLeave4}
             >
-             VER RECOMPENSAS
+              VER RECOMPENSAS
             </button>
           </Card>
         </Col>
