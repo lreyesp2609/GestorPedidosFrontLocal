@@ -38,6 +38,7 @@ const SRI = () => {
         const data = await response.json();
         console.log("Response:", data);
         setVisible(false);
+        message.success("Código de factura creada exitosamente");
       } else {
         throw new Error("Error al crear o actualizar el código SRI");
       }

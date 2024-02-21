@@ -46,7 +46,7 @@ import reverso from "./res/reverso.png";
 import EditarReservacionesForm from "./EditarReservacion.jsx";
 import PagosE from "./pagose.jsx";
 import MovimientosInventario from "./ReversionMovimientosInventario.jsx";
-
+import SRI from "./SRI.jsx";
 const MenuG = () => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
@@ -64,6 +64,7 @@ const MenuG = () => {
   const tooltipTitle13 = "Agrega y edita reservaciones";
   const tooltipTitle14 = "Registra los pagos de tus empleados";
   const tooltipTitle15 = "Control de reversiones";
+  const tooltipTitle16 = "Gestiona los codigos de tus facturas";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -466,6 +467,32 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="SRI" color="red">
+                <Tooltip title={tooltipTitle16}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="sri"
+                        src={logosri}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("sri")}
+                  >
+                    <Meta title={tooltipTitle16}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -647,6 +674,16 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <MovimientosInventario/>
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage == "sri" && (
+          <>
+            <Divider>SRI</Divider>
+            <Row>
+              <Col md={12}>
+                <SRI/>
               </Col>
             </Row>
           </>
