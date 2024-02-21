@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Modal, Form, Input, Segmented } from "antd";
+import { Table, Button, Modal, Form, Input, Segmented, message } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
 import SRIAutorizacion from "./SRIAutorizacion";
@@ -38,6 +38,7 @@ const SRI = () => {
         const data = await response.json();
         console.log("Response:", data);
         setVisible(false);
+        message.success("Código de factura creada exitosamente");
       } else {
         throw new Error("Error al crear o actualizar el código SRI");
       }
