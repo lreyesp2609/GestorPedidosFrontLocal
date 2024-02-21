@@ -6,10 +6,9 @@ const MovimientosInventario = () => {
   const [detalleVisible, setDetalleVisible] = useState(false);
   const [detalleMovimiento, setDetalleMovimiento] = useState({});
   const [reversionVisible, setReversionVisible] = useState(false);
-  const [reversionMotivo, setReversionMotivo] = useState('');
+  const [reversionObservacion, setReversionObservacion] = useState('');
 
   useEffect(() => {
-    
     fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
       .then(response => {
         if (!response.ok) {
@@ -18,8 +17,7 @@ const MovimientosInventario = () => {
         return response.json();
       })
       .then(data => {
-        
-        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'E' || movimiento.tipo_movimiento === 'P');
+        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === '' || movimiento.tipo_movimiento === 'P');
         setMovimientos(movimientosSalida);
       })
       .catch(error => {
@@ -70,17 +68,16 @@ const MovimientosInventario = () => {
 
   const handleCloseReversion = () => {
     setReversionVisible(false);
-    setReversionMotivo('');
+    setReversionObservacion('');
   };
 
   const handleReversion = () => {
-    // Hacer una solicitud POST a la API de reversiones de movimiento
-    fetch(`http://127.0.0.1:8000/Reversiones/reversion/${detalleMovimiento.id_movimiento}/`, {
+    fetch(`http://127.0.0.1:8000/Inventario/crear_movimiento_reversion/${detalleMovimiento.id_movimiento}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ motivo: reversionMotivo }),
+      body: JSON.stringify({ observacion: reversionObservacion }),
     })
       .then(response => {
         if (!response.ok) {
@@ -90,13 +87,21 @@ const MovimientosInventario = () => {
       })
       .then(data => {
         console.log('Respuesta de la API:', data);
-        // Si la respuesta es exitosa, puedes cerrar el modal de reversión
         setReversionVisible(false);
-        setReversionMotivo('');
+        setReversionObservacion('');
+        // Actualizar la lista de movimientos después de la reversión
+        fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
+          .then(response => response.json())
+          .then(data => {
+            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === '' || movimiento.tipo_movimiento === 'P');
+            setMovimientos(movimientosSalida);
+          })
+          .catch(error => {
+            console.error('Error al obtener los movimientos de inventario después de la reversión:', error);
+          });
       })
       .catch(error => {
         console.error('Error al revertir el movimiento:', error);
-        // Puedes mostrar un mensaje de error al usuario si la reversión falla
       });
   };
 
@@ -119,7 +124,7 @@ const MovimientosInventario = () => {
         <ul>
           {detalleMovimiento.detalles && detalleMovimiento.detalles.map(detalle => (
             <li key={detalle.id_detalle_movimiento}>
-              ID Artículo: {detalle.id_articulo} | ID Producto: {detalle.id_producto} | Cantidad: {detalle.cantidad} | Tipo: {detalle.tipo}
+              Artículo: {detalle.nombre_articulo} | Producto: {detalle.nombre_producto} | Cantidad: {detalle.cantidad} | Tipo: {detalle.tipo}
             </li>
           ))}
         </ul>
@@ -139,7 +144,7 @@ const MovimientosInventario = () => {
         ]}
       >
         <p>Por favor, ingrese el motivo de la reversión:</p>
-        <Input value={reversionMotivo} onChange={e => setReversionMotivo(e.target.value)} />
+        <Input value={reversionObservacion} onChange={e => setReversionObservacion(e.target.value)} />
       </Modal>
     </div>
   );
