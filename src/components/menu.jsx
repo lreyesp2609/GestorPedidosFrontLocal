@@ -47,6 +47,7 @@ import EditarReservacionesForm from "./EditarReservacion.jsx";
 import PagosE from "./pagose.jsx";
 import MovimientosInventario from "./ReversionMovimientosInventario.jsx";
 import SRI from "./SRI.jsx";
+import VerReversionesPedidos from "./ReversionesPedidos.jsx"
 const MenuG = () => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
@@ -673,7 +674,7 @@ const MenuG = () => {
             <Divider>Reversiones</Divider>
             <Row>
               <Col md={12}>
-                <MovimientosInventario/>
+                <VerReversionesPedidos/>
               </Col>
             </Row>
           </>

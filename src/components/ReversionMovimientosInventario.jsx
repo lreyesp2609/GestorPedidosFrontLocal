@@ -124,7 +124,7 @@ const MovimientosInventario = () => {
         <ul>
           {detalleMovimiento.detalles && detalleMovimiento.detalles.map(detalle => (
             <li key={detalle.id_detalle_movimiento}>
-              Artículo: {detalle.nombre_articulo} | Producto: {detalle.nombre_producto} | Cantidad: {detalle.cantidad} | Tipo: {detalle.tipo}
+              Producto: {detalle.nombre_articulo} {detalle.nombre_producto} Cantidad: {detalle.cantidad}
             </li>
           ))}
         </ul>
