@@ -30,6 +30,7 @@ const RealizarPedidoLocal = ({ visible, onClose }) => {
   const [currentComboPage, setCurrentComboPage] = useState(1);
   const productPageSize = 3;
   const comboPageSize = 3;
+  const id_cuenta = localStorage.getItem("id_cuenta");
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
@@ -273,7 +274,7 @@ console.log(`Total pedido: ${totalPedido}`);
       formData.append("detalles_pedido", detallesPedidoString);
 
       const response = await fetch(
-        "http://127.0.0.1:8000/Mesero/pedidoslocal/",
+        `http://127.0.0.1:8000/Mesero/pedidoslocal/${id_cuenta}/`,
         {
           method: "POST",
           body: formData,
