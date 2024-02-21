@@ -9,6 +9,10 @@ const MovimientosInventario = () => {
   const [reversionObservacion, setReversionObservacion] = useState('');
 
   useEffect(() => {
+    fetchMovimientosInventario();
+  }, []);
+
+  const fetchMovimientosInventario = () => {
     fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
       .then(response => {
         if (!response.ok) {
@@ -17,13 +21,13 @@ const MovimientosInventario = () => {
         return response.json();
       })
       .then(data => {
-        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === '' || movimiento.tipo_movimiento === 'P');
+        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P' /*|| movimiento.tipo_movimiento === 'P'*/);
         setMovimientos(movimientosSalida);
       })
       .catch(error => {
         console.error('Error al obtener los movimientos de inventario:', error);
       });
-  }, []);
+  };
 
   const columns = [
     {
@@ -89,16 +93,9 @@ const MovimientosInventario = () => {
         console.log('Respuesta de la API:', data);
         setReversionVisible(false);
         setReversionObservacion('');
-        // Actualizar la lista de movimientos después de la reversión
-        fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
-          .then(response => response.json())
-          .then(data => {
-            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === '' || movimiento.tipo_movimiento === 'P');
-            setMovimientos(movimientosSalida);
-          })
-          .catch(error => {
-            console.error('Error al obtener los movimientos de inventario después de la reversión:', error);
-          });
+        
+        // Actualizar el estado localmente eliminando el movimiento revertido
+        setMovimientos(prevMovimientos => prevMovimientos.filter(movimiento => movimiento.id_movimiento !== detalleMovimiento.id_movimiento));
       })
       .catch(error => {
         console.error('Error al revertir el movimiento:', error);
@@ -124,7 +121,7 @@ const MovimientosInventario = () => {
         <ul>
           {detalleMovimiento.detalles && detalleMovimiento.detalles.map(detalle => (
             <li key={detalle.id_detalle_movimiento}>
-              Producto: {detalle.nombre_articulo} {detalle.nombre_producto} Cantidad: {detalle.cantidad}
+              {detalle.nombre_articulo} {detalle.nombre_producto} - Cantidad: {detalle.cantidad}
             </li>
           ))}
         </ul>
