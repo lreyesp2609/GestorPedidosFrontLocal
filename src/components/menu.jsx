@@ -48,6 +48,7 @@ import PagosE from "./pagose.jsx";
 import MovimientosInventario from "./ReversionMovimientosInventario.jsx";
 import SRI from "./SRI.jsx";
 import VerReversionesPedidos from "./ReversionesPedidos.jsx"
+import ReportManagement from "./reporte.jsx";
 const MenuG = () => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
@@ -66,6 +67,7 @@ const MenuG = () => {
   const tooltipTitle14 = "Registra los pagos de tus empleados";
   const tooltipTitle15 = "Control de reversiones";
   const tooltipTitle16 = "Gestiona los codigos de tus facturas";
+  const tooltipTitle17 = "Gestión de reportes";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -494,6 +496,31 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Reportes" color="#359BE6">
+                <Tooltip title={tooltipTitle17}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Reportes"
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("reporte")}
+                  >
+                    <Meta title={tooltipTitle17}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -685,6 +712,16 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <SRI/>
+              </Col>
+            </Row>
+          </>
+        )}
+         {currentPage == "reporte" && (
+          <>
+            <Divider>Reportes</Divider>
+            <Row>
+              <Col md={12}>
+                <ReportManagement/>
               </Col>
             </Row>
           </>
