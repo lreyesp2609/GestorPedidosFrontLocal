@@ -54,15 +54,7 @@ const ValidarPedido =()=>{
       setFilteredInfo({});
       setSortedInfo({});
     };
-  
-    const setAgeSort = () => {
-      setSortedInfo({
-        order: 'ascend',
-        columnKey: 'nombre_usuario',
-      });
-      setFilteredPagado(true);
 
-    };
   
 
 
@@ -81,6 +73,92 @@ const ValidarPedido =()=>{
     setSelectedRecord(recordPago);
     setSelectedPaymentState(estadoPago);
     setModalVisible(true);
+  };
+  const handleValidarPago = async (recordPago) => {
+    try {
+      const formData = new FormData();
+      formData.append('estado_pago', 'Pagado');  // Cambia al estado deseado al validar
+
+      // Realiza la solicitud POST a la API
+      const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Verifica si la solicitud fue exitosa
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+      }
+
+      // Obtiene la respuesta JSON
+      const responseData = await response.json();
+
+      // Verifica si la respuesta indica éxito
+      if (responseData.success) {
+        // Actualiza el estado local de los pedidos si es necesario
+        const updatedPedidos = pedidos.map((pedido) => {
+          if (pedido.id_pedido === recordPago.id_pedido) {
+            return {
+              ...pedido,
+              Pago: 'Pagado',  // Cambia al estado deseado al validar
+            };
+          }
+          return pedido;
+        });
+
+        setPedidos(updatedPedidos);
+
+        console.log('Pago validado con éxito.');
+      } else {
+        // Si la respuesta indica un error, imprime el mensaje de error
+        throw new Error(responseData.message);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+  const handleDenegarPago = async (recordPago) => {
+    try {
+      const formData = new FormData();
+      formData.append('estado_pago', 'Denegado');  // Cambia al estado deseado al denegar
+
+      // Realiza la solicitud POST a la API
+      const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Verifica si la solicitud fue exitosa
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+      }
+
+      // Obtiene la respuesta JSON
+      const responseData = await response.json();
+
+      // Verifica si la respuesta indica éxito
+      if (responseData.success) {
+        // Actualiza el estado local de los pedidos si es necesario
+        const updatedPedidos = pedidos.map((pedido) => {
+          if (pedido.id_pedido === recordPago.id_pedido) {
+            return {
+              ...pedido,
+              Pago: 'Denegado',  // Cambia al estado deseado al denegar
+            };
+          }
+          return pedido;
+        });
+
+        setPedidos(updatedPedidos);
+
+        console.log('Pago denegado con éxito.');
+      } else {
+        // Si la respuesta indica un error, imprime el mensaje de error
+        throw new Error(responseData.message);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
   };
   const handleModalOk2 = async() => {
       try {
@@ -188,26 +266,7 @@ const ValidarPedido =()=>{
     };
 
     
-    const CambiarPago = (estadoPago, recordPago) => {
-      Modal.info({
-        title: 'Cambiar estado del pago',
-        content: (
-          <div>
-            <span style={{ marginRight: '8px' }}>Estado del pago: {estadoPago}</span>
-            <Select
-              defaultValue={estadoPago}
-              style={{ width: 120, marginTop: 16 }}
-              onChange={(value) => handleSelectChangePago(value, recordPago)}
-            >
-              <Option value="Pagado">Pagado</Option>
-              <Option value="En revisión">En revisión</Option>
-              <Option value="Denegado">Denegado</Option>
-            </Select>
-            <Button onClick={() => CambiarEstado2(recordPago.id_pedido, value)} >Ok</Button>
-          </div>
-        ),
-      });
-    };
+    
     const handleSelectChangePago = (value, recordPago) => {
       console.log('Cambiando estado del pago:', value);
       console.log('Registro asociado:', recordPago);
@@ -218,12 +277,7 @@ const ValidarPedido =()=>{
 
 
     };
-const CambiarEstado = (value, record) => {
-  record.tagColor = ColorTag(value);
-  record.tagText = TextoTag(value);
 
-  
-};
 const ColorTag = (estado) => {
   switch (estado) {
     case 'O':
@@ -256,11 +310,11 @@ const TextoTag = (estado) => {
     const ColorTagPago = (estadoPago) => {
       switch (estadoPago) {
         case 'Pagado':
-          return 'green';
+          return 'rgb(17, 54, 11)';
         case 'En revisión':
-          return 'orange';
+          return 'rgb(255, 119, 7)';
         case 'Denegado':
-          return 'red';
+          return 'rgb(151, 2, 2)';
         default:
           return 'default';
       }
@@ -309,8 +363,8 @@ const TextoTag = (estado) => {
       dataIndex: 'nombre_usuario',
       key: 'nombre_usuario',
       sorter: (a, b) => {
-        const aName = a.nombre_usuario || ''; // Si a.nombre_usuario es null, asigna un string vacío
-        const bName = b.nombre_usuario || ''; // Si b.nombre_usuario es null, asigna un string vacío
+        const aName = a.nombre_usuario || ''; 
+        const bName = b.nombre_usuario || ''; 
         return aName.localeCompare(bName);
       },
       sortOrder: sortedInfo.columnKey === 'nombre_usuario' ? sortedInfo.order : null,
@@ -399,7 +453,7 @@ const TextoTag = (estado) => {
                     alt="Imagen del pedido"
                     style={{ maxWidth: '50px', maxHeight: '50px' }}
                 />
-            ) : null
+            ) : <span>N/A</span>
         ),
         ellipsis: true,
       },
@@ -441,6 +495,34 @@ const TextoTag = (estado) => {
         ellipsis: true,
       },
       {
+        title: 'Cambiar estado del pago',
+        dataIndex: 'Pago',
+        key: 'Pago',
+        render: (estadoPago, recordPago) => (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Tooltip title={`Validar pago`}>
+              <Tag
+                color="rgb(3, 34, 4)"  // Puedes cambiar el color según tus necesidades
+                onClick={() => handleValidarPago(recordPago)}
+                style={{ cursor: 'pointer' }}
+              >
+                Validar
+              </Tag>
+            </Tooltip>
+            <Tooltip title={`Denegar pago`}>
+              <Tag
+                color="rgb(151, 2, 2)"  
+                onClick={() => handleDenegarPago(recordPago)}
+                style={{ cursor: 'pointer', marginLeft: '8px' }}
+              >
+                Denegar
+              </Tag>
+            </Tooltip>
+          </div>
+        ),
+        ellipsis: true,
+      },
+      {
         title: 'Precio Total',
         dataIndex: 'Total',
         key: 'Total',
@@ -465,38 +547,10 @@ const TextoTag = (estado) => {
             marginBottom: 16,
           }}
         >
-          <Button onClick={setAgeSort}>Sort age</Button>
-          <Button onClick={clearFilters}>Clear filters</Button>
-          <Button onClick={clearAll}>Clear filters and sorters</Button>
+          <Button onClick={clearFilters}>Limpiar filtros</Button>
         </Space>
         <Table columns={columns} dataSource={pedidos} onChange={handleChange} pagination={{ pageSize: 5 }}/>
-        <Modal
-        title="Editar Estado del Pedido"
-        visible={modalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-      >
-        <Select value={selectedPedido?.estado_del_pedido} onChange={handleSelectChange}>
-          <Option value="O">Ordenado</Option>
-          <Option value="P">En proceso</Option>
-          <Option value="C">En camino</Option>
-          <Option value="E">Pedido entregado</Option>
-        </Select>
-      </Modal>
-      <Modal
-        title="Cambiar Estado del Pago"
-        visible={modalVisible}
-        onOk={handleModalOk2}
-        onCancel={handleModalCancel2}
-      >
-        <p>ID del pedido: {selectedRecord?.id_pedido}</p>
-        <p>Selecciona el nuevo estado del pago:</p>
-        <Select value={selectedPaymentState} onChange={(value) => setSelectedPaymentState(value)}>
-          <Option value="Pagado">Pagado</Option>
-          <Option value="En revisión">En revisión</Option>
-          <Option value="Denegado">Denegado</Option>
-        </Select>
-      </Modal>
+    
       </>
     )
     

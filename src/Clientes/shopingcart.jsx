@@ -184,7 +184,7 @@ const ShoppingCart = () => {
     <>
       <div>
       {mostrarPedido ? (
-        <Pedidos/>
+        <Pedidos regresar={regresar}/>
       ):(
         <div>
           {cart.length > 0 ? (

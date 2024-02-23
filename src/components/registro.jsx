@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Input, Alert, Select, message } from 'antd';
 import { Modal } from 'react-bootstrap';
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
+import { notification } from 'antd';
 import { Link } from 'react-router-dom';
 import Map2 from '../Clientes/Map2';
 
@@ -54,7 +55,10 @@ const RegistroForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("uwu");
+        notification.success({
+          message: 'Registro exitoso',
+          description: '¡usted se ha registrado con exito!',
+        });
       } else {
         const errorMessage = data && data.error ? data.error : 'Error desconocido';
         showError(errorMessage);

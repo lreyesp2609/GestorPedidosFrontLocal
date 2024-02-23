@@ -145,7 +145,7 @@ const Pedidos = ({regresar}) => {
       
         formData.append('precio', totalPrice);
         formData.append('tipo_de_pedido', modoPedido);
-        formData.append('metodo_de_pago', 'E'); 
+        formData.append('metodo_de_pago', 'T'); 
         formData.append('puntos', 0); 
         formData.append('estado_del_pedido', 'O'); 
         formData.append('impuesto', 0);
@@ -185,7 +185,58 @@ const Pedidos = ({regresar}) => {
       
 
     };
+    const PagarPorEfectivo2 =()=>{
+      if (id_cuenta) {
+        const detalles_pedido = cart.map(item => ({
+          id_producto: item.id,
+          cantidad_pedido: item.quantity,
+          costo_unitario: item.price,
+        }));
     
+    
+        const formData = new FormData();
+      
+        formData.append('precio', totalPrice);
+        formData.append('tipo_de_pedido', modoPedido);
+        formData.append('metodo_de_pago', 'E'); 
+        formData.append('puntos', 0); 
+        formData.append('estado_del_pedido', 'O'); 
+        formData.append('impuesto', 0);
+        formData.append('estado_pago', 'En revisión');
+        formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+        // Realiza la solicitud POST al backend
+        fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+          method: 'POST',
+          body: formData,
+        })
+        .then(response => response.json())
+        .then(responseData => {
+          // Maneja la respuesta del backend según sea necesario
+          if (responseData.success) {
+            console.log('Respuesta del servidor:', responseData);
+            console.log('Pedido realizado con éxito.');
+            notification.success({
+              message: 'Pedido Exitoso',
+              description: '¡El pedido se ha completado con éxito!',
+            });
+          } else {
+            console.error('Error al realizar el pedido:', responseData.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error en la solicitud:', error);
+        })
+        .finally(() => {
+          setCart([]);
+          regresar();
+       
+        });
+      } else {
+        console.error('ID de cuenta no encontrado en localStorage');
+      }
+      
+
+    };
     
     
     
@@ -471,7 +522,7 @@ return(
                 <div className="d-grid gap-2">
                     <Button style={{ marginTop: '50px', marginBottom:'240px'}} 
                     disabled={modoPago !== 'E'}
-                    onClick={PagarPorEfectivo} 
+                    onClick={PagarPorEfectivo2} 
                     >
                     Pagar: ${totalPrice}
                     </Button>
@@ -494,9 +545,36 @@ return(
                 )}
                 </div>
             {mostrarComponente && modoPago === 'F' && (
+              <>
+                <div rotationSlider style={{ display: 'flex',  alignItems: 'center'
+                , justifyContent: 'center' }}>
+                      <ImgCrop >
+                      <Upload
+                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={beforeUpload}
+                        
+                      >
+                      {fileList.length < 1 && '+ Subir comprobante'}
+                      </Upload>
+                      </ImgCrop>
+                      </div>
+                  
+                      <Button style={{marginTop:'10px' ,width:'400px'}}
+                      disabled={fileList.length === 0 || modoPedido === null}
+                      onClick={PagarPorFraccionado} 
+                      >
+                      Pagar: ${fraccionadoValue}
+                      </Button>
+
+                    <Divider>O pague con paypal </Divider>
                     <div style={{ marginBottom:'122px',  width: '400px',  margin: '0 auto'   }}>
                       <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue}/>
                     </div>
+                    </>
                   )}
           
         </Col>

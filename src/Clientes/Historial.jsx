@@ -221,11 +221,11 @@ const Historial = () => {
               <Tag
                 color={
                   estado === "En revisón"
-                    ? "blue"
+                    ? "rgb(6, 0, 94)"
                     : estado === "Pagado"
-                    ? "green"
+                    ? "rgb(17, 54, 11)"
                     : estado === "Denegado"
-                    ? "red"
+                    ? "rgb(53, 5, 5)"
                     : "default"
                 }
               >

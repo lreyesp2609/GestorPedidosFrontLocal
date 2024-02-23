@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Modal, Button, Card as AntCard } from "antd";
+import { Modal, Button, Card as AntCard,Col,Row, Input } from "antd";
 import { CartContext } from "../context/CarritoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart, faStar  } from "@fortawesome/free-solid-svg-icons";
 const { Meta } = AntCard;
+const { TextArea } = Input;
 
 const ListProductos = () => {
   const [products, setProducts] = useState([]);
@@ -112,40 +113,85 @@ const ListProductos = () => {
             style={{
               marginTop:'10px',
               width:'50px',
-              backgroundColor: "#6e3700",
+              backgroundColor: "#5a0a03",
               color: "#fff",
               borderRadius: "10px",
               textAlign:'center',
             }}
-            >{`${product.puntosp}`}</p>
+            >
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{
+                  color: "#FFD700", 
+                  marginRight: '1px', 
+                }}
+              />
+              {`${product.puntosp}`}</p>
             </div>
           </AntCard>
         ))}
       </div>
 
-      <Modal visible={showModal} onCancel={handleCloseModal} footer={null}>
+      <Modal visible={showModal} onCancel={handleCloseModal} 
+      footer={null}
+      width={800}  // Ajusta el ancho del modal según tus necesidades
+      bodyStyle={{ height: 500 }}
+      >
         <div>
           {selectedProduct && (
             <>
-              <h5>{selectedProduct.nombreproducto}</h5>
+              <h5 style={{textAlign:'center'}}>{selectedProduct.nombreproducto}</h5>
+              <Row style={{marginBottom:'10px'}}>
+              <Col style={{ paddingRight: '10px', marginRight:'100px'}}>
               <img
                 src={`data:image/png;base64,${selectedProduct.imagenp}`}
                 alt={`Imagen de ${selectedProduct.nombreproducto}`}
-                style={{ width: "100%", height: "340px" }}
+                style={{ width:'360px' ,height:'440px'}}
               />
+              </Col>
+              <Col>
+              <h5 style={{borderBottom: '1px solid #9b9b9b',paddingBottom: '10px',}}>
+                Descripción
+              </h5>
               <p>{selectedProduct.descripcionproducto}</p>
-              <p>{`$${selectedProduct.preciounitario}`}</p>
-
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <h5 style={{borderBottom: '1px solid #9b9b9b',paddingBottom: '10px',}}>
+                Precio Unitario
+              </h5>
+              <p 
+              style={{ backgroundColor: "#0a2e02", 
+              width:'70px',
+              color: "#fff",
+              borderRadius: "10px",
+              textAlign:'center',}}
+              >{`$${selectedProduct.preciounitario}`}</p>
+              <h5 style={{borderBottom: '1px solid #9b9b9b',paddingBottom: '10px',}}>
+                Puntos
+              </h5>
+              <p
+              style={{backgroundColor: "#5a0a03", 
+              width:'40px',
+              color: "#fff",
+              borderRadius: "10px",
+              textAlign:'center',}}
+              > 
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{
+                  color: "#FFD700", 
+                  marginRight: '1px', 
+                }}
+              />
+                {selectedProduct.puntosp}</p>
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
                 {selectedProduct && (
                   <>
                     
 
                     {getQuantityById(selectedProduct.id_producto) === 0 ? (
                       <Button style={{ 
-                        backgroundColor: "#022c01",
+                        backgroundColor: "#000000",
                         color: "#fff",
-                        border:'none'
+                        border:'none',
                          }} 
                          icon={<FontAwesomeIcon icon={faShoppingCart} />}
                          onClick={() => addToCart(selectedProduct.id_producto)}>
@@ -167,8 +213,8 @@ const ListProductos = () => {
                     {getQuantityById(selectedProduct.id_producto) > 0 && (
                       <div
                         style={{
-                          padding: "6px",
-                          width:'40px',
+                          padding: "5px",
+                          width:'57px',
                           marginLeft: "10px",
                           backgroundColor: "#000000",
                           color: "#fff",
@@ -193,8 +239,12 @@ const ListProductos = () => {
                       </Button>
                     )}
                   </>
+                  
                 )}
+                
               </div>
+              </Col>
+            </Row>
             </>
           )}
         </div>

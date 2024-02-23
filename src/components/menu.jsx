@@ -14,6 +14,7 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import imgempresa from "./res/imgempresa.png";
+import imgValidar from "./res/validar.png"
 import imgempleado from "./res/imgempleado.png";
 import imgproductos from "./res/imgproductos.png";
 import imgaviso from "./res/imgaviso.png";
@@ -49,6 +50,7 @@ import MovimientosInventario from "./ReversionMovimientosInventario.jsx";
 import SRI from "./SRI.jsx";
 import VerReversionesPedidos from "./ReversionesPedidos.jsx"
 import ReportManagement from "./reporte.jsx";
+import ValidarPedido from "../Clientes/Validarpedido.jsx";
 const MenuG = () => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
@@ -68,6 +70,7 @@ const MenuG = () => {
   const tooltipTitle15 = "Control de reversiones";
   const tooltipTitle16 = "Gestiona los codigos de tus facturas";
   const tooltipTitle17 = "Gestión de reportes";
+  const tooltipTitle18 = "Validar pagos de pedidos";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -521,6 +524,32 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Validar pedidos" color="#162703">
+                <Tooltip title={tooltipTitle18}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Pedidos"
+                        src={imgValidar}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("validar")}
+                  >
+                    <Meta title={tooltipTitle18}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -722,6 +751,16 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <ReportManagement/>
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage == "validar" && (
+          <>
+            <Divider>Validar Pedidos</Divider>
+            <Row>
+              <Col md={12}>
+                <ValidarPedido/>
               </Col>
             </Row>
           </>
