@@ -12,6 +12,7 @@ const MenuComandas = () => {
     const [bodegas, setBodegas] = useState([]);
     const [tiemposTranscurridos, setTiemposTranscurridos] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
+    const [movimientos, setMovimientos] = useState([]);
 
     useEffect(() => {
         fetch('http://127.0.0.1:8000/bodega/listar/')
@@ -98,6 +99,7 @@ const MenuComandas = () => {
 
 
     const handleModal = () => {
+        fetchMovimientosInventario();
         setModalVisible(!modalVisible);
     };
 
@@ -163,6 +165,23 @@ const MenuComandas = () => {
             console.error('Error en la solicitud:', error);
         }
     };
+    const fetchMovimientosInventario = () => {
+        fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Error al obtener los movimientos de inventario');
+            }
+            return response.json();
+          })
+          .then(data => {
+            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P' /*|| movimiento.tipo_movimiento === 'P'*/);
+            setMovimientos(movimientosSalida);
+            console.log(movimientosSalida);
+          })
+          .catch(error => {
+            console.error('Error al obtener los movimientos de inventario:', error);
+          });
+      };
 
     return (
         <div className='content' style={{ height: '100%', minHeight: '100vh' }}>
@@ -295,8 +314,9 @@ const MenuComandas = () => {
                 visible={modalVisible} // Utiliza el estado modalVisible para controlar la visibilidad del modal
                 onCancel={handleModal}
                 footer={null}
+                width={'75%'}
             >
-                <MovimientosInventario />
+                <MovimientosInventario movimientosinv={movimientos}/>
             </Modal>
         </div>
     );

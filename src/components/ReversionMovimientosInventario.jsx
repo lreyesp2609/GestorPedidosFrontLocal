@@ -1,39 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Input } from 'antd';
 
-const MovimientosInventario = () => {
-  const [movimientos, setMovimientos] = useState([]);
+const MovimientosInventario = ({ movimientosinv }) => {
   const [detalleVisible, setDetalleVisible] = useState(false);
   const [detalleMovimiento, setDetalleMovimiento] = useState({});
   const [reversionVisible, setReversionVisible] = useState(false);
   const [reversionObservacion, setReversionObservacion] = useState('');
+  const [movimientos, setMovimientos] = useState([]);
 
   useEffect(() => {
-    fetchMovimientosInventario();
-  }, []);
-
-  const fetchMovimientosInventario = () => {
-    fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al obtener los movimientos de inventario');
-        }
-        return response.json();
-      })
-      .then(data => {
-        const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P' /*|| movimiento.tipo_movimiento === 'P'*/);
-        setMovimientos(movimientosSalida);
-      })
-      .catch(error => {
-        console.error('Error al obtener los movimientos de inventario:', error);
-      });
-  };
+    setMovimientos(movimientosinv);
+}, []);
 
   const columns = [
     {
       title: 'ID Movimiento',
       dataIndex: 'id_movimiento',
       key: 'id_movimiento',
+    },
+    {
+      title: 'Pedido',
+      dataIndex: 'id_pedido',
+      key: 'id_pedido',
     },
     {
       title: 'Fecha/Hora',
@@ -104,7 +92,8 @@ const MovimientosInventario = () => {
 
   return (
     <div>
-      <Table dataSource={movimientos} columns={columns} />
+      <div className='table-responsive'><Table dataSource={movimientosinv} columns={columns} /></div>
+      
 
       <Modal
         title="Detalle de Movimiento"
