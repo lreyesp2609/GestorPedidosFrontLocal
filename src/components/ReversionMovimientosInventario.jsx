@@ -62,30 +62,31 @@ const columns = [
 
   const handleReversion = () => {
     fetch(`http://127.0.0.1:8000/Inventario/crear_movimiento_reversion/${detalleMovimiento.id_movimiento}/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ observacion: reversionObservacion }),
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ observacion_reversion: reversionObservacion }),  // Asegúrate de utilizar el nombre correcto del campo
     })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al revertir el movimiento');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Respuesta de la API:', data);
-        setReversionVisible(false);
-        setReversionObservacion('');
-        
-        // Actualizar el estado localmente eliminando el movimiento revertido
-        setMovimientos(prevMovimientos => prevMovimientos.filter(movimiento => movimiento.id_movimiento !== detalleMovimiento.id_movimiento));
-      })
-      .catch(error => {
-        console.error('Error al revertir el movimiento:', error);
-      });
-  };
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al revertir el movimiento');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Respuesta de la API:', data);
+            setReversionVisible(false);
+            setReversionObservacion('');
+
+            // Actualizar el estado localmente eliminando el movimiento revertido
+            setMovimientos(prevMovimientos => prevMovimientos.filter(movimiento => movimiento.id_movimiento !== detalleMovimiento.id_movimiento));
+        })
+        .catch(error => {
+            console.error('Error al revertir el movimiento:', error);
+        });
+};
+
 
   return (
     <div>

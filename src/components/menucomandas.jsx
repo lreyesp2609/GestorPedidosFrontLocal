@@ -165,6 +165,7 @@ const MenuComandas = () => {
             console.error('Error en la solicitud:', error);
         }
     };
+
     const fetchMovimientosInventario = () => {
         fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
           .then(response => {
@@ -174,14 +175,14 @@ const MenuComandas = () => {
             return response.json();
           })
           .then(data => {
-            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P'  || movimiento.tipo_movimiento === 'R' /*|| movimiento.tipo_movimiento === 'P'*/);
+            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P'  && movimiento.sestado === '1');
             setMovimientos(movimientosSalida);
             console.log(movimientosSalida);
           })
           .catch(error => {
             console.error('Error al obtener los movimientos de inventario:', error);
-          });
-      };
+        });
+    };
 
     return (
         <div className='content' style={{ height: '100%', minHeight: '100vh' }}>
