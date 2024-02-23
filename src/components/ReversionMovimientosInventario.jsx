@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Input } from 'antd';
+import { Table, Button, Modal, Input, Badge  } from 'antd';
 
 const MovimientosInventario = ({ movimientosinv }) => {
   const [detalleVisible, setDetalleVisible] = useState(false);
@@ -12,37 +12,34 @@ const MovimientosInventario = ({ movimientosinv }) => {
     setMovimientos(movimientosinv);
 }, []);
 
-  const columns = [
-    {
-      title: 'ID Movimiento',
-      dataIndex: 'id_movimiento',
-      key: 'id_movimiento',
+const columns = [
+  {
+    title: 'Estado',
+    key: 'estado',
+    render: (text, record) => {
+      if (record.tipo_movimiento === 'P') {
+        return <Badge color="#5CBA8B" count={`Se preparó el producto de ID: ${record.id_pedido} en la fecha: ${record.fechahora}`} />;
+      } else if (record.tipo_movimiento === 'R') {
+        return <Badge count={`Se revirtió el producto de ID: ${record.id_pedido}`} />;
+      }
+      return null;
     },
-    {
-      title: 'Pedido',
-      dataIndex: 'id_pedido',
-      key: 'id_pedido',
-    },
-    {
-      title: 'Fecha/Hora',
-      dataIndex: 'fechahora',
-      key: 'fechahora',
-    },
-    {
-      title: 'Detalles',
-      key: 'detalles',
-      render: (text, record) => (
-        <Button type="link" onClick={() => showDetalle(record)}>Ver Detalles</Button>
-      ),
-    },
-    {
-      title: 'Reversión',
-      key: 'reversion',
-      render: (text, record) => (
-        <Button type="primary" onClick={() => showReversionModal(record)}>Reversión</Button>
-      ),
-    },
-  ];
+  },
+  {
+    title: 'Detalles',
+    key: 'detalles',
+    render: (text, record) => (
+      <Button type="link" onClick={() => showDetalle(record)}>Ver Detalles</Button>
+    ),
+  },
+  {
+    title: 'Reversión',
+    key: 'reversion',
+    render: (text, record) => (
+      <Button type="primary" onClick={() => showReversionModal(record)}>Reversión</Button>
+    ),
+  },
+];
 
   const showDetalle = (record) => {
     setDetalleMovimiento(record);
