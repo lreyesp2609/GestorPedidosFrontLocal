@@ -20,7 +20,7 @@ const columns = [
       if (record.tipo_movimiento === 'P') {
         return <Badge color="#5CBA8B" count={`Se preparó el producto de ID: ${record.id_pedido} en la fecha: ${record.fechahora}`} />;
       } else if (record.tipo_movimiento === 'R') {
-        return <Badge count={`Se revirtió el producto de ID: ${record.id_pedido}`} />;
+        return <Badge count={`Se revirtió el movimiento de preparación del producto de ID: ${record.id_pedido} en la fecha: ${record.fechahora}`} />;
       }
       return null;
     },

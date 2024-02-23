@@ -174,7 +174,7 @@ const MenuComandas = () => {
             return response.json();
           })
           .then(data => {
-            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P' /*|| movimiento.tipo_movimiento === 'P'*/);
+            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P'  || movimiento.tipo_movimiento === 'R' /*|| movimiento.tipo_movimiento === 'P'*/);
             setMovimientos(movimientosSalida);
             console.log(movimientosSalida);
           })
