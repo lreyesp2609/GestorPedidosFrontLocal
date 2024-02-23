@@ -203,7 +203,7 @@ const GenerarFacturaPDF = ({
     // Agregar nombre de la direccion
     const direccionY = marginTop + 55; // Establecer la posición vertical para direccion
     agregarElementoFactura(
-      `Direccion: ${clienteData.crazon_social}`,
+      `Direccion: ${clienteData.ubicacion}`,
       marginLeft,
       direccionY
     );
