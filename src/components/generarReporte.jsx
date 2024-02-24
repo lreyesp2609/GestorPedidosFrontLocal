@@ -1,72 +1,67 @@
-import React from 'react';
-import { jsPDF } from "jspdf";
+import React, { useEffect } from "react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
-const GenerarReportePDF = ({
-  empresaInfo,
-  logoEmpresa,
-  fechaReporte,
-  contenidoReporte,
-}) => {
+const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData }) => {
+  // Función para generar el reporte PDF
   const generarReportePDF = () => {
-    if (empresaInfo) {
-      const doc = new jsPDF({
-        orientation: "portrait",
-        unit: "in",
-        format: [8.5, 11],
-      });
-      const fontSize = 12;
+    // Crear un nuevo documento PDF
+    const doc = new jsPDF();
 
-      doc.setFontSize(fontSize);
+    // Agregar información de la empresa al PDF
+    doc.setFontSize(12);
+    doc.text(`Nombre de la empresa: ${empresaInfo.enombre}`, 10, 10);
+    doc.text(`Dirección: ${empresaInfo.direccion}`, 10, 20);
+    doc.text(`Teléfono: ${empresaInfo.etelefono}`, 10, 30);
 
-      if (empresaInfo && empresaInfo.nombre && logoEmpresa) {
-        const logoWidth = 30;
-        const logoHeight = 30;
-        const logoPositionX = 0.5;
-        const logoPositionY = 0.25;
-        doc.addImage(
-          logoEmpresa,
-          "JPEG",
-          logoPositionX,
-          logoPositionY,
-          logoWidth,
-          logoHeight
-        );
-
-        const nombreEmpresaX = logoPositionX + logoWidth + 0.1;
-        const nombreEmpresaY = logoPositionY + logoHeight / 3;
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text(empresaInfo.nombre, nombreEmpresaX, nombreEmpresaY);
-
-        const direccionEmpresaX = nombreEmpresaX;
-        const direccionEmpresaY = nombreEmpresaY + fontSize / 2;
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        doc.text(empresaInfo.direccion, direccionEmpresaX, direccionEmpresaY);
-
-        const fechaX = direccionEmpresaX;
-        const fechaY = direccionEmpresaY + fontSize / 2;
-        doc.setFont("helvetica", "normal");
-        doc.text(`Fecha de Emisión: ${fechaReporte}`, fechaX, fechaY);
-
-        const lineY = fechaY + 0.25;
-        doc.setLineWidth(0.01);
-        doc.line(0.5, lineY, 8, lineY);
-
-        let yPos = lineY + 0.25;
-        contenidoReporte.forEach((item) => {
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(fontSize);
-          doc.text(item, 0.5, yPos);
-          yPos += 0.2;
-        });
-      }
-
-      doc.save("reporte.pdf");
+    // Agregar logo de la empresa al PDF si está disponible
+    if (logoEmpresa) {
+      const logo = new Image();
+      logo.src = logoEmpresa;
+      doc.addImage(logo, "PNG", 150, 5, 40, 40);
     }
+
+    // Agregar título y encabezados de la tabla de empleados
+    doc.text("Reporte de Empleados", 10, 50);
+    const headers = [["Nombre", "Apellido", "Teléfono", "Ciudad", "Fecha"]];
+
+    // Extraer datos de los empleados para la tabla
+    const data = empleadosData.map((empleado) => [
+      empleado.nombre,
+      empleado.apellido,
+      empleado.telefono,
+      empleado.ciudad,
+      empleado.fecha,
+    ]);
+
+    // Agregar la tabla de empleados al PDF
+    doc.autoTable({
+      startY: 60,
+      head: headers,
+      body: data,
+    });
+
+    // Obtener la fecha actual
+    const fechaEmision = new Date().toLocaleDateString();
+
+    // Agregar la fecha de emisión al PDF
+    const fechaHoraEmision = new Date().toLocaleString();
+
+    // Agregar la fecha y hora de emisión al PDF
+    doc.text(
+      `Fecha y hora de emisión: ${fechaHoraEmision}`,
+      10,
+      doc.autoTable.previous.finalY + 10
+    );
+
+    // Guardar el documento PDF
+    doc.save("reporte_empleados.pdf");
   };
 
-  return generarReportePDF();
+  // Llamamos a la función para generar el reporte PDF
+  generarReportePDF();
+
+  return null; // No necesitamos renderizar ningún elemento visible en el DOM
 };
 
 export default GenerarReportePDF;

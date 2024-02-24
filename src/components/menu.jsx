@@ -51,6 +51,8 @@ import SRI from "./SRI.jsx";
 import VerReversionesPedidos from "./ReversionesPedidos.jsx"
 import ReportManagement from "./reporte.jsx";
 import ValidarPedido from "../Clientes/Validarpedido.jsx";
+import reportes from "./res/reportes.png";
+
 const MenuG = () => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
@@ -508,6 +510,7 @@ const MenuG = () => {
                     cover={
                       <Image
                         alt="Reportes"
+                        src={reportes}
                         style={{
                           padding: "5%",
                           height: "150px",
