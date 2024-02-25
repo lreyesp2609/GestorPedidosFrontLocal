@@ -25,8 +25,11 @@ import "../components/comanda.css";
 
 const NavBar = () => {
   const [cart, setCart] = useContext(CartContext);
-  const [ComponenteSeleccionado, setComponenteSeleccionado] =
-    useState("Carrusel");
+  const [ComponenteSeleccionado, setComponenteSeleccionado] = useState(() => {
+    // Obtener el componente seleccionado de localStorage al cargar la página
+    const storedComponente = localStorage.getItem("ComponenteSeleccionado");
+    return storedComponente || "Carrusel";
+  });
   const [empresaInfo, setEmpresaInfo] = useState(null);
   const [nombreEmpresa, setNombre] = useState(null);
   const [logoEmpresa, setLogo] = useState(null);
@@ -46,17 +49,18 @@ const NavBar = () => {
     borderRadius: "15px",
     textDecoration: "none",
     color: "white",
-    transition: "background-color 0.3s, color 0.3s", // Agrega una transición suave
+    transition: "background-color 0.3s, color 0.3s", 
     fontFamily: "Arial, sans-serif",
   };
+  
 
   const manejarMouseOver = (e) => {
-    e.target.style.backgroundColor = "black"; // Cambia el color de fondo al pasar el mouse
+    e.target.style.backgroundColor = "black"; 
   };
 
   const manejarMouseOut = (e) => {
-    e.target.style.backgroundColor = ""; // Restaura el color de fondo al salir del mouse
-    e.target.style.color = "white"; // Restaura el color del texto al salir del mouse
+    e.target.style.backgroundColor = ""; 
+    e.target.style.color = "white"; 
   };
   const logoStyle = {
     color: "white",
@@ -64,7 +68,10 @@ const NavBar = () => {
     borderRadius: "50%",
   };
   const [MostrarModal, setMostrarModal] = useState(false);
-  const [Logeado, setLogeado] = useState(false);
+  const [Logeado, setLogeado] = useState(() => {
+    const storedLogeado = localStorage.getItem("Logeado");
+    return storedLogeado ? JSON.parse(storedLogeado) : false;
+  });
   const [ModalRegistroVisible, setModalRegistroVisible] = useState(false);
 
   const HacerClick = () => {
@@ -79,11 +86,15 @@ const NavBar = () => {
     setLogeado(true);
     setMostrarModal(false);
     console.log("Usuario ha iniciado sesión:", userData);
+    localStorage.setItem("Logeado", JSON.stringify(true));
+
   };
 
   const CerrarSesion = () => {
     setLogeado(false);
     setComponenteSeleccionado("Carrusel");
+    localStorage.removeItem("Logeado");
+
   };
 
   const RegresarAlLogin = () => {
@@ -93,6 +104,9 @@ const NavBar = () => {
 
   const MostrarComponente = (component) => {
     setComponenteSeleccionado(component);
+
+    // Almacenar el componente seleccionado en localStorage
+    localStorage.setItem("ComponenteSeleccionado", component);
   };
 
   const Regresar = () => {
@@ -179,28 +193,22 @@ const NavBar = () => {
                 </Nav.Link>
                 {Logeado && (
                   <NavDropdown
-                    style={estiloNavLink}
+                    style={{ ...estiloNavLink, borderRadius: "50%",  color: "white"  }}
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
                     title="Perfil"
                   >
                     <NavDropdown.Item
                       onClick={() => MostrarComponente("Perfil")}
-                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                      style={{ marginLeft: "auto", fontSize: "18px"}}
                     >
                       Ver perfil
                     </NavDropdown.Item>
                     <NavDropdown.Item
                       onClick={() => MostrarComponente("Historial")}
-                      style={{ marginLeft: "auto", fontSize: "18px" }}
-                    >
+                      style={{ marginLeft: "auto", fontSize: "18px"}} 
+                      >
                       Ver Historial
-                    </NavDropdown.Item>
-                    <NavDropdown.Item
-                      onClick={() => MostrarComponente("Pedido")}
-                      style={{ marginLeft: "auto", fontSize: "18px" }}
-                    >
-                      Validar pedido
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item
@@ -270,7 +278,6 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Menu" && <ListProductos />}
           {ComponenteSeleccionado === "Perfil" && <EditarUser />}
           {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
-          {ComponenteSeleccionado === "Pedido" && <ValidarPedido />}
           {ComponenteSeleccionado === "Historial" && <Historial />}
           {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
           {ComponenteSeleccionado != "Carrusel" && (

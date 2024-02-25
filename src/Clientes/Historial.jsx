@@ -158,7 +158,7 @@ const Historial = () => {
   };
 
   return (
-    <div style={{ marginLeft: "30px", marginRight: "50px" }}>
+    <div  style={{ marginLeft: "30px", marginRight: "50px", marginTop:'20px' }}>
       {facturaData && (
         <GenerarFacturaPDF
           facturaData={facturaData}
@@ -193,11 +193,11 @@ const Historial = () => {
               <Tag
                 color={
                   estado === "O"
-                    ? "blue"
+                    ? "rgb(6, 0, 94)"
                     : estado === "P"
-                    ? "purple"
+                    ? "rgb(62, 0, 100)"
                     : estado === "C"
-                    ? "orange"
+                    ? "rgb(211, 116, 0)"
                     : "default"
                 }
               >
@@ -225,7 +225,7 @@ const Historial = () => {
                     : estado === "Pagado"
                     ? "rgb(17, 54, 11)"
                     : estado === "Denegado"
-                    ? "rgb(53, 5, 5)"
+                    ? "rgb(110, 1, 1)"
                     : "default"
                 }
               >

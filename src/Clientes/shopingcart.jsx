@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import Lottie from "react-lottie";
 import {
-  Card,
   Form,
   Modal,
   Button,
@@ -15,6 +14,8 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { CartContext } from "../context/CarritoContext";
 import { Radio, InputNumber } from "antd";
+import { Avatar, Card, Skeleton, Switch } from 'antd';
+const { Meta } = Card;
 import { notification } from "antd";
 import animationData from "../assets/lottis/B.json"; // Importa el archivo JSON de tu animación
 import Pedidos from "./pedido"
@@ -100,7 +101,7 @@ const ShoppingCart = () => {
   
   const handleModoPagoChange = (e) => {
     setModoPago(e.target.value);
-    setFraccionadoValue(1); // Reiniciar el valor al cambiar la opción de pago
+    setFraccionadoValue(1); 
   };
   const handleFraccionadoInputChange = (value) => {
     setFraccionadoValue(value);
@@ -186,7 +187,7 @@ const ShoppingCart = () => {
       {mostrarPedido ? (
         <Pedidos regresar={regresar}/>
       ):(
-        <div>
+        <div style={{marginTop:'30px'}}>
           {cart.length > 0 ? (
             <>
               <Container>
@@ -197,7 +198,7 @@ const ShoppingCart = () => {
                       border: "1px solid rgba(0, 0, 0, 0.74)",
                       boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
 
-                      marginLeft: 0, // Agrega esta línea para establecer el margen izquierdo a 0
+                      marginLeft: 0, 
                       paddingLeft: 0,
                     }}
                   >
@@ -213,6 +214,7 @@ const ShoppingCart = () => {
                     </h5>
                     <ul>
                       {cart.map((item) => (
+                        
                         <div
                           key={item.id}
                           style={{
@@ -223,23 +225,26 @@ const ShoppingCart = () => {
                             marginTop: "10px",
                           }}
                         >
-                          <img
-                            src={`data:image/png;base64,${item.image}`}
-                            alt={`Imagen de ${item.Name}`}
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              marginRight: "10px",
-                            }}
-                          />
-                          {item.Name} - Cantidad: {item.quantity} - Precio: $
-                          {item.price}
+                          <Card style={{ width: 800 }}>
+                            <Meta
+                              avatar={<img style={{
+                                width: "50px",
+                                height: "70px",
+                                marginRight: "10px",
+                              }}
+                              src={`data:image/png;base64,${item.image}`} alt="User" />}
+                              title={item.Name}
+                              description={`Cantidad: ${item.quantity} - Precio: $${item.price}`}
+                            />
+                          </Card>
+                          
                         </div>
                       ))}
                     </ul>
                   </Col>
 
-                  <Col>
+                  <Col style={{backgroundColor:'rgb(255, 255, 255)', borderRadius:'20px'
+                   , marginLeft:'10px' }}  >
                     <Row>
                       <Col>
                         <div style={{ marginTop: "10px", fontSize: "18px" }}>

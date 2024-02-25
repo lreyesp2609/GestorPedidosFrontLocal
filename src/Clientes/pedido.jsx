@@ -543,40 +543,42 @@ return(
                     </Button>
                     </Space>
                 )}
-                </div>
-            {mostrarComponente && modoPago === 'F' && (
-              <>
-                <div rotationSlider style={{ display: 'flex',  alignItems: 'center'
-                , justifyContent: 'center' }}>
-                      <ImgCrop >
-                      <Upload
-                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                        listType="picture-card"
-                        fileList={fileList}
-                        onChange={onChange}
-                        onPreview={onPreview}
-                        beforeUpload={beforeUpload}
-                        
-                      >
-                      {fileList.length < 1 && '+ Subir comprobante'}
-                      </Upload>
-                      </ImgCrop>
-                      </div>
-                  
-                      <Button style={{marginTop:'10px' ,width:'400px'}}
-                      disabled={fileList.length === 0 || modoPedido === null}
-                      onClick={PagarPorFraccionado} 
-                      >
-                      Pagar: ${fraccionadoValue}
-                      </Button>
+                {mostrarComponente && modoPago === 'F' && (
+              <div>
+                <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                    <div rotationSlider style={{ display: 'flex',  alignItems: 'center'
+                      , justifyContent: 'center' }}>
+                    <ImgCrop >
+                    <Upload
+                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      beforeUpload={beforeUpload}
+                      
+                    >
+                    {fileList.length < 1 && '+ Subir comprobante'}
+                    </Upload>
+                    </ImgCrop>
+                    </div>
+                 
+                    <Button style={{marginTop:'10px' ,width:'400px'}}
+                    disabled={fileList.length === 0 || modoPedido === null}
+                    onClick={PagarPorEfectivo} 
+                    >
+                    Pagar: ${totalPrice}
+                    </Button>
 
                     <Divider>O pague con paypal </Divider>
                     <div style={{ marginBottom:'122px',  width: '400px',  margin: '0 auto'   }}>
                       <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue}/>
                     </div>
-                    </>
+                    </div>
                   )}
           
+                </div>
+            
         </Col>
         <Col>
         <div>
