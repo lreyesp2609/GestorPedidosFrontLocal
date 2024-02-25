@@ -9,22 +9,29 @@ import {
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
+import "./res/editar.css";
+import imghogar from "./res/hogar.png"
+import imgtrabajo from "./res/localizacion.png"
 
 import Map3 from "./Map3";
+import Mapafijo from "../components/mapafijo";
 
 const EditarUser = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [MostrarModal, setMostrarModal] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
+  const [MostrarModal2, setMostrarModal2] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(1); 
+  const [selectedlat, setSelectedlat] = useState(null);
+  const [selectedlog, setSelectedlog] = useState(null);
 
   const [locationData, setLocationData] = useState({
-    latitud1: 0,
-    longitud1: 0,
-    latitud2: 0,
-    longitud2: 0,
-    latitud3: 0,
-    longitud3: 0,
+    latitud1: null,
+    longitud1: null,
+    latitud2: null,
+    longitud2: null,
+    latitud3: null,
+    longitud3: null,
   });
 
   const handleLocationSelect = (location) => {
@@ -50,6 +57,11 @@ const EditarUser = () => {
   const handleEditClick = () => {
     setIsEditing(true);
   };
+  const vermapa = (lat,log) => {
+    setMostrarModal2(true);
+    setSelectedlat(lat);
+    setSelectedlog(log);
+  }
 
   const HacerClick = (location) => {
     setCurrentLocation(location);
@@ -58,6 +70,9 @@ const EditarUser = () => {
 
   const CerrarModal = () => {
     setMostrarModal(false);
+  };
+  const CerrarModal2 = () => {
+    setMostrarModal2(false);
   };
 
   const [userData, setUserData] = useState(null);
@@ -99,16 +114,28 @@ const EditarUser = () => {
         return;
       }
       // Desestructurar propiedades de values solo si values está definido
-      const { telefono, snombre, capellido, ruc_cedula, razon_social,  } = values;
+      const { telefono, snombre, capellido, ruc_cedula, razon_social, } = values;
 
+      console.log(locationData.latitud2);
+      console.log(locationData.longitud2);
       const formData = new FormData();
       formData.append("ctelefono", telefono);
       formData.append("snombre", snombre);
       formData.append("capellido", capellido);
       formData.append("ruc_cedula", ruc_cedula);
       formData.append("crazon_social", razon_social);
-      formData.append('latitud', locationData.latitud1);
-      formData.append('longitud', locationData.longitud1);
+      if(locationData.latitud1!=0 && locationData.longitud1!=0){
+        formData.append('latitud1', locationData.latitud1);
+        formData.append('longitud1', locationData.longitud1);
+      }
+      if(locationData.latitud2!=0 && locationData.longitud2!=0){
+        formData.append('latitud2', locationData.latitud2);
+        formData.append('longitud2', locationData.longitud2);
+      }
+      if(locationData.latitud3!=0 && locationData.longitud3!=0){
+        formData.append('latitud3', locationData.latitud3);
+        formData.append('longitud3', locationData.longitud3);
+      }
       const response = await fetch(
         `http://127.0.0.1:8000/Login/editar_usuario/${id_cuenta}/`,
         {
@@ -130,7 +157,7 @@ const EditarUser = () => {
       message.error("Error en la solicitud de edición de aviso");
     }
   };
-  
+
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -146,7 +173,10 @@ const EditarUser = () => {
     <>
       <Container>
         <Row>
-          <Col md={4} style={styles.formularioContainer}>
+
+          <Col md={4} className="formularioContainer">
+            <div style={{ height: '8%' }}>
+            </div>
             <div
               style={{
                 overflow: "hidden",
@@ -181,6 +211,7 @@ const EditarUser = () => {
                 <div
                   style={{
                     position: "absolute",
+                    borderRadius: "50%",
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
@@ -189,6 +220,7 @@ const EditarUser = () => {
                   <FontAwesomeIcon
                     icon={faUser}
                     size="5x"
+                    style={{ color: 'white' }}
                     onMouseOver={(e) =>
                       (e.currentTarget.style.transform = "scale(1.1)")
                     }
@@ -200,7 +232,7 @@ const EditarUser = () => {
               )}
             </div>
             <div style={{ textAlign: "center" }}>
-              <span>Editar foto de perfil</span>
+              <span style={{ color: "white" }}> {userData?.nombre_usuario || ""}</span>
             </div>
             <div style={{ textAlign: "center", marginTop: "130px" }}>
               <Button
@@ -246,20 +278,20 @@ const EditarUser = () => {
                 <h5
                   style={{
                     textAlign: "center",
-                    border: "1px solid #fcaf6f",
                     borderRadius: "10px",
-                    backgroundColor: "#fcaf6f", // Agregar color de fondo gris
+                    backgroundColor: "black", // Agregar color de fondo gris
+                    color: "white",
                     padding: "10px", // Añadir relleno para mejorar la apariencia
                   }}
                 >
-                  Datos generales
+                  Datos de cuenta
                 </h5>
 
                 <Form>
                   <Form.Group>
                     <Row>
                       <Col>
-                        <Form.Label>Nombre</Form.Label>
+                        <Form.Label>Nombres:</Form.Label>
                         <Form.Control
                           value={userData?.snombre || ""}
                           readOnly={!isEditing}
@@ -273,7 +305,7 @@ const EditarUser = () => {
                         />
                       </Col>
                       <Col>
-                        <Form.Label>Apellido</Form.Label>
+                        <Form.Label>Apellidos:</Form.Label>
                         <Form.Control
                           value={userData?.capellido || ""}
                           readOnly={!isEditing}
@@ -289,7 +321,7 @@ const EditarUser = () => {
                     </Row>
                     <Row>
                       <Col>
-                        <Form.Label>telefono</Form.Label>
+                        <Form.Label>Telefono:</Form.Label>
                         <Form.Control
                           value={userData?.telefono || ""}
                           readOnly={!isEditing}
@@ -306,21 +338,32 @@ const EditarUser = () => {
                   </Form.Group>
                   <Form.Group>
                     <Row>
-                      <Form.Label>Direccion 1</Form.Label>
-
-                      <Col lg={10}>
+                      <Col>
+                        <Form.Label>Razon social:</Form.Label>
                         <Form.Control
-                          as="textarea"
-                          rows={3}
-                          value={`Latitud: ${locationData.latitud1}, 
-Longitud: ${locationData.longitud1}`}
+                          value={userData?.razon_social || ""}
+                          readOnly={!isEditing}
+                          onChange={(e) =>
+                            isEditing &&
+                            setUserData({
+                              ...userData,
+                              razon_social: e.target.value,
+                            })
+                          }
                         />
                       </Col>
-                      <Col lg={1}>
-                        <FontAwesomeIcon
-                          onClick={() => HacerClick(1)}
-                          icon={faMapMarkerAlt}
-                          size="2x"
+                      <Col>
+                        <Form.Label>Identificacion:</Form.Label>
+                        <Form.Control
+                          value={userData?.ruc_cedula || ""}
+                          readOnly={!isEditing}
+                          onChange={(e) =>
+                            isEditing &&
+                            setUserData({
+                              ...userData,
+                              ruc_cedula: e.target.value,
+                            })
+                          }
                         />
                       </Col>
                     </Row>
@@ -336,9 +379,9 @@ Longitud: ${locationData.longitud1}`}
                             capellido: userData.capellido,
                             ruc_cedula: userData.ruc_cedula,
                             razon_social: userData.razon_social,
-                           
+
                           });
-                          
+
                         }}
                       >
                         Guardar Cambios
@@ -352,82 +395,167 @@ Longitud: ${locationData.longitud1}`}
                 <h5
                   style={{
                     textAlign: "center",
-                    border: "1px solid #fcaf6f",
                     borderRadius: "10px",
-                    backgroundColor: "#fcaf6f",
-                    padding: "10px",
+                    backgroundColor: "black", // Agregar color de fondo gris
+                    color: "white",
+                    padding: "10px", // Añadir relleno para mejorar la apariencia
                   }}
                 >
-                  Datos opcionales
+                  Mis ubicaciones
                 </h5>
                 <Form>
                   <Form.Group>
-                    <Row>
-                      <Col>
-                        <Form.Label>Razon social</Form.Label>
-                        <Form.Control
-                          value={userData?.razon_social || ""}
-                          readOnly={!isEditing}
-                          onChange={(e) =>
-                            isEditing &&
-                            setUserData({
-                              ...userData,
-                              razon_social: e.target.value,
-                            })
-                          }
-                        />
-                      </Col>
-                      <Col>
-                        <Form.Label>Identificacion</Form.Label>
-                        <Form.Control
-                          value={userData?.ruc_cedula || ""}
-                          readOnly={!isEditing}
-                          onChange={(e) =>
-                            isEditing &&
-                            setUserData({
-                              ...userData,
-                              ruc_cedula: e.target.value,
-                            })
-                          }
-                        />
-                      </Col>
-                    </Row>
+                    <Form.Group>
+                      <div style={{
+                        border: "1px solid ",
+                        backgroundColor: 'white', // Ajusta el color de fondo según tu preferencia
+                        borderRadius: '10px', // Ajusta el radio de borde según tu preferencia
+                        overflow: 'hidden',
+                        // Para asegurarte de que las esquinas redondeadas se apliquen correctamente
+                      }}>
+                        <Row>
+                          <Col md={3} style={{ borderRight: "1px solid " }}>
+                            <img src={imghogar} style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}></img>
+                          </Col>
+                          <Col md={8}>
+                            {locationData.latitud1 && (
+                              <Row>
+                                <Col md={6}>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
+                                    onClick={() => vermapa(locationData.latitud1,locationData.longitud1)}
+                                  >
+                                    Ver Ubicación
+                                  </Button>
+                                </Col>
+                                <Col md={6}>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
+                                    onClick={() => HacerClick(1)}
+                                  >
+                                    Cambiar Ubicación
+                                  </Button>
+                                </Col>
+                              </Row>
+                            ) ||
+                              !locationData.latitud1 && (
+                                <>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}
+                                    onClick={() => HacerClick(1)}
+                                  >
+                                    Escoger ubicación
+                                  </Button>
+                                </>
+                              )}
+                          </Col>
+                        </Row>
+                      </div>
+
+                      
+                      <div style={{
+                        border: "1px solid ",
+                        backgroundColor: 'white', // Ajusta el color de fondo según tu preferencia
+                        borderRadius: '10px', // Ajusta el radio de borde según tu preferencia
+                        overflow: 'hidden',
+                        // Para asegurarte de que las esquinas redondeadas se apliquen correctamente
+                      }}>
+                        <Row>
+                          <Col md={3} style={{ borderRight: "1px solid " }}>
+                            <img src={imgtrabajo} style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}></img>
+                          </Col>
+                          <Col md={8}>
+                            {locationData.latitud2 && (
+                              <Row>
+                                <Col md={6}>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
+                                    onClick={() => vermapa(locationData.latitud2,locationData.longitud2)}
+                                  >
+                                    Ver Ubicación
+                                  </Button>
+                                </Col>
+                                <Col md={6}>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
+                                    onClick={() => HacerClick(2)}
+                                  >
+                                    Cambiar Ubicación
+                                  </Button>
+                                </Col>
+                              </Row>
+                            ) ||
+                              !locationData.latitud2 && (
+                                <>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}
+                                    onClick={() => HacerClick(2)}
+                                  >
+                                    Escoger ubicación
+                                  </Button>
+                                </>
+                              )}
+                          </Col>
+                        </Row>
+                      </div>
+                    </Form.Group>
                   </Form.Group>
                   <Form.Group>
-                    <Row>
-                      <Form.Label>Direccion 2</Form.Label>
-                      <Col lg={10}>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          value={`Latitud: ${locationData.latitud2}, 
-Longitud: ${locationData.longitud2}`}
-                        />
-                      </Col>
-                      <Col lg={1}>
-                        <FontAwesomeIcon
-                          onClick={() => HacerClick(2)}
-                          icon={faMapMarkerAlt}
-                          size="2x"
-                        />
-                      </Col>
-                      <Form.Label>Direccion 3</Form.Label>
-                      <Col lg={10}>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          value={`Latitud: ${locationData.latitud3}, 
-Longitud: ${locationData.longitud3}`}
-                        />
-                      </Col>
-                      <Col lg={1}>
-                        <FontAwesomeIcon
-                          onClick={() => HacerClick(3)}
-                          icon={faMapMarkerAlt}
-                          size="2x"
-                        />
-                      </Col>
-                    </Row>
+                  <div style={{
+                        border: "1px solid ",
+                        backgroundColor: 'white', // Ajusta el color de fondo según tu preferencia
+                        borderRadius: '10px', // Ajusta el radio de borde según tu preferencia
+                        overflow: 'hidden',
+                        // Para asegurarte de que las esquinas redondeadas se apliquen correctamente
+                      }}>
+                        <Row>
+                          <Col md={3} style={{ borderRight: "1px solid " }}>
+                            <img src={imghogar} style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}></img>
+                          </Col>
+                          <Col md={8}>
+                            {locationData.latitud3 && (
+                              <Row>
+                                <Col md={6}>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
+                                    onClick={() => vermapa(locationData.latitud3,locationData.longitud3)}
+                                  >
+                                    Ver Ubicación
+                                  </Button>
+                                </Col>
+                                <Col md={6}>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
+                                    onClick={() => HacerClick(3)}
+                                  >
+                                    Cambiar Ubicación
+                                  </Button>
+                                </Col>
+                              </Row>
+                            ) ||
+                              !locationData.latitud3 && (
+                                <>
+                                  <Button
+                                    variant="primary"
+                                    style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}
+                                    onClick={() => HacerClick(3)}
+                                  >
+                                    Escoger ubicación
+                                  </Button>
+                                </>
+                              )}
+                          </Col>
+                        </Row>
+                      </div>
+                    
                   </Form.Group>
                 </Form>
               </Col>
@@ -478,7 +606,15 @@ Longitud: ${locationData.longitud3}`}
           </Col>
         </Row>
       </Container>
-
+      <Modal show={MostrarModal2} onHide={CerrarModal2} size="lg">
+        <Modal.Header
+          closeButton
+          style={{ borderBottom: "none" }}
+        ></Modal.Header>
+        <Modal.Body>
+          <Mapafijo latitud={selectedlat} longitud= {selectedlog} idm={1} ></Mapafijo>
+        </Modal.Body>
+      </Modal>
       {isEditing && (
         <Modal show={MostrarModal} onHide={CerrarModal} size="lg">
           <Modal.Header
@@ -498,14 +634,6 @@ Longitud: ${locationData.longitud3}`}
 };
 
 const styles = {
-  formularioContainer: {
-    border: "1px solid rgba(196, 208, 255, 0.74)",
-    borderRadius: "50px",
-    padding: "20px",
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "rgba(196, 208, 255, 0.74)",
-    marginTop: "30px",
-  },
   centerContainer: {},
   heading: {
     textAlign: "center",
