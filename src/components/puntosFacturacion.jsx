@@ -53,6 +53,26 @@ const PuntosFacturacion = () => {
       formData.append("id_mesero", values.id_mesero);
       formData.append("sestado", values.sestado === "Activo" ? "1" : "0");
 
+      // Validar si el mesero ya está asignado a un punto de facturación
+      const validationResponse = await fetch("http://127.0.0.1:8000/CodigoFactura/validar_punto_facturacion/", {
+        method: "POST",
+        body: JSON.stringify({ id_mesero: values.id_mesero }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!validationResponse.ok) {
+        throw new Error("Error al validar el punto de facturación");
+      }
+
+      const validationData = await validationResponse.json();
+
+      if (validationData.mensaje === "1") {
+        throw new Error("Mesero ya asignado a un punto de facturación");
+      }
+
+      // Si la validación es exitosa, continuar con la creación del punto de facturación
       const response = await fetch(
         `http://127.0.0.1:8000/CodigoFactura/crear_punto/1/`,
         {
@@ -60,6 +80,7 @@ const PuntosFacturacion = () => {
           body: formData,
         }
       );
+      
       if (response.ok) {
         const data = await response.json();
         console.log("Response:", data);
@@ -70,6 +91,7 @@ const PuntosFacturacion = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+      message.error(error.message);
     }
   };
 
