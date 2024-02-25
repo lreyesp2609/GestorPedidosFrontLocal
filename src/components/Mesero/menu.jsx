@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { UserOutlined } from "@ant-design/icons";
-import { Image, Card, Badge, Tooltip, Divider, Modal, Table } from "antd";
+import {
+  Image,
+  Card,
+  Badge,
+  Tooltip,
+  Divider,
+  Modal,
+  Table,
+  notification,
+} from "antd";
 import {
   Container,
   Row,
@@ -14,15 +23,45 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import imgtomarpedido from "./res/imgtomarpedido.png";
-import imgfacturas from "./res/imgfacturas.png"
+import imgfacturas from "./res/imgfacturas.png";
+import validando from "./res/validando.png";
 
 import RealizarPedidoMesero from "./pedidomesa";
 import FacturasMesero from "./facturasmesero";
 import RealizarPedidoLocal from "./pedidoslocal";
+import ValidarFacturas from "./validarfacturas";
 
 const MenuM = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [pedidos, setPedidos] = useState([]);
+  const [hasPermission, setHasPermission] = useState(false);
+  const [permissionNotification, setPermissionNotification] = useState({
+    message: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    validarPermisos();
+  }, []);
+
+  const validarPermisos = () => {
+    const idCuenta = localStorage.getItem("id_cuenta");
+    fetch(
+      `http://127.0.0.1:8000/CodigoFactura/validar_permisos_factura/${idCuenta}/`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setHasPermission(false);
+        } else {
+          setHasPermission(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al validar permisos:", error);
+        setHasPermission(false);
+      });
+  };
 
   const showModal = () => {
     setModalVisible(true);
@@ -33,8 +72,31 @@ const MenuM = () => {
   };
   const { Meta } = Card;
   const tooltipTitle = "Realiza pedidos a las mesas";
-  const tooltipTitle1 = "Gestiona tus facturas";
+  const tooltipTitle1 = "Ver tus facturas";
   const tooltipTitle2 = "Gestiona tus pedidos";
+
+  const [userData, setUserData] = useState(null);
+  const id_cuenta = localStorage.getItem("id_cuenta");
+
+  const ObtenerUsuario = async () => {
+    if (id_cuenta) {
+      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUserData(data.mesero);
+          console.log("Datos del usuario:", data.mesero); // Imprimir los datos del usuario por consola
+        })
+        .catch((error) =>
+          console.error("Error al obtener datos del usuario:", error)
+        );
+    } else {
+      console.error("Nombre de usuario no encontrado en localStorage");
+    }
+  };
+
+  useEffect(() => {
+    ObtenerUsuario();
+  }, []);
 
   const columns = [
     {
@@ -45,7 +107,7 @@ const MenuM = () => {
     {
       title: "Precio",
       dataIndex: "precio",
-      key: "precio"
+      key: "precio",
     },
     {
       title: "Mesa Asociada",
@@ -53,9 +115,9 @@ const MenuM = () => {
       key: "mesa_asociada",
       render: (mesa_asociada) => (
         <Badge
-        color={mesa_asociada ? '#F08C1E' : '#50B496'}
-        count={mesa_asociada ? mesa_asociada.observacion : 'Local'}
-      />
+          color={mesa_asociada ? "#F08C1E" : "#50B496"}
+          count={mesa_asociada ? mesa_asociada.observacion : "Local"}
+        />
       ),
     },
     {
@@ -64,9 +126,9 @@ const MenuM = () => {
       key: "estado_del_pedido",
       render: (estado_del_pedido) => (
         <Badge
-          count={estado_del_pedido === 'O' ? 'Ordenado' : 'Preparado'}
+          count={estado_del_pedido === "O" ? "Ordenado" : "Preparado"}
           style={{
-            backgroundColor: estado_del_pedido === 'O' ? '#f5222d' : '#52c41a',
+            backgroundColor: estado_del_pedido === "O" ? "#f5222d" : "#52c41a",
           }}
         />
       ),
@@ -77,7 +139,7 @@ const MenuM = () => {
       key: "Accion",
       render: (estado_del_pedido, record) => {
         console.log(record.estado_del_pedido);
-        return estado_del_pedido === 'P' ? (
+        return estado_del_pedido === "P" ? (
           <Button onClick={() => handleConfirmarPedido(record.id_pedido)}>
             Confirmar Pedido
           </Button>
@@ -99,17 +161,31 @@ const MenuM = () => {
 
   const listpedidos = () => {
     fetch("http://127.0.0.1:8000/Mesero/listpedidos/")
-    .then((response) => response.json())
-    .then((data) => {
-      setPedidos(data.pedidos);
-      console.log(data.pedidos);
-    })
-    .catch((error) => console.error("Error fetching pedidos:", error));
-  }
+      .then((response) => response.json())
+      .then((data) => {
+        setPedidos(data.pedidos);
+        console.log(data.pedidos);
+      })
+      .catch((error) => console.error("Error fetching pedidos:", error));
+  };
 
   const handleCardClick = (page) => {
-    console.log("Clicked on:", page);
-    setCurrentPage(page);
+    if (page === "validarfacturas" && !hasPermission) {
+      // Si el usuario no tiene permiso para acceder a "Validar Facturas",
+      // mostramos la notificación de acceso denegado
+      setPermissionNotification({
+        message: "Acceso denegado",
+        description: "No tienes permiso para acceder a este módulo.",
+      });
+    } else {
+      // Si el usuario tiene permiso o el módulo no es "Validar Facturas",
+      // cambiamos la página normalmente y ocultamos la notificación
+      setCurrentPage(page);
+      setPermissionNotification({
+        message: "",
+        description: "",
+      });
+    }
   };
 
   const handleAtrasClick = (page) => {
@@ -138,18 +214,25 @@ const MenuM = () => {
   const handleConfirmarPedido = (idPedido) => {
     // Lógica para confirmar el pedido
     const formData = new FormData();
-    formData.append('id_pedido', idPedido);
-  
-    fetch('http://127.0.0.1:8000/Mesero/confirmarpedido/', {
-      method: 'POST',
+    formData.append("id_pedido", idPedido);
+
+    fetch("http://127.0.0.1:8000/Mesero/confirmarpedido/", {
+      method: "POST",
       body: formData,
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
         listpedidos();
       })
-      .catch(error => console.error('Error confirmando el pedido:', error));
+      .catch((error) => console.error("Error confirmando el pedido:", error));
+  };
+
+  const showNotification = (message, description) => {
+    notification.error({
+      message: message,
+      description: description,
+    });
   };
 
   return (
@@ -209,8 +292,66 @@ const MenuM = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+  <Badge.Ribbon text="Validar Facturas">
+    <Tooltip title={tooltipTitle2}>
+      {hasPermission ? (
+        <Card
+          hoverable
+          style={cardStyle}
+          cover={
+            <Image
+              alt="Validar Facturas"
+              src={validando}
+              style={{
+                padding: "5%",
+                height: "150px",
+                width: "auto",
+              }}
+              preview={false}
+            />
+          }
+          className="text-center"
+          onClick={() => handleCardClick("validarfacturas")}
+        >
+          <Meta title={tooltipTitle2}></Meta>
+        </Card>
+      ) : (
+        <div
+          style={{
+            ...cardStyle,
+            cursor: "not-allowed",
+            backgroundColor: "#E8E8E8",
+          }}
+        >
+          <Image
+            alt="Validar Facturas"
+            src={validando}
+            style={{
+              padding: "5%",
+              height: "150px",
+              width: "auto",
+            }}
+            preview={false}
+          />
+          <Meta title={tooltipTitle2}></Meta>
+          <p style={{ textAlign: "center", color: "red" }}>
+            No tienes acceso a este módulo
+          </p>
+        </div>
+      )}
+    </Tooltip>
+  </Badge.Ribbon>
+</Col>
+
             <Col md={6}>
-              <div style={{ border: "1px solid #A4A4A4", borderRadius: '5px', minHeight: '100%' }}>
+              <div
+                style={{
+                  border: "1px solid #A4A4A4",
+                  borderRadius: "5px",
+                  minHeight: "100%",
+                }}
+              >
                 <Divider>Pedidos</Divider>
                 <Card>
                   <p>Pedidos actuales:</p>
@@ -219,15 +360,14 @@ const MenuM = () => {
                 </Card>
                 <Divider>Pedidos</Divider>
                 <div className="table-responsive">
-                <Table
-                  columns={columns}
-                  dataSource={pedidos}
-                  rowKey="id_pedido"
-                />
+                  <Table
+                    columns={columns}
+                    dataSource={pedidos}
+                    rowKey="id_pedido"
+                  />
                 </div>
               </div>
             </Col>
-
           </>
         )}
         {currentPage != "homemesero" && (
@@ -281,13 +421,36 @@ const MenuM = () => {
             </Row>
           </>
         )}
+        {currentPage === "validarfacturas" && (
+          <>
+            {/* Renderizar el componente ValidarFacturas solo si el usuario tiene permiso */}
+            {hasPermission && (
+              <Row>
+                <Divider>Valida tus facturas</Divider>
+                <Col md={12}>
+                  <ValidarFacturas />
+                </Col>
+              </Row>
+            )}
+            {/* Mostrar un mensaje si no tiene permiso y se hizo clic en el módulo */}
+            {permissionNotification.message && (
+              <Row>
+                <Col md={12}>
+                  {showNotification(
+                    permissionNotification.message,
+                    permissionNotification.description
+                  )}
+                </Col>
+              </Row>
+            )}
+          </>
+        )}
       </Row>
 
       <RealizarPedidoLocal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
-
     </>
   );
 };
