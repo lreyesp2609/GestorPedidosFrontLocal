@@ -14,7 +14,7 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import imgempresa from "./res/imgempresa.png";
-import imgValidar from "./res/validar.png"
+import imgValidar from "./res/validar.png";
 import imgempleado from "./res/imgempleado.png";
 import imgproductos from "./res/imgproductos.png";
 import imgaviso from "./res/imgaviso.png";
@@ -37,7 +37,7 @@ import Mesas from "./editarmesa.jsx";
 import EditarBodegaForm from "./editarbodega.jsx";
 import Proveedores from "./proveedores.jsx";
 import Inventario from "./editarinventario.jsx";
-import Pagos from "./res/pagosempleado.png"
+import Pagos from "./res/pagosempleado.png";
 import CrearRecompensaProductoForm from "./CrearRecompensaProducto.jsx";
 import Recompensa from "./recompensa.jsx";
 import EditarRecompensaProductoForm from "./EditarRecompensaProducto.jsx";
@@ -48,10 +48,12 @@ import EditarReservacionesForm from "./EditarReservacion.jsx";
 import PagosE from "./pagose.jsx";
 import MovimientosInventario from "./ReversionMovimientosInventario.jsx";
 import SRI from "./SRI.jsx";
-import VerReversionesPedidos from "./ReversionesPedidos.jsx"
+import VerReversionesPedidos from "./ReversionesPedidos.jsx";
 import ReportManagement from "./reporte.jsx";
 import ValidarPedido from "../Clientes/Validarpedido.jsx";
 import reportes from "./res/reportes.png";
+import maquina from "./res/maquina.png";
+import PuntosFacturacion from "./puntosFacturacion.jsx";
 
 const MenuG = () => {
   const { Meta } = Card;
@@ -73,6 +75,7 @@ const MenuG = () => {
   const tooltipTitle16 = "Gestiona los codigos de tus facturas";
   const tooltipTitle17 = "Gestión de reportes";
   const tooltipTitle18 = "Validar pagos de pedidos";
+  const tooltipTitle19 = "Gestiona tus puntos de facturación";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -101,9 +104,8 @@ const MenuG = () => {
     whiteSpace: "nowrap",
   };
 
-  
   const openNewWindow = () => {
-    window.open('/cocina', '_blank'); 
+    window.open("/cocina", "_blank");
   };
 
   return (
@@ -553,6 +555,32 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Puntos de facturación" color="#162703">
+                <Tooltip title={tooltipTitle19}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Puntos de facturación"
+                        src={maquina}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("puntosfactura")}
+                  >
+                    <Meta title={tooltipTitle19}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -713,7 +741,7 @@ const MenuG = () => {
             <Divider>Reservaciones</Divider>
             <Row>
               <Col md={12}>
-                <EditarReservacionesForm/>
+                <EditarReservacionesForm />
               </Col>
             </Row>
           </>
@@ -723,7 +751,7 @@ const MenuG = () => {
             <Divider>Pagos</Divider>
             <Row>
               <Col md={12}>
-                <PagosE/>
+                <PagosE />
               </Col>
             </Row>
           </>
@@ -733,7 +761,7 @@ const MenuG = () => {
             <Divider>Reversiones</Divider>
             <Row>
               <Col md={12}>
-                <VerReversionesPedidos/>
+                <VerReversionesPedidos />
               </Col>
             </Row>
           </>
@@ -743,17 +771,17 @@ const MenuG = () => {
             <Divider>SRI</Divider>
             <Row>
               <Col md={12}>
-                <SRI/>
+                <SRI />
               </Col>
             </Row>
           </>
         )}
-         {currentPage == "reporte" && (
+        {currentPage == "reporte" && (
           <>
             <Divider>Reportes</Divider>
             <Row>
               <Col md={12}>
-                <ReportManagement/>
+                <ReportManagement />
               </Col>
             </Row>
           </>
@@ -763,7 +791,17 @@ const MenuG = () => {
             <Divider>Validar Pedidos</Divider>
             <Row>
               <Col md={12}>
-                <ValidarPedido/>
+                <ValidarPedido />
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage == "puntosfactura" && (
+          <>
+            <Divider>Puntos de facturación</Divider>
+            <Row>
+              <Col md={12}>
+                <PuntosFacturacion />
               </Col>
             </Row>
           </>
