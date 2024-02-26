@@ -25,7 +25,7 @@ const VerReversionesPedidos = () => {
                 return response.json();
             })
             .then(data => {
-                const movimientosReversion = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'R');
+                const movimientosReversion = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'R' || movimiento.tipo_movimiento === 'P' && movimiento.sestado === '0');
                 setMovimientos(movimientosReversion);
                 setTotal(movimientosReversion.length);
             })
@@ -35,6 +35,14 @@ const VerReversionesPedidos = () => {
     }, []);
 
     const columns = [
+        {
+            title: 'Tipo de Movimiento',
+            dataIndex: 'tipo_movimiento',
+            key: 'tipo_movimiento',
+            render: (text) => (
+                <span>{text === 'P' ? 'Original' : text === 'R' ? 'Reversión' : ''}</span>
+            ),
+        },
         {
             title: 'ID Movimiento',
             dataIndex: 'id_movimiento',
@@ -75,8 +83,8 @@ const VerReversionesPedidos = () => {
     };
 
     const Changueopcion = (value) => {
-    setSelectedOpcion(value);
-  }
+        setSelectedOpcion(value);
+    }
 
     return (
         <div>
@@ -93,7 +101,7 @@ const VerReversionesPedidos = () => {
                                     </Tooltip>
                                 ),
                                 value: 'ReversionPedido',
-                                
+
                             },
                             {
                                 label: (
@@ -102,10 +110,10 @@ const VerReversionesPedidos = () => {
                                             <Avatar shape="square" src={reversionproveedor} size="large" />
                                         </div>
                                     </Tooltip>
-                                    
+
                                 ),
                                 value: 'Mesas',
-                                
+
                             },
                             {
                                 label: (
@@ -114,10 +122,10 @@ const VerReversionesPedidos = () => {
                                             <Avatar shape="square" src={reversionfactura} size="large" />
                                         </div>
                                     </Tooltip>
-                                    
+
                                 ),
                                 value: 'Mesas',
-                                
+
                             },
                             {
                                 label: (
@@ -126,19 +134,19 @@ const VerReversionesPedidos = () => {
                                             <Avatar shape="square" src={reversionpago} size="large" />
                                         </div>
                                     </Tooltip>
-                                    
+
                                 ),
                                 value: 'Mesas',
-                                
+
                             }
-                            
+
                         ]}
                         value={selectedOpcion}
                         onChange={Changueopcion}
-                        
+
                     />
                 </Col>
-                
+
                 {selectedOpcion === 'ReversionPedido' && (
                     <>
                         <Divider>Control mesas</Divider>
@@ -167,18 +175,18 @@ const VerReversionesPedidos = () => {
                                     </ul>
                                 </Modal>
                             </Row>
-                            
+
                         </Col>
                     </>
                 )}
                 {selectedOpcion === 'Categorias' && (
-                                <>
-                                    <Divider>Control categorías</Divider>
-                                    <Col md={12}>
-                                        <EditarRecompensaComboForm/>
-                                    </Col>
-                                </>
-                            )}
+                    <>
+                        <Divider>Control categorías</Divider>
+                        <Col md={12}>
+                            <EditarRecompensaComboForm />
+                        </Col>
+                    </>
+                )}
             </Row>
         </div>
     );
