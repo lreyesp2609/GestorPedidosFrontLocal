@@ -161,7 +161,7 @@ const NavBar = () => {
         </Row>
         <Navbar expand="lg" style={navbarStyle}>
           <Container>
-            <Navbar.Brand className="d-flex align-items-center" href="/">
+            <Navbar.Brand className="d-flex align-items-center" href="/" onClick={localStorage.removeItem("ComponenteSeleccionado")}>
               <img
                 src={`data:image/png;base64,${logoEmpresa}`}
                 alt="Logo"

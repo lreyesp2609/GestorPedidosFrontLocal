@@ -5,6 +5,7 @@ import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import { notification } from 'antd';
 import { Link } from 'react-router-dom';
 import Map2 from '../Clientes/Map2';
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -59,6 +60,7 @@ const RegistroForm = () => {
           message: 'Registro exitoso',
           description: '¡usted se ha registrado con exito!',
         });
+        iniciar(values);
       } else {
         const errorMessage = data && data.error ? data.error : 'Error desconocido';
         showError(errorMessage);
@@ -78,6 +80,71 @@ const RegistroForm = () => {
     message.error({
       content: errorMessage,
     });
+  };
+
+  const iniciar = async (values) => {
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/Login/iniciar_sesion/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombreusuario: values.username,
+            contrasenia: values.password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log(data); // Verifica si el token está presente en la respuesta
+
+      if (response.ok) {
+        const { token, nombreusuario, id_cuenta } = data;
+        console.log("Token almacenado:", token);
+        console.log("Nombre de usuario almacenado:", nombreusuario);
+        console.log("ID de cuenta almacenado:", id_cuenta);
+
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", nombreusuario);
+        localStorage.setItem("id_cuenta", id_cuenta);
+        setTimeout(() => {
+          localStorage.removeItem("token");
+          console.log("Token eliminado después de 24 horas.");
+        }, 24 * 60 * 60 * 1000);
+        const rolResponse = await fetch("http://127.0.0.1:8000/Login/rol/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: token, // Utiliza el token recién obtenido
+          }),
+        });
+
+        if (rolResponse.ok) {
+          const rolData = await rolResponse.json();
+          const rol = rolData.rol;
+          console.log('Llegamos acá?')
+          if (rol === "C") {
+            console.log("Redirigiendo a /");
+            localStorage.setItem("Logeado", JSON.stringify(true));
+            window.location.href = "/";
+          }
+        } else {
+          console.log("Error al obtener el rol");
+        }
+      } else {
+
+        console.error("Error en inicio de sesión:", data.mensaje);
+        message.error(data.mensaje);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de inicio de sesión:", error);
+    }
   };
 
   return (
@@ -164,6 +231,27 @@ const RegistroForm = () => {
         >
           <Input placeholder="Teléfono" />
         </Form.Item>
+        <Form.Item
+              label="Nombre"
+              name="sname"
+              rules={[
+                { required: true, message: 'Ingresa tu nombre' },
+                { max: 300, message: 'Máximo 300 caracteres' },
+              ]}
+            >
+              <Input placeholder="Nombre" />
+            </Form.Item>
+
+            <Form.Item
+              label="Apellido"
+              name="lastname"
+              rules={[
+                { required: true, message: 'Ingresa tu apellido' },
+                { max: 300, message: 'Máximo 300 caracteres' },
+              ]}
+            >
+              <Input placeholder="Apellido" />
+            </Form.Item>
 
         <Form.Item
           label="Contraseña"
@@ -215,26 +303,6 @@ const RegistroForm = () => {
               ]}
             >
               <Input placeholder="Razón Social" />
-            </Form.Item>
-
-            <Form.Item
-              label="Nombre"
-              name="sname"
-              rules={[
-                { max: 300, message: 'Máximo 300 caracteres' },
-              ]}
-            >
-              <Input placeholder="Nombre" />
-            </Form.Item>
-
-            <Form.Item
-              label="Apellido"
-              name="lastname"
-              rules={[
-                { max: 300, message: 'Máximo 300 caracteres' },
-              ]}
-            >
-              <Input placeholder="Apellido" />
             </Form.Item>
 
             <Form.Item
