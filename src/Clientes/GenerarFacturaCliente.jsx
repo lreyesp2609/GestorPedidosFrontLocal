@@ -3,8 +3,8 @@ import { jsPDF } from "jspdf";
 const GenerarFacturaPDF = ({
   empresaInfo,
   logoEmpresa,
-  clienteData,
   facturaData,
+  clienteData,
   productos,
   combos,
   obtenerTipoDePedido,
@@ -17,27 +17,40 @@ const GenerarFacturaPDF = ({
     });
 
     // Definir diseño para el rollo de factura
-    const designWidth = 210; // Ancho del diseño
-    const designHeight = 297; // Alto del diseño
     const marginLeft = 10; // Margen izquierdo
-    const marginTop = 10; // Margen superior
+    const marginTop = 7; // Margen superior
 
     // Función para agregar un nuevo elemento de factura al documento
     const agregarElementoFactura = (texto, x, y) => {
       doc.text(texto, x, y);
     };
 
+    // Definir coordenadas y dimensiones de las franjas
+    const topRectY = 0; // Coordenada Y de la franja superior
+    const bottomRectY = doc.internal.pageSize.getHeight() - 20; // Coordenada Y de la franja inferior
+    const rectWidths = doc.internal.pageSize.getWidth(); // Ancho de la franja es igual al ancho de la página
+    const rectHeights = 30; // Altura de las franjas
+
+    doc.setFillColor(194, 18, 18); // Rojo: RGB(255, 0, 0)
+
+    // Dibujar franja superior
+    doc.rect(0, topRectY, rectWidths, rectHeights, "F");
+
+    // Dibujar franja inferior
+    doc.rect(0, bottomRectY, rectWidths, rectHeights, "F");
+
     // Agregar logo y nombre de la empresa
     if (empresaInfo && empresaInfo.enombre && logoEmpresa) {
       const logoWidth = 30; // Ajusta este valor para cambiar el ancho del logo
       const logoHeight = 30; // Ajusta este valor para cambiar la altura del logo
-      const logoX = 7; // Nueva coordenada X para el logo (ajusta según sea necesario)
-      const logoY = marginTop + logoHeight / 2;
+      const logoX = 3; // Nueva coordenada X para el logo (ajusta según sea necesario)
+      const newMarginTop = 2; // Nuevo valor para el margen superior
+      const logoY = newMarginTop + logoHeight / 2; // Nueva coordenada Y para el logo
       doc.addImage(
         logoEmpresa,
         "JPEG",
         logoX,
-        marginTop,
+        newMarginTop, // Ajustar el margen superior para el logo
         logoWidth,
         logoHeight
       );
@@ -46,45 +59,18 @@ const GenerarFacturaPDF = ({
       const fontSizeLogoEmpresa = 20; // Tamaño de fuente para el logo y el nombre de la empresa
       doc.setFontSize(fontSizeLogoEmpresa);
 
-      // Dividir el nombre de la empresa en dos partes
-      const nombreEmpresa = empresaInfo.enombre.split(" ");
-      const nombreEmpresaParte1 = nombreEmpresa
-        .slice(0, Math.ceil(nombreEmpresa.length / 2))
-        .join(" ");
-      const nombreEmpresaParte2 = nombreEmpresa
-        .slice(Math.ceil(nombreEmpresa.length / 2))
-        .join(" ");
-
-      // Calcular la posición para centrar verticalmente las dos líneas
-      const totalLineHeight = 12; // Altura total del texto en dos líneas
+      // Calcular la posición para centrar verticalmente el nombre de la empresa
+      const totalLineHeight = 12; // Altura total del texto en una línea
       const startY = logoY - totalLineHeight / 2;
 
-      // Calcular la posición horizontal para centrar cada parte del nombre
-      const nombreEmpresaParte1Width =
-        (doc.getStringUnitWidth(nombreEmpresaParte1) * 16) /
-        doc.internal.scaleFactor; // Ancho de la primera parte del nombre
-      const nombreEmpresaParte2Width =
-        (doc.getStringUnitWidth(nombreEmpresaParte2) * 16) /
-        doc.internal.scaleFactor; // Ancho de la segunda parte del nombre
-      const nombreEmpresaXParte1 =
-        logoX + logoWidth + 20 - nombreEmpresaParte1Width / 2;
-      const nombreEmpresaXParte2 =
-        logoX + logoWidth + 20 - nombreEmpresaParte2Width / 2;
+      // Calcular la posición horizontal para centrar el nombre de la empresa
+      const nombreEmpresaWidth =
+        (doc.getStringUnitWidth(empresaInfo.enombre) * 14) /
+        doc.internal.scaleFactor; // Ancho del nombre de la empresa
+      const nombreEmpresaX = logoX + logoWidth + 20 - nombreEmpresaWidth / 2;
 
-      doc.text(nombreEmpresaParte1, nombreEmpresaXParte1, startY);
-      doc.text(
-        nombreEmpresaParte2,
-        nombreEmpresaXParte2,
-        startY + totalLineHeight / 2
-      );
-
-      // Calcular el ancho y la altura del rectángulo
-      const rectWidth =
-        Math.max(nombreEmpresaParte1Width, nombreEmpresaParte2Width) + 45; // Reducir el margen añadido al ancho
-      const rectHeight = totalLineHeight + logoHeight - 10; // Reducir el margen añadido a la altura
-
-      // Agregar contorno cuadrado
-      doc.rect(logoX, marginTop, rectWidth, rectHeight);
+      // Resto del código para agregar el nombre de la empresa
+      doc.text(empresaInfo.enombre, nombreEmpresaX, startY);
 
       // Restaurar el tamaño de fuente para el resto del documento
       doc.setFontSize(16); // Tamaño de fuente para el resto del documento
@@ -93,62 +79,44 @@ const GenerarFacturaPDF = ({
     // Agregar dirección de la empresa
     if (empresaInfo && empresaInfo.direccion) {
       const direccion = empresaInfo.direccion;
-      const lineasDireccion = direccion.split(/ y |(?=Quevedo)/); // Dividir la dirección en líneas por " y " o "Quevedo" (usando un lookahead)
-      const direccionY = marginTop + 9; // Ajusta la posición vertical según sea necesario
+      const direccionY = marginTop + 8; // Ajusta la posición vertical según sea necesario
       const fontSizeOriginal = doc.internal.getFontSize(); // Guardar el tamaño de fuente original
       const fontSizeDireccion = 10; // Tamaño de fuente para la dirección
 
-      lineasDireccion.forEach((linea, index) => {
-        const width =
-          (doc.getStringUnitWidth(linea.trim()) * fontSizeDireccion) /
-          doc.internal.scaleFactor;
-        const nombreEmpresaParte2Width =
-          (doc.getStringUnitWidth(lineasDireccion[1]) * 16) /
-          doc.internal.scaleFactor; // Ancho de la segunda parte del nombre de la empresa
-        const offset = 38; // Valor adicional para ajustar la posición hacia la derecha
-        const x =
-          (doc.internal.pageSize.getWidth() +
-            nombreEmpresaParte2Width -
-            width +
-            offset) /
-          2; // Calcular la posición horizontal centrada respecto a la segunda parte del nombre de la empresa, con un ajuste hacia la derecha
-        const y = direccionY + index * 5; // Incrementar la posición vertical para cada línea
-        doc.setFontSize(fontSizeDireccion); // Establecer el tamaño de fuente para la dirección
-        agregarElementoFactura(linea.trim(), x, y); // Eliminar espacios en blanco al principio y al final de cada línea
-      });
-
-      doc.setFontSize(10); // Establecer el tamaño de fuente
-
-      // Agregar texto "Contribuyente Negocio Popular" en una línea
-      const textoContribuyente1 = "Contribuyente Negocio";
-      const textoContribuyente1Width =
-        (doc.getStringUnitWidth(textoContribuyente1) * fontSizeOriginal) /
+      // Calcular el ancho total de la dirección
+      const direccionWidth =
+        (doc.getStringUnitWidth(direccion.trim()) * fontSizeDireccion) /
         doc.internal.scaleFactor;
-      const contribuyenteX1 =
-        (doc.internal.pageSize.getWidth() - textoContribuyente1Width) / 2 + 55; // Ajustar la posición hacia la derecha
-      const contribuyenteY1 = direccionY + (lineasDireccion.length + 1) * 4; // Colocar el texto debajo de la dirección
-      agregarElementoFactura(
-        textoContribuyente1,
-        contribuyenteX1,
-        contribuyenteY1
-      );
 
-      // Agregar texto "Régimen RIMPE" en una línea
-      const textoContribuyente2 = " Popular Régimen RIMPE";
-      const textoContribuyente2Width =
-        (doc.getStringUnitWidth(textoContribuyente2) * fontSizeOriginal) /
+      // Calcular la posición X para centrar la dirección
+      const direccionX =
+        (doc.internal.pageSize.getWidth() - direccionWidth) / 2;
+
+      // Mostrar la dirección como una sola línea
+      doc.setFontSize(fontSizeDireccion); // Establecer el tamaño de fuente para la dirección
+      agregarElementoFactura(direccion.trim(), direccionX, direccionY); // Agregar la dirección como una sola línea
+
+      // Texto completo de "Contribuyente Negocio Popular Régimen RIMPE"
+      const textoContribuyente = "Contribuyente Negocio Popular Régimen RIMPE";
+      const textoContribuyenteWidth =
+        (doc.getStringUnitWidth(textoContribuyente) * fontSizeOriginal) /
         doc.internal.scaleFactor;
-      const contribuyenteX2 =
-        (doc.internal.pageSize.getWidth() - textoContribuyente2Width) / 2 + 56; // Ajustar la posición hacia la derecha
-      const contribuyenteY2 = contribuyenteY1 + 5; // Ajustar la posición vertical
-      agregarElementoFactura(
-        textoContribuyente2,
-        contribuyenteX2,
-        contribuyenteY2
-      );
 
-      // No es necesario restablecer el tamaño de fuente aquí
+      // Calcular la posición X para centrar el texto completo
+      const contribuyenteX =
+        doc.internal.pageSize.getWidth() - textoContribuyenteWidth + 1.7;
+
+      // Calcular la posición Y para el texto completo (debajo de la dirección)
+      const contribuyenteY = direccionY + 5; // Colocar el texto debajo de la dirección
+
+      // Agregar el texto completo como una sola línea
+      agregarElementoFactura(
+        textoContribuyente,
+        contribuyenteX,
+        contribuyenteY
+      );
     }
+
 
     // Agregar detalles de la factura
     let yPos = marginTop + 75;
