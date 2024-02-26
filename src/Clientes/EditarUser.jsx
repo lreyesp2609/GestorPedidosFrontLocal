@@ -12,13 +12,14 @@ import { message } from "antd";
 import "./res/editar.css";
 import imghogar from "./res/hogar.png"
 import imgtrabajo from "./res/localizacion.png"
+import imgubicacion from "./res/ubicacion.png"
 
 import Map3 from "./Map3";
 import Mapafijo from "../components/mapafijo";
 
 const EditarUser = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
   const [MostrarModal, setMostrarModal] = useState(false);
   const [MostrarModal2, setMostrarModal2] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(1); 
@@ -54,9 +55,6 @@ const EditarUser = () => {
     }
   };
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
   const vermapa = (lat,log) => {
     setMostrarModal2(true);
     setSelectedlat(lat);
@@ -136,6 +134,11 @@ const EditarUser = () => {
         formData.append('latitud3', locationData.latitud3);
         formData.append('longitud3', locationData.longitud3);
       }
+      const imageInput = document.getElementById("imageInput");
+      const imageFile = imageInput?.files[0];
+      if (imageFile) {
+        formData.append("imagen", imageFile);
+      }
       const response = await fetch(
         `http://127.0.0.1:8000/Login/editar_usuario/${id_cuenta}/`,
         {
@@ -147,7 +150,6 @@ const EditarUser = () => {
       const data = await response.json();
       if (response.ok) {
         message.success("Usuario editado con exito");
-        setIsEditing(false);
         ObtenerUsuario();
       } else {
         message.error(`Error al editar aviso: ${data.error}`);
@@ -231,18 +233,13 @@ const EditarUser = () => {
                 </div>
               )}
             </div>
+            <input
+  type="file"
+  id="imageInput"
+  {...getInputProps()}
+/>
             <div style={{ textAlign: "center" }}>
               <span style={{ color: "white" }}> {userData?.nombre_usuario || ""}</span>
-            </div>
-            <div style={{ textAlign: "center", marginTop: "130px" }}>
-              <Button
-                variant="primary"
-                type="submit"
-                style={{ width: "150px", borderRadius: "10px" }}
-                onClick={handleEditClick}
-              >
-                editar datos
-              </Button>
             </div>
             <div style={{ textAlign: "center" }}>
               <Button
@@ -516,7 +513,7 @@ const EditarUser = () => {
                       }}>
                         <Row>
                           <Col md={3} style={{ borderRight: "1px solid " }}>
-                            <img src={imghogar} style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}></img>
+                            <img src={imgubicacion} style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}></img>
                           </Col>
                           <Col md={8}>
                             {locationData.latitud3 && (
