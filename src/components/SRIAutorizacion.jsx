@@ -14,11 +14,16 @@ const SRIAutorizacion = () => {
 
   const handleOk = async () => {
     try {
+      // Verifica si el código de autorización tiene exactamente 49 dígitos
+      if (codigoAutorizacion.length !== 49) {
+        throw new Error("El código de autorización debe tener exactamente 49 dígitos");
+      }
+  
       const formData = new FormData();
       formData.append("codigo_autorizacion", codigoAutorizacion);
       formData.append("fecha_vencimiento", form.getFieldValue("fecha_vencimiento"));
       formData.append("fecha_autorizacion", form.getFieldValue("fecha_autorizacion"));
-
+  
       const response = await fetch(
         `http://127.0.0.1:8000/CodigoFactura/crear_codigoautorizacion/1/`,
         {
@@ -36,9 +41,10 @@ const SRIAutorizacion = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      message.error("Hubo un error al crear el código de autorización");
+      message.error(error.message || "Hubo un error al crear el código de autorización");
     }
   };
+  
 
   const handleCancel = () => {
     setVisible(false);
@@ -46,7 +52,7 @@ const SRIAutorizacion = () => {
 
   const handleChangeCodigoAutorizacion = (e) => {
     const value = e.target.value;
-    if (value.length <= 10) {
+    if (value.length <= 49) {
       setCodigoAutorizacion(value);
     }
   };
@@ -75,7 +81,7 @@ const SRIAutorizacion = () => {
             rules={[
               { required: true, message: "Por favor ingresa el código de autorización" },
               { pattern: /^\d*$/, message: "Por favor ingresa solo números" },
-              { max: 10, message: "El código de autorización debe tener 10 dígitos" }
+              { max: 49, message: "El código de autorización debe tener 49 dígitos" }
             ]}
           >
             <Input value={codigoAutorizacion} onChange={handleChangeCodigoAutorizacion} />

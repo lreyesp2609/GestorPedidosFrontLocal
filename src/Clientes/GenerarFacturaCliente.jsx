@@ -176,11 +176,21 @@ const GenerarFacturaPDF = ({
     agregarElementoFactura(textoNotaVenta, marginLeft, notaVentaY);
 
     // Agregar Aut. S.R.I #
+    agregarElementoFactura(`Aut. S.R.I #\n`, codigoAutorizacionX, notaVentaY);
+
+    // Guardar la configuración actual de la fuente
+    const currentFontSize = doc.internal.getFontSize();
+    // Establecer un tamaño de fuente más pequeño solo para el código de autorización del SRI
+    doc.setFontSize(7);
+    // Agregar el código de autorización del SRI con una fuente más pequeña
     agregarElementoFactura(
-      `Aut. S.R.I # ${facturaData.codigo_autorizacion_sri}`,
+      `${facturaData.codigo_autorizacion_sri}`,
       codigoAutorizacionX,
-      notaVentaY
+      notaVentaY + 5 // Ajusta la posición vertical según sea necesario
     );
+    // Restaurar la configuración original de la fuente
+    doc.setFontSize(currentFontSize);
+
 
     // Agregar fecha
     const fechaEmisionY = marginTop + 45; // Establecer la posición vertical para la fecha de emisión

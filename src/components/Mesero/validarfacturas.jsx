@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "react-bootstrap";
+import { notification } from "antd";
 
 const ValidarFacturas = () => {
   const [facturas, setFacturas] = useState([]);
@@ -8,36 +9,39 @@ const ValidarFacturas = () => {
   const [facturasValidadas, setFacturasValidadas] = useState([]);
 
   const [userData, setUserData] = useState(null);
-    const id_cuenta = localStorage.getItem("id_cuenta");
+  const id_cuenta = localStorage.getItem("id_cuenta");
 
-    const ObtenerUsuario = async () => {
-      if (id_cuenta) {
-        fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
-          .then((response) => response.json())
-          .then((data) => {
-            setUserData(data.mesero);
-            console.log("Datos del usuario:", data.mesero); // Imprimir los datos del usuario por consola
-          })
-          .catch((error) =>
-            console.error("Error al obtener datos del usuario:", error)
-          );
-      } else {
-        console.error("Nombre de usuario no encontrado en localStorage");
-      }
-    };
-    
-    useEffect(() => {
-      ObtenerUsuario();
-    }, []);
-
+  const ObtenerUsuario = async () => {
+    if (id_cuenta) {
+      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUserData(data.mesero);
+          console.log("Datos del usuario:", data.mesero);
+        })
+        .catch((error) =>
+          console.error("Error al obtener datos del usuario:", error)
+        );
+    } else {
+      console.error("Nombre de usuario no encontrado en localStorage");
+    }
+  };
 
   useEffect(() => {
+    ObtenerUsuario();
+  }, []);
+
+  const cargarFacturas = () => {
     fetch("http://127.0.0.1:8000/Mesero/lista_facturas/")
       .then((response) => response.json())
       .then((data) => {
         setFacturas(data.facturas);
       })
       .catch((error) => console.error("Error fetching facturas:", error));
+  };
+
+  useEffect(() => {
+    cargarFacturas();
 
     fetch("http://127.0.0.1:8000/Mesero/listar_meseros/")
       .then((response) => response.json())
@@ -85,7 +89,11 @@ const ValidarFacturas = () => {
       .then((response) => {
         if (response.ok) {
           console.log(`Factura con ID ${idFactura} validada con éxito.`);
-          // Aquí puedes recargar las facturas para reflejar el cambio
+          notification.success({
+            message: 'Validación Exitosa',
+            description: `La factura con ID ${idFactura} se validó correctamente.`
+          });
+          cargarFacturas(); // Actualizar la lista de facturas
         } else {
           console.error(`Error al validar la factura con ID ${idFactura}.`);
         }
@@ -97,7 +105,6 @@ const ValidarFacturas = () => {
       console.error("Error: datos del usuario no disponibles.");
     }
   };
-  
 
   const deshacerValidacion = (idFactura) => {
     console.log("Deshaciendo validación de factura con ID:", idFactura);
