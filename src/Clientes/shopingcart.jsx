@@ -59,7 +59,7 @@ const ShoppingCart = () => {
     fontSize: "24px", // Ajusta el tamaño del texto
     textAlign: "center",
     fontFamily: "Circular, sans-serif", // Cambia el estilo de letra
-    color: "gray", // Cambia el color del texto
+    color: "white", // Cambia el color del texto
     marginBottom: "270px",
   };
  
@@ -187,24 +187,18 @@ const ShoppingCart = () => {
       {mostrarPedido ? (
         <Pedidos regresar={regresar}/>
       ):(
-        <div style={{marginTop:'30px'}}>
+        <div style={{marginTop:'5px'}}>
           {cart.length > 0 ? (
             <>
               <Container>
                 <Row>
                   <Col
                     md={9}
-                    style={{
-                      border: "1px solid rgba(0, 0, 0, 0.74)",
-                      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-
-                      marginLeft: 0, 
-                      paddingLeft: 0,
-                    }}
+                    
                   >
                     <h5
                       style={{
-                        marginTop: "10px",
+                        color:"white",
                         fontSize: "18px",
                         marginBottom: "30px",
                         marginLeft: "10px",
@@ -218,19 +212,16 @@ const ShoppingCart = () => {
                         <div
                           key={item.id}
                           style={{
-                            marginBottom: "10px",
-                            borderBottom: "1px solid #ccc",
-                            paddingBottom: "10px",
+                            
                             fontSize: "18px",
                             marginTop: "10px",
                           }}
                         >
-                          <Card style={{ width: 800 }}>
+                          <Card style={{ width: "100%" }}>
                             <Meta
                               avatar={<img style={{
                                 width: "50px",
                                 height: "70px",
-                                marginRight: "10px",
                               }}
                               src={`data:image/png;base64,${item.image}`} alt="User" />}
                               title={item.Name}
@@ -243,25 +234,24 @@ const ShoppingCart = () => {
                     </ul>
                   </Col>
 
-                  <Col style={{backgroundColor:'rgb(255, 255, 255)', borderRadius:'20px'
+                  <Col style={{backgroundColor:'rgb(255, 255, 255)', borderRadius:'5px'
                    , marginLeft:'10px' }}  >
                     <Row>
                       <Col>
-                        <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                        <div style={{ marginTop: "10px", fontSize: "18px"}}>
                           Total: ${totalPrice}
                         </div>
                       </Col>
                     </Row>
                     <Row>
-                      <Col style={{ marginTop: "400px" }}>
-                        <div style={{ marginTop: "10px", fontSize: "18px" }}>
-                          Total: ${totalPrice}
-                        </div>
+                      <Col>
                         <div className="d-grid gap-2">
                           <Button
                             onClick={HacerClick}
                             size="lg"
                             style={{
+                              marginBottom:"10px",
+                              marginTop:"10px",
                               backgroundColor: "#131212",
                               borderRadius: "8px",
                               padding: "15px 30px",

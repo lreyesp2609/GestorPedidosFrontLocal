@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { Drawer } from 'antd';
 import {
   Container,
   Nav,
@@ -35,6 +36,13 @@ const NavBar = () => {
   const [logoEmpresa, setLogo] = useState(null);
   const [Direccion, setDireccion] = useState(null);
   const [Correo, setCorreo] = useState(null);
+  const [open, setOpen] = useState(false);
+  const showDrawer = () => {
+    setOpen(true);
+  };
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const quantity = cart.reduce((acc, curr) => {
     return acc + curr.quantity;
@@ -49,18 +57,18 @@ const NavBar = () => {
     borderRadius: "15px",
     textDecoration: "none",
     color: "white",
-    transition: "background-color 0.3s, color 0.3s", 
+    transition: "background-color 0.3s, color 0.3s",
     fontFamily: "Arial, sans-serif",
   };
-  
+
 
   const manejarMouseOver = (e) => {
-    e.target.style.backgroundColor = "black"; 
+    e.target.style.backgroundColor = "black";
   };
 
   const manejarMouseOut = (e) => {
-    e.target.style.backgroundColor = ""; 
-    e.target.style.color = "white"; 
+    e.target.style.backgroundColor = "";
+    e.target.style.color = "white";
   };
   const logoStyle = {
     color: "white",
@@ -193,21 +201,21 @@ const NavBar = () => {
                 </Nav.Link>
                 {Logeado && (
                   <NavDropdown
-                    style={{ ...estiloNavLink, borderRadius: "50%",  color: "white"  }}
+                    style={{ ...estiloNavLink, borderRadius: "50%", color: "white" }}
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
                     title="Perfil"
                   >
                     <NavDropdown.Item
                       onClick={() => MostrarComponente("Perfil")}
-                      style={{ marginLeft: "auto", fontSize: "18px"}}
+                      style={{ marginLeft: "auto", fontSize: "18px" }}
                     >
                       Ver perfil
                     </NavDropdown.Item>
                     <NavDropdown.Item
                       onClick={() => MostrarComponente("Historial")}
-                      style={{ marginLeft: "auto", fontSize: "18px"}} 
-                      >
+                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                    >
                       Ver Historial
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
@@ -246,7 +254,7 @@ const NavBar = () => {
                       color: "inherit",
                       fontSize: "18px",
                     }}
-                    onClick={() => MostrarComponente("Carrito")}
+                    onClick={() => showDrawer()}
                   >
                     {" "}
                     <Nav.Link
@@ -277,7 +285,6 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Carrusel" && <Carrusel />}
           {ComponenteSeleccionado === "Menu" && <ListProductos />}
           {ComponenteSeleccionado === "Perfil" && <EditarUser />}
-          {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
           {ComponenteSeleccionado === "Historial" && <Historial />}
           {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
           {ComponenteSeleccionado != "Carrusel" && (
@@ -320,6 +327,13 @@ const NavBar = () => {
           </Modal.Body>
         </Modal>
       </div>
+      <Drawer closable={true}
+        maskClosable={true} onClose={onClose} open={open} className="carrito" >
+        <div className="carrito">
+        <ShoppingCart />
+        </div>
+        
+      </Drawer>
     </>
   );
 };
