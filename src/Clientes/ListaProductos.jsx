@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Modal, Button, Card as AntCard, Col, Row, Input } from "antd";
+import { Modal, Button, Card as AntCard, Input } from "antd";
 import { CartContext } from "../context/CarritoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faStar } from "@fortawesome/free-solid-svg-icons";
+import { Row, Col } from 'react-bootstrap';
 const { Meta } = AntCard;
 const { TextArea } = Input;
 
@@ -81,12 +82,12 @@ const ListProductos = () => {
         <Row>
 
           {products.map((product, index) => (
-            <Col md={2}>
+            <Col md={6}>
               <AntCard
                 hoverable
                 key={product.id}
                 style={{
-                  width: "18rem",
+                  width: "100%",
                   cursor: "pointer",
                   marginRight: index < products.length - 1 ? "20px" : "0",
                 }}

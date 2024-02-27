@@ -14,7 +14,7 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { CartContext } from "../context/CarritoContext";
 import { Radio, InputNumber } from "antd";
-import { Avatar, Card, Skeleton, Switch } from 'antd';
+import { Avatar, Card, Skeleton, Badge } from 'antd';
 const { Meta } = Card;
 import { notification } from "antd";
 import animationData from "../assets/lottis/B.json"; // Importa el archivo JSON de tu animación
@@ -33,16 +33,9 @@ const ShoppingCart = () => {
   const [modoPago, setModoPago] = useState(null);
   const [fraccionadoValue, setFraccionadoValue] = useState(0);
   const [mostrarComponente, setMostrarComponente] = useState(false);
-
   const [modoPedido, setModoPedido] = useState(null);
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
-
-
-
-
-
-
   const lottieOptions = {
     loop: true,
     autoplay: !isAnimationPaused,
@@ -59,10 +52,10 @@ const ShoppingCart = () => {
     fontSize: "24px", // Ajusta el tamaño del texto
     textAlign: "center",
     fontFamily: "Circular, sans-serif", // Cambia el estilo de letra
-    color: "white", // Cambia el color del texto
+    color: "Black", // Cambia el color del texto
     marginBottom: "270px",
   };
- 
+
   const [locationData, setLocationData] = useState({
     latitud: 0,
     longitud: 0,
@@ -93,15 +86,15 @@ const ShoppingCart = () => {
     }
   }, []);
 
-  
- 
-  
-  
 
-  
+
+
+
+
+
   const handleModoPagoChange = (e) => {
     setModoPago(e.target.value);
-    setFraccionadoValue(1); 
+    setFraccionadoValue(1);
   };
   const handleFraccionadoInputChange = (value) => {
     setFraccionadoValue(value);
@@ -163,9 +156,9 @@ const ShoppingCart = () => {
   };
   const regresar = () => {
     setMostrarPedido(false);
-  
+
   };
-  
+
 
   const CerrarModal = () => {
     setMostrarModal(false);
@@ -179,66 +172,59 @@ const ShoppingCart = () => {
     (acc, curr) => acc + curr.quantity * curr.price,
     0
   );
-  
+
 
   return (
     <>
       <div>
-      {mostrarPedido ? (
-        <Pedidos regresar={regresar}/>
-      ):(
-        <div style={{marginTop:'5px'}}>
-          {cart.length > 0 ? (
-            <>
-              <Container>
-                <Row>
-                  <Col
-                    md={9}
-                    
-                  >
-                    <h5
-                      style={{
-                        color:"white",
-                        fontSize: "18px",
-                        marginBottom: "30px",
-                        marginLeft: "10px",
-                      }}
-                    >
-                      Productos en el carrito: {quantity}
-                    </h5>
-                    <ul>
-                      {cart.map((item) => (
-                        
-                        <div
-                          key={item.id}
-                          style={{
-                            
-                            fontSize: "18px",
-                            marginTop: "10px",
-                          }}
-                        >
-                          <Card style={{ width: "100%" }}>
+        {mostrarPedido ? (
+          <Pedidos regresar={regresar} />
+        ) : (
+          <div style={{ marginTop: '5px' }}>
+            {cart.length > 0 ? (
+              <>
+                <Container>
+                  <Badge count={"Productos en el carrito: " + quantity} showZero color='#faad14' />
+
+                  <ul>
+                    {cart.map((item) => (
+
+                      <div
+                        key={item.id}
+                        style={{
+
+                          fontSize: "18px",
+                          marginTop: "10px",
+                        }}
+                      >
+                        <Row>
+                          <Col md={4}  >
+                            <img style={{
+                              width: "90px",
+                              height: "90px",
+                              border: '1px solid #9b9b9b',
+                            }}
+                              src={`data:image/png;base64,${item.image}`} alt="User" />
+                          </Col>
+                          <Col md={8}>
+                          <strong>{item.Name}</strong>
+                          <br/>
                             <Meta
-                              avatar={<img style={{
-                                width: "50px",
-                                height: "70px",
-                              }}
-                              src={`data:image/png;base64,${item.image}`} alt="User" />}
-                              title={item.Name}
                               description={`Cantidad: ${item.quantity} - Precio: $${item.price}`}
                             />
-                          </Card>
-                          
-                        </div>
-                      ))}
-                    </ul>
-                  </Col>
+                          </Col>
+                        </Row>
+                      </div>
+                    ))}
+                  </ul>
 
-                  <Col style={{backgroundColor:'rgb(255, 255, 255)', borderRadius:'5px'
-                   , marginLeft:'10px' }}  >
+                  <Col style={{
+                    backgroundColor: 'rgb(255, 255, 255)', borderRadius: '5px'
+                    , marginLeft: '10px'
+                  }}  >
                     <Row>
                       <Col>
-                        <div style={{ marginTop: "10px", fontSize: "18px"}}>
+                        <div style={{ marginTop: "10px", fontSize: "18px" }}>
                           Total: ${totalPrice}
                         </div>
                       </Col>
@@ -250,22 +236,22 @@ const ShoppingCart = () => {
                             onClick={HacerClick}
                             size="lg"
                             style={{
-                              marginBottom:"10px",
-                              marginTop:"10px",
+                              marginBottom: "10px",
+                              marginTop: "10px",
                               backgroundColor: "#131212",
                               borderRadius: "8px",
                               padding: "15px 30px",
                               fontSize: "16px",
                               color: "#fff",
                               border: "1px solid #131212",
-                              transition: "background-color 0.3s", // Agrega una transición para suavizar el cambio de color
+                              transition: "background-color 0.3s",
                             }}
                             onMouseOver={(e) =>
                               (e.target.style.backgroundColor = "#333")
-                            } // Cambia el color al pasar el ratón
+                            }
                             onMouseOut={(e) =>
                               (e.target.style.backgroundColor = "#000")
-                            } // Restaura el color original al salir del ratón
+                            } 
                           >
                             Hacer pedido
                           </Button>
@@ -273,23 +259,22 @@ const ShoppingCart = () => {
                       </Col>
                     </Row>
                   </Col>
-                </Row>
-              </Container>
-            </>
-          ) : (
-            <div style={estiloTexto}>
-              No hay productos en el carrito.
-              <br />
-              <div onClick={toggleAnimation}>
-                <Lottie options={lottieOptions} height={100} width={100} />
+                </Container>
+              </>
+            ) : (
+              <div style={estiloTexto}>
+                No hay productos en el carrito.
+                <br />
+                <div onClick={toggleAnimation}>
+                  <Lottie options={lottieOptions} height={100} width={100} />
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-           )}
+            )}
+          </div>
+        )}
       </div>
     </>
-           
+
   );
 };
 
