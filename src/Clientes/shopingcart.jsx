@@ -8,7 +8,6 @@ import {
   ButtonGroup,
   Container,
   Col,
-  Container
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
