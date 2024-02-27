@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Modal, Button, Card as AntCard, Col, Row, Input } from "antd";
+import { Modal, Button, Card as AntCard, Input } from "antd";
 import { CartContext } from "../context/CarritoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faStar } from "@fortawesome/free-solid-svg-icons";
+import { Row, Col } from 'react-bootstrap';
 const { Meta } = AntCard;
 const { TextArea } = Input;
 
@@ -18,9 +19,11 @@ const ListProductos = () => {
       .then((response) => response.json())
       .then((data) => setProducts(data.productos))
       .catch((error) => console.error("Error fetching products:", error));
+    
   }, []);
 
   const handleCardClick = (product) => {
+    console.log(products);
     setSelectedProduct(product);
     setShowModal(true);
   };
@@ -51,6 +54,7 @@ const ListProductos = () => {
             Name: selectedProduct.nombreproducto,
             image: selectedProduct.imagenp,
             price: parseFloat(selectedProduct.preciounitario),
+            iva: selectedProduct.iva,
           },
         ];
       }
@@ -81,12 +85,12 @@ const ListProductos = () => {
         <Row>
 
           {products.map((product, index) => (
-            <Col md={2}>
+            <Col md={6}>
               <AntCard
                 hoverable
                 key={product.id}
                 style={{
-                  width: "18rem",
+                  width: "100%",
                   cursor: "pointer",
                   marginRight: index < products.length - 1 ? "20px" : "0",
                 }}

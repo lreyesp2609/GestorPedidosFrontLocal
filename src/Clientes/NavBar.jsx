@@ -254,7 +254,9 @@ const NavBar = () => {
                       color: "inherit",
                       fontSize: "18px",
                     }}
-                    onClick={() => MostrarComponente("Carrito")}>
+                    onClick={() => showDrawer()}
+                  >
+                    {" "}
                     <Nav.Link
                       style={estiloNavLink}
                       onMouseOver={manejarMouseOver}
@@ -284,7 +286,6 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Menu" && <ListProductos />}
           {ComponenteSeleccionado === "Perfil" && <EditarUser />}
           {ComponenteSeleccionado === "Historial" && <Historial />}
-          {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
           {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
           {ComponenteSeleccionado != "Carrusel" && (
             <Row>
@@ -326,12 +327,15 @@ const NavBar = () => {
           </Modal.Body>
         </Modal>
       </div>
-      <Drawer closable={true}
-        maskClosable={true} onClose={onClose} open={open} className="carrito" >
-        <div className="carrito">
-        <ShoppingCart />
+      <Drawer
+        closable={true}
+        maskClosable={true} 
+        onClose={onClose} 
+        open={open} >
+        <div>
+          <ShoppingCart />
         </div>
-        
+
       </Drawer>
     </>
   );
