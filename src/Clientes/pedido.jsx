@@ -9,7 +9,7 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { Radio, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
-import { notification, Alert,Tooltip } from 'antd';
+import { notification, Alert, Tooltip } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -32,14 +32,57 @@ const Pedidos = ({ regresar }) => {
   const [showCardForm, setShowCardForm] = useState(false);
 
   const [pagoCompletado, setPagoCompletado] = useState(false);
-  const [modoPago, setModoPago] = useState('T');
+  const [modoPago, setModoPago] = useState('E');
   const [fraccionadoValue, setFraccionadoValue] = useState(1);
   const [mostrarComponente, setMostrarComponente] = useState(false);
 
   const [modoPedido, setModoPedido] = useState("D");
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
+  const [sucursalesData, setSucursalesData] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
+
+  const listarsucursales = () => {
+    fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.sucursales);
+        const now = new Date();
+        const dayOfWeek = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][now.getDay()];
+        const month = now.getMonth() + 1; // Los meses en JavaScript son de 0 a 11, así que sumamos 1
+        const day = now.getDate();
+        console.log('Día de la semana actual:', dayOfWeek);
+
+        const sucursalesConEstado = data.sucursales.map((sucursal) => {
+          const horarioAbierto = sucursal.horario && sucursal.horario.detalles
+            ? sucursal.horario.detalles.find(
+              (detalle) => {
+                const fechaInicio = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horainicio}`);
+                const fechaFin = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horafin}`);
+
+                console.log('Fecha de inicio:', fechaInicio);
+                console.log('Fecha de fin:', fechaFin);
+                console.log('dia actual:', detalle.dia);
+                console.log('Fecha actual:', now);
+                return detalle.dia === dayOfWeek &&
+                  fechaInicio <= now &&
+                  fechaFin >= now;
+              }
+            )
+            : null;
+
+          return {
+            ...sucursal,
+            estadoApertura: horarioAbierto ? 'Abierto ahora' : 'Cerrado',
+          };
+        });
+        setSucursalesData(sucursalesConEstado);
+        console.log(sucursalesConEstado);
+      })
+      .catch((error) => {
+        console.error('Error al obtener los datos de sucursales:', error);
+      });
+  };
 
 
   const [locationData, setLocationData] = useState({
@@ -50,9 +93,8 @@ const Pedidos = ({ regresar }) => {
 
   const id_cuenta = localStorage.getItem('id_cuenta');
   useEffect(() => {
-
-
     if (id_cuenta) {
+      listarsucursales();
       fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
         .then(response => response.json())
         .then(data => {
@@ -521,6 +563,40 @@ const Pedidos = ({ regresar }) => {
             )}
           </>
         )}
+        {modoPedido === 'R' && (
+            sucursalesData.map((sucursal) => {
+              if (sucursal.estadoApertura === 'Abierto ahora') {
+                return (
+                  <Card
+                    hoverable
+                    title={sucursal.snombre}
+                    style={{
+                      width: "auto",
+                      border: "1px solid #A4A4A4",
+                      margin: "10px",
+                    }}
+                    cover={
+                      <img
+                        alt="Descarga la aplicación móvil"
+                        src={`data:image/png;base64,${sucursal.imagensucursal}`}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    }
+                    className="text-center"
+                    key={sucursal.id}  // Agrega una clave única para cada elemento en el mapa
+                  >
+                    <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
+                    <span style={{ color: 'green' }}>
+                      {sucursal.estadoApertura}
+                    </span>
+                  </Card>
+                );
+              }
+              return (<div>No hay sucursales disponibles ahora mismo</div>)
+                // Devuelve null para las sucursales que no cumplen con la condición
+            })
+        )}
+
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
           <Modal.Body>
@@ -537,42 +613,42 @@ const Pedidos = ({ regresar }) => {
             options={[
               {
                 label: (
-                  <Tooltip placement="top" title="Pagar por transferencia">
-                  <div
-                    style={{
-                      padding: 4,
-                    }}
-                  >
-                    <img src={imgtransfer} style={{ width: "100%" }} />
-                  </div>
-                  </Tooltip>
-                ),
-                value: 'T',
-              },
-              {
-                label: (
                   <Tooltip placement="top" title="Pagar en efectivo" >
-                  <div
-                    style={{
-                      padding: 4,
-                    }}
-                  >
-                    <img src={imgefectivo} style={{ width: "100%" }} />
-                  </div>
+                    <div
+                      style={{
+                        padding: 4,
+                      }}
+                    >
+                      <img src={imgefectivo} style={{ width: "100%" }} />
+                    </div>
                   </Tooltip>
                 ),
                 value: 'E',
               },
               {
                 label: (
+                  <Tooltip placement="top" title="Pagar por transferencia">
+                    <div
+                      style={{
+                        padding: 4,
+                      }}
+                    >
+                      <img src={imgtransfer} style={{ width: "100%" }} />
+                    </div>
+                  </Tooltip>
+                ),
+                value: 'T',
+              },
+              {
+                label: (
                   <Tooltip placement="top" title="Dividir los pagos" >
-                  <div
-                    style={{
-                      padding: 4,
-                    }}
-                  >
-                    <img src={imgdividir} style={{ width: "100%" }} />
-                  </div>
+                    <div
+                      style={{
+                        padding: 4,
+                      }}
+                    >
+                      <img src={imgdividir} style={{ width: "100%" }} />
+                    </div>
                   </Tooltip>
                 ),
                 value: 'F',

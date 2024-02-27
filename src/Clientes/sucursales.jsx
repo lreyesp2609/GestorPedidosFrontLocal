@@ -135,10 +135,30 @@ const Sucursalescliente = () => {
             console.error("Error al obtener la información de la empresa:", error);
         }
     };
-
+    const id_cuenta = localStorage.getItem('id_cuenta');
     useEffect(() => {
-        obtenerInformacionEmpresa();
-        listarsucursales();
+        if (id_cuenta) {
+            obtenerInformacionEmpresa();
+            listarsucursales();
+            fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+        .then(response => response.json())
+        .then(data => {
+          setUserData(data.usuario);
+
+          setLocationData({
+            latitud1: data.usuario?.ubicacion1?.latitud || undefined,
+            longitud1: data.usuario?.ubicacion1?.longitud || undefined,
+            latitud2: data.usuario?.ubicacion2?.latitud || undefined,
+            longitud2: data.usuario?.ubicacion2?.longitud || undefined,
+            latitud3: data.usuario?.ubicacion3?.latitud || undefined,
+            longitud3: data.usuario?.ubicacion3?.longitud || undefined,
+          });
+
+        })
+        .catch(error => console.error('Error al obtener datos del usuario:', error));
+        } else {
+            console.error('Nombre de usuario no encontrado en localStorage');
+        }
     }, []);
     const listarsucursales = () => {
         fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
@@ -148,16 +168,16 @@ const Sucursalescliente = () => {
                 const now = new Date();
                 const dayOfWeek = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][now.getDay()];
                 const month = now.getMonth() + 1; // Los meses en JavaScript son de 0 a 11, así que sumamos 1
-            const day = now.getDate();
+                const day = now.getDate();
                 console.log('Día de la semana actual:', dayOfWeek);
-    
+
                 const sucursalesConEstado = data.sucursales.map((sucursal) => {
                     const horarioAbierto = sucursal.horario && sucursal.horario.detalles
                         ? sucursal.horario.detalles.find(
                             (detalle) => {
                                 const fechaInicio = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horainicio}`);
                                 const fechaFin = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horafin}`);
-                                
+
                                 console.log('Fecha de inicio:', fechaInicio);
                                 console.log('Fecha de fin:', fechaFin);
                                 console.log('dia actual:', detalle.dia);
@@ -168,7 +188,7 @@ const Sucursalescliente = () => {
                             }
                         )
                         : null;
-    
+
                     return {
                         ...sucursal,
                         estadoApertura: horarioAbierto ? 'Abierto ahora' : 'Cerrado',
@@ -181,7 +201,7 @@ const Sucursalescliente = () => {
                 console.error('Error al obtener los datos de sucursales:', error);
             });
     };
-    
+
     return (
         <>
             <div className='contentlight' style={{ height: '100%', minHeight: '100vh' }}>
