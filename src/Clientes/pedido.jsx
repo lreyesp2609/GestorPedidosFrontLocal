@@ -160,6 +160,17 @@ const Pedidos = ({ regresar }) => {
     regresar();
   };
 
+  const ivaPrecio = () => {
+    let iva = 0;
+    for (let i = 0; i < cart.length; i++) {
+      const currentItem = cart[i];
+      if (currentItem.iva == 1) {
+        iva += currentItem.quantity * currentItem.price * 0.15;
+      }
+    }
+    return iva;
+  }
+
 
   const quantity = cart.reduce((acc, curr) => {
     return acc + curr.quantity;
@@ -180,7 +191,7 @@ const Pedidos = ({ regresar }) => {
 
       const formData = new FormData();
 
-      formData.append('precio', totalPrice);
+      formData.append('precio', Number(totalPrice)+Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'T');
       formData.append('puntos', 0);
@@ -233,7 +244,7 @@ const Pedidos = ({ regresar }) => {
 
       const formData = new FormData();
 
-      formData.append('precio', totalPrice);
+      formData.append('precio', Number(totalPrice)+Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'E');
       formData.append('puntos', 0);
@@ -290,7 +301,7 @@ const Pedidos = ({ regresar }) => {
       // Construye el cuerpo de la solicitud con los datos necesarios
       const formData = new FormData();
 
-      formData.append('precio', totalPrice);
+      formData.append('precio', number(totalPrice)+Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'T'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
@@ -339,7 +350,7 @@ const Pedidos = ({ regresar }) => {
       // Construye el cuerpo de la solicitud con los datos necesarios
       const formData = new FormData();
 
-      formData.append('precio', totalPrice);
+      formData.append('precio', Number(totalPrice)+Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'F'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
@@ -716,7 +727,7 @@ const Pedidos = ({ regresar }) => {
               disabled={fileList.length === 0 || modoPedido === null}
               onClick={PagarPorEfectivo}
             >
-              Pagar: ${totalPrice}
+              Pagar: ${ Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
             </Button>
 
             <Divider>O pague con paypal </Divider>
@@ -732,7 +743,7 @@ const Pedidos = ({ regresar }) => {
               disabled={modoPago !== 'E'}
               onClick={PagarPorEfectivo2}
             >
-              Pagar: ${totalPrice}
+              Pagar: ${ Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
             </Button>
           </div>
         )}
@@ -777,7 +788,7 @@ const Pedidos = ({ regresar }) => {
                 disabled={fileList.length === 0 || modoPedido === null}
                 onClick={PagarPorEfectivo}
               >
-                Pagar: ${totalPrice}
+                Pagar: ${ Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
               </Button>
 
               <Divider>O pague con paypal </Divider>
