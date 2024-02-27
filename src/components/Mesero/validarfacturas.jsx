@@ -108,13 +108,31 @@ const ValidarFacturas = () => {
 
   const deshacerValidacion = (idFactura) => {
     console.log("Deshaciendo validación de factura con ID:", idFactura);
-  };
-
-  const deshacerValidacionValidada = (idFactura) => {
-    console.log(
-      "Deshaciendo validación de factura validada con ID:",
-      idFactura
-    );
+    const motivoReverso = prompt("Por favor, ingrese el motivo del reverso:");
+    if (motivoReverso !== null) {
+      fetch(`http://127.0.0.1:8000/Mesero/crear_reverso_factura/${idFactura}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ motivo_reverso: motivoReverso })
+      })
+      .then((response) => {
+        if (response.ok) {
+          console.log(`Reverso de factura con ID ${idFactura} creado con éxito.`);
+          notification.success({
+            message: 'Reverso Exitoso',
+            description: `Se ha creado el reverso de la factura con ID ${idFactura}.`
+          });
+          cargarFacturas(); // Actualizar la lista de facturas
+        } else {
+          console.error(`Error al crear el reverso de la factura con ID ${idFactura}.`);
+        }
+      })
+      .catch((error) => {
+        console.error("Error en la solicitud:", error);
+      });
+    }
   };
 
   const facturasNoValidadas = facturas.filter(
@@ -230,7 +248,7 @@ const ValidarFacturas = () => {
                     <Button
                       variant="danger"
                       onClick={() =>
-                        deshacerValidacionValidada(factura.id_factura)
+                        deshacerValidacion(factura.id_factura)
                       }
                     >
                       Reverso
