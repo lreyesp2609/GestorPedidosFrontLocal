@@ -592,7 +592,7 @@ const Pedidos = ({ regresar }) => {
                   </Card>
                 );
               }
-              return (<div>No hay sucursales disponibles ahora mismo</div>)
+              return (<div>No hay más sucursales disponibles ahora mismo</div>)
                 // Devuelve null para las sucursales que no cumplen con la condición
             })
         )}
