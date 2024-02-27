@@ -7,7 +7,6 @@ import {
   Row,
   ButtonGroup,
   Col,
-  Container,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
@@ -59,7 +58,7 @@ const ShoppingCart = () => {
     fontSize: "24px", // Ajusta el tamaño del texto
     textAlign: "center",
     fontFamily: "Circular, sans-serif", // Cambia el estilo de letra
-    color: "white", // Cambia el color del texto
+    color: "rgb(129, 129, 129)", // Cambia el color del texto
     marginBottom: "270px",
   };
  
@@ -187,10 +186,10 @@ const ShoppingCart = () => {
       {mostrarPedido ? (
         <Pedidos regresar={regresar}/>
       ):(
-        <div style={{marginTop:'5px'}}>
+        <div style={{marginTop:'30px'}}>
           {cart.length > 0 ? (
             <>
-              <Container>
+          
                 <Row>
                   <Col
                     md={9}
@@ -198,7 +197,7 @@ const ShoppingCart = () => {
                   >
                     <h5
                       style={{
-                        color:"white",
+                        
                         fontSize: "18px",
                         marginBottom: "30px",
                         marginLeft: "10px",
@@ -251,14 +250,14 @@ const ShoppingCart = () => {
                             size="lg"
                             style={{
                               marginBottom:"10px",
-                              marginTop:"10px",
+                              marginTop:"400px",
                               backgroundColor: "#131212",
                               borderRadius: "8px",
                               padding: "15px 30px",
                               fontSize: "16px",
                               color: "#fff",
                               border: "1px solid #131212",
-                              transition: "background-color 0.3s", // Agrega una transición para suavizar el cambio de color
+                              transition: "background-color 0.3s", 
                             }}
                             onMouseOver={(e) =>
                               (e.target.style.backgroundColor = "#333")
@@ -274,7 +273,7 @@ const ShoppingCart = () => {
                     </Row>
                   </Col>
                 </Row>
-              </Container>
+ 
             </>
           ) : (
             <div style={estiloTexto}>

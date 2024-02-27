@@ -254,9 +254,7 @@ const NavBar = () => {
                       color: "inherit",
                       fontSize: "18px",
                     }}
-                    onClick={() => showDrawer()}
-                  >
-                    {" "}
+                    onClick={() => MostrarComponente("Carrito")}>
                     <Nav.Link
                       style={estiloNavLink}
                       onMouseOver={manejarMouseOver}
@@ -286,6 +284,7 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Menu" && <ListProductos />}
           {ComponenteSeleccionado === "Perfil" && <EditarUser />}
           {ComponenteSeleccionado === "Historial" && <Historial />}
+          {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
           {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
           {ComponenteSeleccionado != "Carrusel" && (
             <Row>
