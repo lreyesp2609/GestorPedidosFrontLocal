@@ -8,13 +8,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
-import { Radio, InputNumber, Divider, Space, Card, Upload, message } from 'antd';
-import { notification,Alert } from 'antd';
+import { Radio, InputNumber, Divider, Space, Card,Upload, message    } from 'antd';
+import { notification } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-
-
-
 
 
 
@@ -232,208 +229,181 @@ const Pedidos = ({ regresar }) => {
     }
 
 
-  };
-
-
-
-
-  const CerrarModalDespuesDePago = () => {
-    if (id_cuenta) {
-      const detalles_pedido = cart.map(item => ({
-        id_producto: item.id,
-        cantidad_pedido: item.quantity,
-        costo_unitario: item.price,
-      }));
-
-
-      // Construye el cuerpo de la solicitud con los datos necesarios
-      const formData = new FormData();
-
-      formData.append('precio', totalPrice);
-      formData.append('tipo_de_pedido', modoPedido);
-      formData.append('metodo_de_pago', 'T'); // Asumo que 'E' es el método de pago en efectivo
-      formData.append('puntos', 0); // Ajusta según sea necesario
-      formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
-      formData.append('impuesto', 0);
-      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-      // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-        method: 'POST',
-        body: formData,
-      })
-        .then(response => response.json())
-        .then(responseData => {
-          // Maneja la respuesta del backend según sea necesario
-          if (responseData.success) {
-            console.log('Respuesta del servidor:', responseData);
-            console.log('Pedido realizado con éxito.');
-            notification.success({
-              message: 'Pedido Exitoso',
-              description: '¡El pedido se ha completado con éxito!',
+    };
+    
+    
+    
+    
+      const CerrarModalDespuesDePago = () => {
+        if (id_cuenta) {
+          const detalles_pedido = cart.map(item => ({
+            id_producto: item.id,
+            cantidad_pedido: item.quantity,
+            costo_unitario: item.price,
+          }));
+      
+      
+          // Construye el cuerpo de la solicitud con los datos necesarios
+          const formData = new FormData();
+        
+          formData.append('precio', totalPrice);
+          formData.append('tipo_de_pedido', modoPedido);
+          formData.append('metodo_de_pago', 'T'); // Asumo que 'E' es el método de pago en efectivo
+          formData.append('puntos', 0); // Ajusta según sea necesario
+          formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
+          formData.append('impuesto', 0);
+          formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+          // Realiza la solicitud POST al backend
+          fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+            method: 'POST',
+            body: formData,
+          })
+          .then(response => response.json())
+          .then(responseData => {
+            // Maneja la respuesta del backend según sea necesario
+            if (responseData.success) {
+              console.log('Respuesta del servidor:', responseData);
+              console.log('Pedido realizado con éxito.');
+              notification.success({
+                message: 'Pedido Exitoso',
+                description: '¡El pedido se ha completado con éxito!',
+              });
+            } else {
+              console.error('Error al realizar el pedido:', responseData.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error en la solicitud:', error);
+          })
+          .finally(() => {
+            setCart([]);
+            regresar();
+          });
+        } else {
+          console.error('ID de cuenta no encontrado en localStorage');
+        }
+        }
+        const CerrarModalDespuesDePago2 = () => {
+          if (id_cuenta) {
+            const detalles_pedido = cart.map(item => ({
+              id_producto: item.id,
+              cantidad_pedido: item.quantity,
+              costo_unitario: item.price,
+            }));
+        
+        
+            // Construye el cuerpo de la solicitud con los datos necesarios
+            const formData = new FormData();
+          
+            formData.append('precio', totalPrice);
+            formData.append('tipo_de_pedido', modoPedido);
+            formData.append('metodo_de_pago', 'F'); // Asumo que 'E' es el método de pago en efectivo
+            formData.append('puntos', 0); // Ajusta según sea necesario
+            formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
+            formData.append('impuesto', 0);
+            formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+            // Realiza la solicitud POST al backend
+            fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+              method: 'POST',
+              body: formData,
+            })
+            .then(response => response.json())
+            .then(responseData => {
+              // Maneja la respuesta del backend según sea necesario
+              if (responseData.success) {
+                console.log('Respuesta del servidor:', responseData);
+                console.log('Pedido realizado con éxito.');
+                notification.success({
+                  message: 'Pedido Exitoso',
+                  description: '¡El pedido se ha completado con éxito!',
+                });
+              } else {
+                console.error('Error al realizar el pedido:', responseData.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error en la solicitud:', error);
+            })
+            .finally(() => {
+              setCart([]);
+              regresar();
             });
           } else {
-            console.error('Error al realizar el pedido:', responseData.message);
+            console.error('ID de cuenta no encontrado en localStorage');
           }
-        })
-        .catch(error => {
-          console.error('Error en la solicitud:', error);
-        })
-        .finally(() => {
-          setCart([]);
-          regresar();
-        });
-    } else {
-      console.error('ID de cuenta no encontrado en localStorage');
-    }
-  }
-  const CerrarModalDespuesDePago2 = () => {
-    if (id_cuenta) {
-      const detalles_pedido = cart.map(item => ({
-        id_producto: item.id,
-        cantidad_pedido: item.quantity,
-        costo_unitario: item.price,
-      }));
-
-
-      // Construye el cuerpo de la solicitud con los datos necesarios
-      const formData = new FormData();
-
-      formData.append('precio', totalPrice);
-      formData.append('tipo_de_pedido', modoPedido);
-      formData.append('metodo_de_pago', 'F'); // Asumo que 'E' es el método de pago en efectivo
-      formData.append('puntos', 0); // Ajusta según sea necesario
-      formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
-      formData.append('impuesto', 0);
-      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-      // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-        method: 'POST',
-        body: formData,
-      })
-        .then(response => response.json())
-        .then(responseData => {
-          // Maneja la respuesta del backend según sea necesario
-          if (responseData.success) {
-            console.log('Respuesta del servidor:', responseData);
-            console.log('Pedido realizado con éxito.');
-            notification.success({
-              message: 'Pedido Exitoso',
-              description: '¡El pedido se ha completado con éxito!',
-            });
-          } else {
-            console.error('Error al realizar el pedido:', responseData.message);
           }
-        })
-        .catch(error => {
-          console.error('Error en la solicitud:', error);
-        })
-        .finally(() => {
-          setCart([]);
-          regresar();
-        });
-    } else {
-      console.error('ID de cuenta no encontrado en localStorage');
-    }
-  }
-  const PagarPorFraccionado = () => {
-    setMostrarComponente(!mostrarComponente);
-    console.log('Pagar por fraccionado con valor:', fraccionadoValue);
-  };
-  const handleLocationSelect = (location) => {
-    setLocationData((prevLocationData) => ({
-      ...prevLocationData,
-      [`latitud${currentLocation}`]: location.latitud,
-      [`longitud${currentLocation}`]: location.longitud,
-    }));
-    setMostrarModal(false);
-  };
-
-
-  const handleSaveLocation = () => {
-    if (marker) {
-      setLocationData((prevLocationData) => ({
-        ...prevLocationData,
-        [`latitud${currentLocation}`]: marker.latitude,
-        [`longitud${currentLocation}`]: marker.longitude,
-      }));
-      setCurrentLocation((prevLocation) => (prevLocation % 3) + 1); // Cambiar a la siguiente ubicación (1, 2, 3)
-    }
-  };
+        const PagarPorFraccionado = () => {
+          setMostrarComponente(!mostrarComponente);
+          console.log('Pagar por fraccionado con valor:', fraccionadoValue);
+        };
+        const handleLocationSelect = (location) => {
+            setLocationData((prevLocationData) => ({
+              ...prevLocationData,
+              [`latitud${currentLocation}`]: location.latitud,
+              [`longitud${currentLocation}`]: location.longitud,
+            }));
+            setMostrarModal(false);
+          };
+          
+        
+        const handleSaveLocation = () => {
+          if (marker) {
+            setLocationData((prevLocationData) => ({
+              ...prevLocationData,
+              [`latitud${currentLocation}`]: marker.latitude,
+              [`longitud${currentLocation}`]: marker.longitude,
+            }));
+            setCurrentLocation((prevLocation) => (prevLocation % 3) + 1); // Cambiar a la siguiente ubicación (1, 2, 3)
+          }
+        };
 
 
 
-  const isImage = file => {
-    const imageTypes = ['image/jpeg', 'image/png'];
-    return imageTypes.includes(file.type);
-  };
-  const [fileList, setFileList] = useState([]);
-  const onChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-  };
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
-  };
-  const beforeUpload = file => {
-    if (!isImage(file)) {
-      message.error('Solo puedes subir imágenes!');
-      return Upload.LIST_IGNORE;
-    }
-    return true;
-  };
-  return (
-    <Row style={{ marginLeft: '30px', marginRight: '50px' }}>
-      <Button
-        onClick={HacerClick}
-        size="lg"
-        style={{
-          marginBottom: "10px",
-          marginTop: "10px",
-          backgroundColor: "#131212",
-          borderRadius: "8px",
-          padding: "15px 30px",
-          fontSize: "16px",
-          color: "#fff",
-          border: "1px solid #131212",
-          transition: "background-color 0.3s",
-        }}
-        onMouseOver={(e) =>
-          (e.target.style.backgroundColor = "#333")
-        }
-        onMouseOut={(e) =>
-          (e.target.style.backgroundColor = "#000")
-        }
-      >
-        Cancelar
-      </Button>
-      <Col>
-        <Alert
-          message="Hola ✌🏻"
-          description="Revisa tu dirección y forma de pago antes de comprar."
-          type="info"
-          showIcon
-        />
-        <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
-        <Radio.Group onChange={handleModoPedidoChange} value={modoPedido}>
-          <Col style={{ marginLeft: '10px' }}>
-            <Row>
-              <Radio value="D">Domicilio</Radio>
-              <Radio value="R">Retirar</Radio>
-              <Radio value="L">Local</Radio>
-            </Row>
-          </Col>
-        </Radio.Group>
-        {modoPedido === 'D' && (
+        const isImage = file => {
+          const imageTypes = ['image/jpeg', 'image/png']; 
+          return imageTypes.includes(file.type);
+        };      
+          const [fileList, setFileList] = useState([]);
+          const onChange = ({ fileList: newFileList }) => {
+            setFileList(newFileList);
+          };
+          const onPreview = async (file) => {
+            let src = file.url;
+            if (!src) {
+              src = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file.originFileObj);
+                reader.onload = () => resolve(reader.result);
+              });
+            }
+            const image = new Image();
+            image.src = src;
+            const imgWindow = window.open(src);
+            imgWindow?.document.write(image.outerHTML);
+          };
+          const beforeUpload = file => {
+            if (!isImage(file)) {
+              message.error('Solo puedes subir imágenes!');
+              return Upload.LIST_IGNORE;
+            }
+            return true;
+          };
+return(
+<Row style={{marginLeft:'30px', marginRight:'50px'}}>
+        <Col>
+          <h5>Hola ✌🏻</h5>
+          <span>Revisa tu dirección y forma de pago antes de comprar.</span>
+          <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
+          <Radio.Group onChange={handleModoPedidoChange} value={modoPedido}>
+            <Col style={{marginLeft:'10px'}}>
+              <Row>
+                <Radio value="D">Domicilio</Radio>
+                <Radio value="R">Retirar</Radio>
+                <Radio value="L">Local</Radio>
+              </Row>
+            </Col>
+          </Radio.Group>
+          {modoPedido === 'D' && (
           <>
             <ButtonGroup style={{
               marginLeft: '10px', marginTop: '10px', width: '100%',
@@ -464,133 +434,125 @@ const Pedidos = ({ regresar }) => {
               onLocationSelect={handleLocationSelect}
               onSaveLocation={handleSaveLocation}
             />
-          </Modal.Body>
-        </Modal>
-        <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
-        <Nav fill variant="tabs">
-          <Nav.Item>
-
-            <Nav.Link onClick={() => handleModoPagoChange('T')}>Transferencia</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link onClick={() => handleModoPagoChange('E')}>Efectivo</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link onClick={() => handleModoPagoChange('F')}>Fraccionado</Nav.Link>
-          </Nav.Item>
-        </Nav>
-        {modoPago === 'T' && (
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center'
-            , justifyContent: 'center'
-          }}>
-            <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
-            <div style={{
-              display: 'flex', alignItems: 'center'
-              , justifyContent: 'center'
-            }}>
-              <Card
-                style={{
-                  width: 400,
-                  marginRight: '10px',
-                }}
-              >
-                <p>Banco: Pichincha</p>
-                <p>Tipo de cuenta: Ahorros</p>
-                <p>Número de cuenta: 2207213048</p>
-                <p>Nombre: Angie Mayerli Díaz Veliz</p>
-                <p>Cedula: 0927711309</p>
-                <p>Email: angiediazv9@gmail.com</p>
-              </Card>
-              <Card
-                style={{
-                  width: 400,
-                }}
-              >
-                <p>Banco: Guayaquil</p>
-                <p>Tipo de cuenta: Ahorros</p>
-                <p>Número de cuenta: 00012119645</p>
-                <p>Nombre: Angie Mayerli Díaz Veliz</p>
-                <p>Cedula: 0927711309</p>
-                <p>Email: angiediazv9@gmail.com</p>
-              </Card>
-            </div>
-            <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-            <div rotationSlider style={{
-              display: 'flex', alignItems: 'center'
-              , justifyContent: 'center'
-            }}>
-              <ImgCrop >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-card"
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={beforeUpload}
-
-                >
-                  {fileList.length < 1 && '+ Subir comprobante'}
-                </Upload>
-              </ImgCrop>
-            </div>
-
-            <Button style={{ marginTop: '10px', width: '400px' }}
-              disabled={fileList.length === 0 || modoPedido === null}
-              onClick={PagarPorEfectivo}
-            >
-              Pagar: ${totalPrice}
-            </Button>
-
-            <Divider>O pague con paypal </Divider>
-            <div style={{ width: '400px' }} >
-              <PayPal onSuccess={CerrarModalDespuesDePago} />
-            </div>
-          </div>
-        )}
-
-        {modoPago === 'E' && (
-          <div className="d-grid gap-2">
-            <Button style={{ marginTop: '50px', marginBottom: '240px' }}
-              disabled={modoPago !== 'E'}
-              onClick={PagarPorEfectivo2}
-            >
-              Pagar: ${totalPrice}
-            </Button>
-          </div>
-        )}
-
-        <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          {modoPago === 'F' && (
-            <Space align="center">
-              <InputNumber
-                min={0}
-                value={fraccionadoValue}
-                onChange={handleFraccionadoInputChange}
-                style={{ marginLeft: '10px' }}
-              />
-              <Button onClick={PagarPorFraccionado}>
-                Pagar: ${fraccionadoValue.toFixed(2)}
-              </Button>
-            </Space>
-          )}
-          {mostrarComponente && modoPago === 'F' && (
-            <div>
-              <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-              <div rotationSlider style={{
-                display: 'flex', alignItems: 'center'
-                , justifyContent: 'center'
-              }}>
-                <ImgCrop >
-                  <Upload
-                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={onChange}
-                    onPreview={onPreview}
-                    beforeUpload={beforeUpload}
-
-                  >
+              </Modal.Body>
+            </Modal>
+          <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
+          <Nav fill variant="tabs">
+                <Nav.Item>
+                    
+                    <Nav.Link onClick={() => handleModoPagoChange('T')}>Transferencia</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link onClick={() => handleModoPagoChange('E')}>Efectivo</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link onClick={() => handleModoPagoChange('F')}>Fraccionado</Nav.Link>
+                </Nav.Item>
+              </Nav>
+              {modoPago === 'T' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'
+                    , justifyContent: 'center' }}>
+                     <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
+                     <div style={{ display: 'flex',  alignItems: 'center'
+                    , justifyContent: 'center' }}>
+                     <Card
+                        style={{
+                          width: 400,
+                          marginRight: '10px', 
+                        }}
+                      >
+                        <p>Banco: Pichincha</p>
+                        <p>Tipo de cuenta: Ahorros</p>
+                        <p>Número de cuenta: 2207213048</p>
+                        <p>Nombre: Angie Mayerli Díaz Veliz</p>
+                        <p>Cedula: 0927711309</p>
+                        <p>Email: angiediazv9@gmail.com</p>
+                    </Card>
+                    <Card
+                        style={{
+                          width: 400,
+                        }}
+                      >
+                        <p>Banco: Guayaquil</p>
+                        <p>Tipo de cuenta: Ahorros</p>
+                        <p>Número de cuenta: 00012119645</p>
+                        <p>Nombre: Angie Mayerli Díaz Veliz</p>
+                        <p>Cedula: 0927711309</p>
+                        <p>Email: angiediazv9@gmail.com</p>
+                    </Card>
+                    </div>
+                    <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                    <div rotationSlider style={{ display: 'flex',  alignItems: 'center'
+                      , justifyContent: 'center' }}>
+                    <ImgCrop >
+                    <Upload
+                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      beforeUpload={beforeUpload}
+                      
+                    >
+                    {fileList.length < 1 && '+ Subir comprobante'}
+                    </Upload>
+                    </ImgCrop>
+                    </div>
+                 
+                    <Button style={{marginTop:'10px' ,width:'400px'}}
+                    disabled={fileList.length === 0 || modoPedido === null}
+                    onClick={PagarPorEfectivo} 
+                    >
+                    Pagar: ${totalPrice}
+                    </Button>
+           
+                  <Divider>O pague con paypal </Divider>
+                    <div style={{   width: '400px' }} >
+                      <PayPal onSuccess={CerrarModalDespuesDePago} />
+                    </div>
+                    </div>
+                  )}
+                 
+                {modoPago === 'E' && (
+                <div className="d-grid gap-2">
+                    <Button style={{ marginTop: '50px', marginBottom:'240px'}} 
+                    disabled={modoPago !== 'E'}
+                    onClick={PagarPorEfectivo2} 
+                    >
+                    Pagar: ${totalPrice}
+                    </Button>
+                </div> 
+                    )}
+              
+              <div style={{ textAlign: 'center', marginTop: '20px', marginBottom:'20px' }}>
+                {modoPago === 'F' && (
+                    <Space align="center">
+                    <InputNumber
+                        min={0}
+                        value={fraccionadoValue}
+                        onChange={handleFraccionadoInputChange}
+                        style={{ marginLeft: '10px' }}
+                    />
+                    <Button onClick={PagarPorFraccionado}>
+                        Pagar: ${fraccionadoValue.toFixed(2)}
+                    </Button>
+                    </Space>
+                )}
+                {mostrarComponente && modoPago === 'F' && (
+              <div>
+                <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                    <div rotationSlider style={{ display: 'flex',  alignItems: 'center'
+                      , justifyContent: 'center' }}>
+                    <ImgCrop >
+                    <Upload
+                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      beforeUpload={beforeUpload}
+                      
+                    >
                     {fileList.length < 1 && '+ Subir comprobante'}
                   </Upload>
                 </ImgCrop>
@@ -603,17 +565,17 @@ const Pedidos = ({ regresar }) => {
                 Pagar: ${totalPrice}
               </Button>
 
-              <Divider>O pague con paypal </Divider>
-              <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue} />
-              </div>
-            </div>
-          )}
-
-        </div>
-
-      </Col>
-      <Col>
+                    <Divider>O pague con paypal </Divider>
+                    <div style={{ marginBottom:'122px',  width: '400px',  margin: '0 auto'   }}>
+                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue}/>
+                    </div>
+                    </div>
+                  )}
+          
+                </div>
+            
+        </Col>
+        <Col>
         <div>
           <ul>
             {cart.map((item) => (
@@ -631,9 +593,9 @@ const Pedidos = ({ regresar }) => {
             ))}
           </ul>
         </div>
-      </Col>
-    </Row>
-  )
+        </Col>
+      </Row>
+)
 }
 
 
