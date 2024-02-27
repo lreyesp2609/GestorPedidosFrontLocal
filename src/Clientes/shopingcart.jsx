@@ -6,6 +6,7 @@ import {
   Button,
   Row,
   ButtonGroup,
+  Container,
   Col,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -206,8 +207,8 @@ const ShoppingCart = () => {
                               src={`data:image/png;base64,${item.image}`} alt="User" />
                           </Col>
                           <Col md={8}>
-                          <strong>{item.Name}</strong>
-                          <br/>
+                            <strong>{item.Name}</strong>
+                            <br />
                             <Meta
                               description={`Cantidad: ${item.quantity} - Precio: $${item.price}`}
                             />
@@ -250,7 +251,7 @@ const ShoppingCart = () => {
                             }
                             onMouseOut={(e) =>
                               (e.target.style.backgroundColor = "#000")
-                            } 
+                            }
                           >
                             Hacer pedido
                           </Button>
