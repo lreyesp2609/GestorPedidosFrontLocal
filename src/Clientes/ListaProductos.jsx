@@ -19,9 +19,11 @@ const ListProductos = () => {
       .then((response) => response.json())
       .then((data) => setProducts(data.productos))
       .catch((error) => console.error("Error fetching products:", error));
+    
   }, []);
 
   const handleCardClick = (product) => {
+    console.log(products);
     setSelectedProduct(product);
     setShowModal(true);
   };
@@ -52,6 +54,7 @@ const ListProductos = () => {
             Name: selectedProduct.nombreproducto,
             image: selectedProduct.imagenp,
             price: parseFloat(selectedProduct.preciounitario),
+            iva: selectedProduct.iva,
           },
         ];
       }
@@ -264,4 +267,3 @@ const ListProductos = () => {
 };
 
 export default ListProductos;
- 
