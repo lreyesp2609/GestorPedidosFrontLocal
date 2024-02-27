@@ -6,7 +6,7 @@ import { Form,Modal, Button, Row,ButtonGroup,
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
-import { Radio, InputNumber, Divider, Space, Card,Upload, message    } from 'antd';
+import { Radio, InputNumber, Divider, Space, Card,Upload, message , Checkbox    } from 'antd';
 import { notification } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
@@ -239,6 +239,10 @@ const Pedidos = ({regresar}) => {
     };
     
     
+    const navLinkStyle = {
+      color: '#000000', 
+      fontWeight: 'bold', 
+    };
     
     
       const CerrarModalDespuesDePago = () => {
@@ -395,8 +399,12 @@ const Pedidos = ({regresar}) => {
             }
             return true;
           };
+          const checkBox = (e) => {
+            console.log(`checked = ${e.target.checked}`);
+          };
 return(
-<Row style={{marginLeft:'30px', marginRight:'50px'}}>
+<Row style={{marginLeft:'30px', marginRight:'50px', marginTop:'10px'
+, background:'rgb(255, 255, 255)', borderRadius:'10px'}}>
         <Col>
           <h5>Hola ✌🏻</h5>
           <span>Revisa tu dirección y forma de pago antes de comprar.</span>
@@ -442,81 +450,92 @@ return(
               </Modal.Body>
             </Modal>
           <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
-          <Nav fill variant="tabs">
-                <Nav.Item>
-                    
-                    <Nav.Link onClick={() => handleModoPagoChange('T')}>Transferencia</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link onClick={() => handleModoPagoChange('E')}>Efectivo</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link onClick={() => handleModoPagoChange('F')}>Fraccionado</Nav.Link>
-                </Nav.Item>
-              </Nav>
-              {modoPago === 'T' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'
-                    , justifyContent: 'center' }}>
-                     <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
-                     <div style={{ display: 'flex',  alignItems: 'center'
-                    , justifyContent: 'center' }}>
-                     <Card
-                        style={{
-                          width: 400,
-                          marginRight: '10px', 
-                        }}
-                      >
-                        <p>Banco: Pichincha</p>
-                        <p>Tipo de cuenta: Ahorros</p>
-                        <p>Número de cuenta: 2207213048</p>
-                        <p>Nombre: Angie Mayerli Díaz Veliz</p>
-                        <p>Cedula: 0927711309</p>
-                        <p>Email: angiediazv9@gmail.com</p>
-                    </Card>
-                    <Card
-                        style={{
-                          width: 400,
-                        }}
-                      >
-                        <p>Banco: Guayaquil</p>
-                        <p>Tipo de cuenta: Ahorros</p>
-                        <p>Número de cuenta: 00012119645</p>
-                        <p>Nombre: Angie Mayerli Díaz Veliz</p>
-                        <p>Cedula: 0927711309</p>
-                        <p>Email: angiediazv9@gmail.com</p>
-                    </Card>
-                    </div>
-                    <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-                    <div rotationSlider style={{ display: 'flex',  alignItems: 'center'
-                      , justifyContent: 'center' }}>
-                    <ImgCrop >
-                    <Upload
-                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                      listType="picture-card"
-                      fileList={fileList}
-                      onChange={onChange}
-                      onPreview={onPreview}
-                      beforeUpload={beforeUpload}
-                      
-                    >
-                    {fileList.length < 1 && '+ Subir comprobante'}
-                    </Upload>
-                    </ImgCrop>
-                    </div>
-                 
-                    <Button style={{marginTop:'10px' ,width:'400px'}}
-                    disabled={fileList.length === 0 || modoPedido === null}
-                    onClick={PagarPorEfectivo} 
-                    >
-                    Pagar: ${totalPrice}
-                    </Button>
-           
-                  <Divider>O pague con paypal </Divider>
-                    <div style={{   width: '400px' }} >
-                      <PayPal onSuccess={CerrarModalDespuesDePago} />
-                    </div>
-                    </div>
-                  )}
+          <Nav fill variant="tabs" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+            <Nav.Link onClick={() => handleModoPagoChange('T')} style={navLinkStyle}>Transferencia</Nav.Link>
+            <Nav.Link onClick={() => handleModoPagoChange('E')} style={navLinkStyle}>Efectivo</Nav.Link>
+            <Nav.Link onClick={() => handleModoPagoChange('F')} style={navLinkStyle}>Fraccionado</Nav.Link>
+          </Nav>
+          {modoPago === 'T' && (
+  <Row gutter={[16, 16]}>
+    <Col >
+    <div>
+      <style>
+        {`
+          @media only screen and (max-width: 600px) {
+            .ant-divider-inner-text {
+              font-size: 10px;
+            }
+          }
+        `}
+      </style>
+      <Divider>Realice la transferencia a la siguiente cuenta:</Divider>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Card style={{ width: 'auto', marginBottom: '16px' }}>
+          <p>Banco: Pichincha</p>
+          <p>Tipo de cuenta: Ahorros</p>
+          <p>Número de cuenta: 2207213048</p>
+          <p>Nombre: Angie Mayerli Díaz Veliz</p>
+          <p>Cedula: 0927711309</p>
+          <p>Email: angiediazv9@gmail.com</p>
+        </Card>
+        <Card style={{ width: 'auto' }}>
+          <p>Banco: Guayaquil</p>
+          <p>Tipo de cuenta: Ahorros</p>
+          <p>Número de cuenta: 00012119645</p>
+          <p>Nombre: Angie Mayerli Díaz Veliz</p>
+          <p>Cedula: 0927711309</p>
+          <p>Email: angiediazv9@gmail.com</p>
+        </Card>
+      </div>
+    </Col>
+
+    <Col  style={{ textAlign: 'center' }}>
+    <div>
+      <style>
+        {`
+          @media only screen and (max-width: 600px) {
+            .ant-divider-inner-text {
+              font-size: 10px;
+            }
+          }
+        `}
+      </style>
+      <Divider orientation="left">
+        Comprobante de pago (foto, escaneo ó captura de pantalla)
+      </Divider>
+    </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+        <ImgCrop>
+          <Upload
+            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+            listType="picture-card"
+            fileList={fileList}
+            onChange={onChange}
+            onPreview={onPreview}
+            beforeUpload={beforeUpload}
+          >
+            {fileList.length < 1 && '+ Subir comprobante'}
+          </Upload>
+        </ImgCrop>
+      </div>
+      <div className="d-grid gap-2">
+      <Button 
+        disabled={fileList.length === 0 || modoPedido === null} 
+        onClick={PagarPorEfectivo}>
+        Pagar: ${totalPrice}
+      </Button>
+      </div> 
+      <Divider>O pague con PayPal</Divider>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+        <PayPal onSuccess={CerrarModalDespuesDePago} />
+      </div>
+    </Col>
+  </Row>
+)}
+
+             
                  
                 {modoPago === 'E' && (
                 <div className="d-grid gap-2">
@@ -580,7 +599,7 @@ return(
                 </div>
             
         </Col>
-        <Col>
+        {/*<Col>
         <div>
         <ul>
             {cart.map((item) => (
@@ -596,7 +615,7 @@ return(
                 ))}
               </ul>
         </div>
-        </Col>
+            </Col>*/}
       </Row>
 )
 }
