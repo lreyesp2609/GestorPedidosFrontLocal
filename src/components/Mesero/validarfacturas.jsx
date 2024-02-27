@@ -144,6 +144,19 @@ const ValidarFacturas = () => {
       )
   );
 
+  const tipoPedidoCompleto = (tipo) => {
+    switch (tipo) {
+      case 'D':
+        return 'A domicilio';
+      case 'R':
+        return 'A retirar';
+      case 'L':
+        return 'En local';
+      default:
+        return tipo;
+    }
+  };
+
   return (
     <div>
       <h2>Lista de Facturas</h2>
@@ -164,6 +177,8 @@ const ValidarFacturas = () => {
             <th>Código Autorización</th>
             <th>Número Factura Desde</th>
             <th>Número Factura Hasta</th>
+            <th>Estado de pago</th>
+            <th>Tipo de pedido</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -184,6 +199,8 @@ const ValidarFacturas = () => {
               <td>{factura.codigo_autorizacion}</td>
               <td>{factura.numero_factura_desde}</td>
               <td>{factura.numero_factura_hasta}</td>
+              <th>{factura.estado_pago}</th>
+              <td>{tipoPedidoCompleto(factura.tipo_de_pedido)}</td>
               <td>
                 <Button
                   variant="success"

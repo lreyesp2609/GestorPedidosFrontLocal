@@ -327,15 +327,18 @@ const NavBar = () => {
           </Modal.Body>
         </Modal>
       </div>
-      <Drawer closable={true}
-        maskClosable={true} onClose={onClose} open={open} className="carrito" >
-        <div className="carrito">
-        <ShoppingCart />
+      <Drawer
+        closable={true}
+        maskClosable={true} 
+        onClose={onClose} 
+        open={open} >
+        <div>
+          <ShoppingCart />
         </div>
-        
+
       </Drawer>
     </>
   );
 };
-
+ 
 export default NavBar;

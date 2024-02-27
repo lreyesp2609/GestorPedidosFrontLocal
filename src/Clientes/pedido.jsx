@@ -1,8 +1,10 @@
-import React, { useContext, useState, useEffect  } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Lottie from 'react-lottie';
-import { Form,Modal, Button, Row,ButtonGroup,
-  Col, Container, Nav} from 'react-bootstrap';
-  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  Form, Modal, Button, Row, ButtonGroup,
+  Col, Container, Nav
+} from 'react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
@@ -10,153 +12,141 @@ import { Radio, InputNumber, Divider, Space, Card,Upload, message    } from 'ant
 import { notification } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-
-
-
-
-
-
 import PayPal from "./Paypal";
 import PayPal2 from "./Paypal2";
 import Map3 from "./Map3";
-const Pedidos = ({regresar}) => {
-    const [cart, setCart] = useContext(CartContext);
-    const [mostrarPedido, setMostrarPedido] = useState(false);
-  
-  
-  
-  
-    const [MostrarModal, setMostrarModal] = useState(false);
-    const [userData, setUserData] = useState(null);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [showCardForm, setShowCardForm] = useState(false);
-    
-    const [pagoCompletado, setPagoCompletado] = useState(false); 
-    const [modoPago, setModoPago] = useState(null); 
-    const [fraccionadoValue, setFraccionadoValue] = useState(1);
-    const [mostrarComponente, setMostrarComponente] = useState(false);
-  
-    const [modoPedido, setModoPedido] = useState(null); 
-    const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
-    const [isAnimationPaused, setIsAnimationPaused] = useState(false);
-    const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
+const Pedidos = ({ regresar }) => {
+  const [cart, setCart] = useContext(CartContext);
+  const [mostrarPedido, setMostrarPedido] = useState(false);
+  const [MostrarModal, setMostrarModal] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [showCardForm, setShowCardForm] = useState(false);
+
+  const [pagoCompletado, setPagoCompletado] = useState(false);
+  const [modoPago, setModoPago] = useState(null);
+  const [fraccionadoValue, setFraccionadoValue] = useState(1);
+  const [mostrarComponente, setMostrarComponente] = useState(false);
+
+  const [modoPedido, setModoPedido] = useState(null);
+  const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
+  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
 
 
-    const [locationData, setLocationData] = useState({
-        latitud: 0,
-        longitud: 0
-      });
-    
-      const id_cuenta = localStorage.getItem('id_cuenta');
-      useEffect(() => {
-        
-      
-        if (id_cuenta) {
-          fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
-            .then(response => response.json())
-            .then(data => {
-              setUserData(data.usuario);
-              
-              setLocationData({
-                latitud1: data.usuario?.ubicacion1?.latitud || 0,
-                longitud1: data.usuario?.ubicacion1?.longitud || 0,
-                latitud2: data.usuario?.ubicacion2?.latitud || 0,
-                longitud2: data.usuario?.ubicacion2?.longitud || 0,
-                latitud3: data.usuario?.ubicacion3?.latitud || 0,
-                longitud3: data.usuario?.ubicacion3?.longitud || 0,
-              });
-            })
-            .catch(error => console.error('Error al obtener datos del usuario:', error));
-        } else {
-          console.error('Nombre de usuario no encontrado en localStorage');
-        }
-      }, []);
-    
-      const handleModoPagoChange = (value) => {
-        setModoPago(value);
-      };
-      const handleFraccionadoInputChange = (value) => {
-        setFraccionadoValue(value);
-      };
-      const handleModoPedidoChange = (e) => {
-        setModoPedido(e.target.value);
-      };
-      const handleLocationChange = (location) => {
-        setSelectedLocation(location);
-        setShowElegirUbicacion(location === 'Otro');
-        let newLocationData = {};
-        console.log(`Cambiando a la ubicación: ${location}`);
-    
-    
-        switch (location) {
-          case 'Casa':
-            newLocationData = {
-              latitud: locationData.latitud1,
-              longitud: locationData.longitud1,
-            };
-            break;
-          case 'Trabajo':
-            newLocationData = {
-              latitud: locationData.latitud2,
-              longitud: locationData.longitud2,
-            };
-            break;
-          case 'Otro':
-            newLocationData = {
-              latitud: locationData.latitud3,
-              longitud: locationData.longitud3,
-            };
-            break;
-          default:
-            newLocationData = {
-              latitud: 0,
-              longitud: 0,
-            };
-        }
-        console.log('Nuevos datos de ubicación:', newLocationData);
-        setLocationData((prevLocationData) => ({ ...prevLocationData, ...newLocationData }));
-      };
-      
-      const HacerClick = () => {
-        if (cart.length > 0) {
-          setMostrarPedido(true);
-        }
-      };
-      
-    
-      const quantity = cart.reduce((acc, curr) => {
-        return acc + curr.quantity;
-      }, 0);
-    
-      const totalPrice = cart.reduce(
-        (acc, curr) => acc + curr.quantity * curr.price,
-        0
-      );
-    const PagarPorEfectivo =()=>{
-      if (id_cuenta) {
-        const detalles_pedido = cart.map(item => ({
-          id_producto: item.id,
-          cantidad_pedido: item.quantity,
-          costo_unitario: item.price,
-        }));
-    
-    
-        const formData = new FormData();
-      
-        formData.append('precio', totalPrice);
-        formData.append('tipo_de_pedido', modoPedido);
-        formData.append('metodo_de_pago', 'T'); 
-        formData.append('puntos', 0); 
-        formData.append('estado_del_pedido', 'O'); 
-        formData.append('impuesto', 0);
-        formData.append('estado_pago', 'En revisión');
-        formData.append('imagen', fileList[0]?.originFileObj || null);
-        formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-        // Realiza la solicitud POST al backend
-        fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-          method: 'POST',
-          body: formData,
+  const [locationData, setLocationData] = useState({
+    latitud: 0,
+    longitud: 0
+  });
+
+  const id_cuenta = localStorage.getItem('id_cuenta');
+  useEffect(() => {
+
+
+    if (id_cuenta) {
+      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+        .then(response => response.json())
+        .then(data => {
+          setUserData(data.usuario);
+
+          setLocationData({
+            latitud1: data.usuario?.ubicacion1?.latitud || 0,
+            longitud1: data.usuario?.ubicacion1?.longitud || 0,
+            latitud2: data.usuario?.ubicacion2?.latitud || 0,
+            longitud2: data.usuario?.ubicacion2?.longitud || 0,
+            latitud3: data.usuario?.ubicacion3?.latitud || 0,
+            longitud3: data.usuario?.ubicacion3?.longitud || 0,
+          });
         })
+        .catch(error => console.error('Error al obtener datos del usuario:', error));
+    } else {
+      console.error('Nombre de usuario no encontrado en localStorage');
+    }
+  }, []);
+
+  const handleModoPagoChange = (value) => {
+    setModoPago(value);
+  };
+  const handleFraccionadoInputChange = (value) => {
+    setFraccionadoValue(value);
+  };
+  const handleModoPedidoChange = (e) => {
+    setModoPedido(e.target.value);
+  };
+  const handleLocationChange = (location) => {
+    setSelectedLocation(location);
+    setShowElegirUbicacion(location === 'Otro');
+    let newLocationData = {};
+    console.log(`Cambiando a la ubicación: ${location}`);
+
+
+    switch (location) {
+      case 'Casa':
+        newLocationData = {
+          latitud: locationData.latitud1,
+          longitud: locationData.longitud1,
+        };
+        break;
+      case 'Trabajo':
+        newLocationData = {
+          latitud: locationData.latitud2,
+          longitud: locationData.longitud2,
+        };
+        break;
+      case 'Otro':
+        newLocationData = {
+          latitud: locationData.latitud3,
+          longitud: locationData.longitud3,
+        };
+        break;
+      default:
+        newLocationData = {
+          latitud: 0,
+          longitud: 0,
+        };
+    }
+    console.log('Nuevos datos de ubicación:', newLocationData);
+    setLocationData((prevLocationData) => ({ ...prevLocationData, ...newLocationData }));
+  };
+
+  const HacerClick = () => {
+    regresar();
+  };
+
+
+  const quantity = cart.reduce((acc, curr) => {
+    return acc + curr.quantity;
+  }, 0);
+
+  const totalPrice = cart.reduce(
+    (acc, curr) => acc + curr.quantity * curr.price,
+    0
+  );
+  const PagarPorEfectivo = () => {
+    if (id_cuenta) {
+      const detalles_pedido = cart.map(item => ({
+        id_producto: item.id,
+        cantidad_pedido: item.quantity,
+        costo_unitario: item.price,
+      }));
+
+
+      const formData = new FormData();
+
+      formData.append('precio', totalPrice);
+      formData.append('tipo_de_pedido', modoPedido);
+      formData.append('metodo_de_pago', 'T');
+      formData.append('puntos', 0);
+      formData.append('estado_del_pedido', 'O');
+      formData.append('impuesto', 0);
+      formData.append('estado_pago', 'En revisión');
+      formData.append('imagen', fileList[0]?.originFileObj || null);
+      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      // Realiza la solicitud POST al backend
+      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+        method: 'POST',
+        body: formData,
+      })
         .then(response => response.json())
         .then(responseData => {
           // Maneja la respuesta del backend según sea necesario
@@ -177,38 +167,38 @@ const Pedidos = ({regresar}) => {
         .finally(() => {
           setCart([]);
           regresar();
-       
-        });
-      } else {
-        console.error('ID de cuenta no encontrado en localStorage');
-      }
-      
 
-    };
-    const PagarPorEfectivo2 =()=>{
-      if (id_cuenta) {
-        const detalles_pedido = cart.map(item => ({
-          id_producto: item.id,
-          cantidad_pedido: item.quantity,
-          costo_unitario: item.price,
-        }));
-    
-    
-        const formData = new FormData();
-      
-        formData.append('precio', totalPrice);
-        formData.append('tipo_de_pedido', modoPedido);
-        formData.append('metodo_de_pago', 'E'); 
-        formData.append('puntos', 0); 
-        formData.append('estado_del_pedido', 'O'); 
-        formData.append('impuesto', 0);
-        formData.append('estado_pago', 'En revisión');
-        formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-        // Realiza la solicitud POST al backend
-        fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
-          method: 'POST',
-          body: formData,
-        })
+        });
+    } else {
+      console.error('ID de cuenta no encontrado en localStorage');
+    }
+
+
+  };
+  const PagarPorEfectivo2 = () => {
+    if (id_cuenta) {
+      const detalles_pedido = cart.map(item => ({
+        id_producto: item.id,
+        cantidad_pedido: item.quantity,
+        costo_unitario: item.price,
+      }));
+
+
+      const formData = new FormData();
+
+      formData.append('precio', totalPrice);
+      formData.append('tipo_de_pedido', modoPedido);
+      formData.append('metodo_de_pago', 'E');
+      formData.append('puntos', 0);
+      formData.append('estado_del_pedido', 'O');
+      formData.append('impuesto', 0);
+      formData.append('estado_pago', 'En revisión');
+      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      // Realiza la solicitud POST al backend
+      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+        method: 'POST',
+        body: formData,
+      })
         .then(response => response.json())
         .then(responseData => {
           // Maneja la respuesta del backend según sea necesario
@@ -229,12 +219,12 @@ const Pedidos = ({regresar}) => {
         .finally(() => {
           setCart([]);
           regresar();
-       
+
         });
-      } else {
-        console.error('ID de cuenta no encontrado en localStorage');
-      }
-      
+    } else {
+      console.error('ID de cuenta no encontrado en localStorage');
+    }
+
 
     };
     
@@ -364,7 +354,7 @@ const Pedidos = ({regresar}) => {
           }
         };
 
-        
+
 
         const isImage = file => {
           const imageTypes = ['image/jpeg', 'image/png']; 
@@ -412,30 +402,32 @@ return(
           </Radio.Group>
           {modoPedido === 'D' && (
           <>
-            <ButtonGroup style={{marginLeft:'10px',marginTop: '10px',width:'100%', 
-            marginBottom:'10px' }}>
-              <Button variant="outline-warning" 
-              onClick={() => handleLocationChange('Casa')}
-              style={{color:'rgb(255, 121, 32)'}}>Casa</Button>
-              <Button variant="outline-warning" 
-              onClick={() => handleLocationChange('Trabajo')}
-              style={{color:'rgb(255, 121, 32)'}}>Trabajo</Button>
-              <Button variant="outline-warning" 
-              onClick={() => handleLocationChange('Otro')}
-              style={{color:'rgb(255, 121, 32)'}}>Otro</Button>
-          </ButtonGroup>
-              <h5>Coordenadas de {selectedLocation}:</h5>
-              {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
-                `Latitud: ${locationData.latitud}, Longitud: ${locationData.longitud}`
-              ) : (
-                'Coordenadas no disponibles'
-              )}
+            <ButtonGroup style={{
+              marginLeft: '10px', marginTop: '10px', width: '100%',
+              marginBottom: '10px'
+            }}>
+              <Button variant="outline-warning"
+                onClick={() => handleLocationChange('Casa')}
+                style={{ color: 'rgb(255, 121, 32)' }}>Casa</Button>
+              <Button variant="outline-warning"
+                onClick={() => handleLocationChange('Trabajo')}
+                style={{ color: 'rgb(255, 121, 32)' }}>Trabajo</Button>
+              <Button variant="outline-warning"
+                onClick={() => handleLocationChange('Otro')}
+                style={{ color: 'rgb(255, 121, 32)' }}>Otro</Button>
+            </ButtonGroup>
+            <h5>Coordenadas de {selectedLocation}:</h5>
+            {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
+              `Latitud: ${locationData.latitud}, Longitud: ${locationData.longitud}`
+            ) : (
+              'Coordenadas no disponibles'
+            )}
           </>
-          )}
-            <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
-              <Modal.Header closeButton style={{ borderBottom: 'none' }} />
-              <Modal.Body>
-              <Map3
+        )}
+        <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
+          <Modal.Header closeButton style={{ borderBottom: 'none' }} />
+          <Modal.Body>
+            <Map3
               onLocationSelect={handleLocationSelect}
               onSaveLocation={handleSaveLocation}
             />
@@ -559,16 +551,16 @@ return(
                       
                     >
                     {fileList.length < 1 && '+ Subir comprobante'}
-                    </Upload>
-                    </ImgCrop>
-                    </div>
-                 
-                    <Button style={{marginTop:'10px' ,width:'400px'}}
-                    disabled={fileList.length === 0 || modoPedido === null}
-                    onClick={PagarPorEfectivo} 
-                    >
-                    Pagar: ${totalPrice}
-                    </Button>
+                  </Upload>
+                </ImgCrop>
+              </div>
+
+              <Button style={{ marginTop: '10px', width: '400px' }}
+                disabled={fileList.length === 0 || modoPedido === null}
+                onClick={PagarPorEfectivo}
+              >
+                Pagar: ${totalPrice}
+              </Button>
 
                     <Divider>O pague con paypal </Divider>
                     <div style={{ marginBottom:'122px',  width: '400px',  margin: '0 auto'   }}>
@@ -582,19 +574,21 @@ return(
         </Col>
         <Col>
         <div>
-        <ul>
+          <ul>
             {cart.map((item) => (
-                  <li key={item.id} style={{ marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '10px', fontSize: '18px', 
-                  marginTop:'10px'}}>
-                    <img
-                      src={`data:image/png;base64,${item.image}`} 
-                      alt={`Imagen de ${item.Name}`}
-                      style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                    />
-                    {item.Name} - Cantidad: {item.quantity} - Precio: ${item.price}
-                  </li>
-                ))}
-              </ul>
+              <li key={item.id} style={{
+                marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '10px', fontSize: '18px',
+                marginTop: '10px'
+              }}>
+                <img
+                  src={`data:image/png;base64,${item.image}`}
+                  alt={`Imagen de ${item.Name}`}
+                  style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                />
+                {item.Name} - Cantidad: {item.quantity} - Precio: ${item.price}
+              </li>
+            ))}
+          </ul>
         </div>
         </Col>
       </Row>
