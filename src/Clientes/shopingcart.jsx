@@ -87,6 +87,17 @@ const ShoppingCart = () => {
   }, []);
 
 
+  const ivaPrecio = () => {
+    let iva = 0;
+    for (let i = 0; i < cart.length; i++) {
+      const currentItem = cart[i];
+      if (currentItem.iva == 1) {
+        iva += currentItem.quantity * currentItem.price * 0.15;
+      }
+    }
+    return iva;
+  }
+
 
 
 
@@ -174,6 +185,7 @@ const ShoppingCart = () => {
   );
 
 
+
   return (
     <>
       <div>
@@ -188,7 +200,6 @@ const ShoppingCart = () => {
 
                   <ul>
                     {cart.map((item) => (
-
                       <div
                         key={item.id}
                         style={{
@@ -209,9 +220,7 @@ const ShoppingCart = () => {
                           <Col md={8}>
                             <strong>{item.Name}</strong>
                             <br />
-                            <Meta
-                              description={`Cantidad: ${item.quantity} - Precio: $${item.price}`}
-                            />
+                            <span>{`Cantidad: ${item.quantity} - Precio: $${item.price}`}</span>
                           </Col>
                         </Row>
                       </div>
@@ -220,15 +229,30 @@ const ShoppingCart = () => {
 
                   <Col style={{
                     backgroundColor: 'rgb(255, 255, 255)', borderRadius: '5px'
-                    , marginLeft: '10px'
+                    , marginLeft: '10px',border: "1px solid #131212", padding:"20px"
                   }}  >
                     <Row>
-                      <Col>
+                      <Col md={6} style={{ textAlign: "left" }}>
                         <div style={{ marginTop: "10px", fontSize: "18px" }}>
-                          Total: ${totalPrice}
+                          SubTotal:
+                        </div>
+                        <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                          Impuestos:
+                        </div>
+                      </Col>
+                      <Col md={6} style={{ textAlign: "right" }}>
+                        <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                          ${totalPrice}
+                        </div>
+                        <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                          ${ivaPrecio().toFixed(2)}
                         </div>
                       </Col>
                     </Row>
+                    <hr style={{ marginTop: "5px", marginBottom: "5px" }} />
+                    <div style={{ marginTop: "10px", fontSize: "25px" }}>
+                      Total: ${Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
+                    </div>
                     <Row>
                       <Col>
                         <div className="d-grid gap-2">
