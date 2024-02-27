@@ -40,6 +40,7 @@ const Pedidos = ({ regresar }) => {
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [sucursalesData, setSucursalesData] = useState([]);
+  const [sucursal, setSucursal] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
 
   const listarsucursales = () => {
@@ -165,7 +166,7 @@ const Pedidos = ({ regresar }) => {
     for (let i = 0; i < cart.length; i++) {
       const currentItem = cart[i];
       if (currentItem.iva == 1) {
-        iva += currentItem.quantity * currentItem.price * 0.15;
+        iva += currentItem.quantity * currentItem.price * 0.12;
       }
     }
     return iva;
@@ -191,7 +192,7 @@ const Pedidos = ({ regresar }) => {
 
       const formData = new FormData();
 
-      formData.append('precio', Number(totalPrice)+Number(ivaPrecio().toFixed(2)));
+      formData.append('precio', Number(totalPrice) + Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'T');
       formData.append('puntos', 0);
@@ -200,6 +201,7 @@ const Pedidos = ({ regresar }) => {
       formData.append('estado_pago', 'En revisión');
       formData.append('imagen', fileList[0]?.originFileObj || null);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      formData.append('id_sucursal', sucursal);
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -215,18 +217,23 @@ const Pedidos = ({ regresar }) => {
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
             });
+            setCart([]);
+          regresar();
           } else {
+            notification.error({
+              message: 'Fallo en el pedido',
+              description: '¡Algo salió mal!',
+            });
             console.error('Error al realizar el pedido:', responseData.message);
           }
         })
         .catch(error => {
+          notification.error({
+            message: 'Fallo en el pedido',
+            description: '¡Algo salió mal!',
+          });
           console.error('Error en la solicitud:', error);
         })
-        .finally(() => {
-          setCart([]);
-          regresar();
-
-        });
     } else {
       console.error('ID de cuenta no encontrado en localStorage');
     }
@@ -243,15 +250,18 @@ const Pedidos = ({ regresar }) => {
 
 
       const formData = new FormData();
-
-      formData.append('precio', Number(totalPrice)+Number(ivaPrecio().toFixed(2)));
+      let valor = Number(totalPrice) + Number(ivaPrecio().toFixed(2));
+      console.log('Total: ' + valor);
+      formData.append('precio', valor);
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'E');
       formData.append('puntos', 0);
       formData.append('estado_del_pedido', 'O');
       formData.append('impuesto', 0);
       formData.append('estado_pago', 'En revisión');
+      formData.append('id_sucursal', sucursal);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -267,19 +277,25 @@ const Pedidos = ({ regresar }) => {
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
             });
+            setCart([]);
+            regresar();
           } else {
+            notification.error({
+              message: 'Fallo en el pedido',
+              description: '¡Algo salió mal!',
+            });
             console.error('Error al realizar el pedido:', responseData.message);
           }
         })
         .catch(error => {
+          notification.error({
+            message: 'Fallo en el pedido',
+            description: '¡Algo salió mal!',
+          });
           console.error('Error en la solicitud:', error);
         })
-        .finally(() => {
-          setCart([]);
-          regresar();
-
-        });
     } else {
+
       console.error('ID de cuenta no encontrado en localStorage');
     }
 
@@ -301,7 +317,7 @@ const Pedidos = ({ regresar }) => {
       // Construye el cuerpo de la solicitud con los datos necesarios
       const formData = new FormData();
 
-      formData.append('precio', number(totalPrice)+Number(ivaPrecio().toFixed(2)));
+      formData.append('precio', number(totalPrice) + Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'T'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
@@ -350,7 +366,7 @@ const Pedidos = ({ regresar }) => {
       // Construye el cuerpo de la solicitud con los datos necesarios
       const formData = new FormData();
 
-      formData.append('precio', Number(totalPrice)+Number(ivaPrecio().toFixed(2)));
+      formData.append('precio', Number(totalPrice) + Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'F'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
@@ -411,9 +427,9 @@ const Pedidos = ({ regresar }) => {
       setCurrentLocation((prevLocation) => (prevLocation % 3) + 1); // Cambiar a la siguiente ubicación (1, 2, 3)
     }
   };
-
-
-
+  const handleSucursalSelect = (selectedSucursal) => {
+    setSucursal(selectedSucursal);
+  };
   const isImage = file => {
     const imageTypes = ['image/jpeg', 'image/png'];
     return imageTypes.includes(file.type);
@@ -575,39 +591,38 @@ const Pedidos = ({ regresar }) => {
           </>
         )}
         {modoPedido === 'R' && (
-            sucursalesData.map((sucursal) => {
-              if (sucursal.estadoApertura === 'Abierto ahora') {
-                return (
-                  <Card
-                    hoverable
-                    title={sucursal.snombre}
-                    style={{
-                      width: "auto",
-                      border: "1px solid #A4A4A4",
-                      margin: "10px",
-                    }}
-                    cover={
-                      <img
-                        alt="Descarga la aplicación móvil"
-                        src={`data:image/png;base64,${sucursal.imagensucursal}`}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    }
-                    className="text-center"
-                    key={sucursal.id}  // Agrega una clave única para cada elemento en el mapa
-                  >
-                    <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
-                    <span style={{ color: 'green' }}>
-                      {sucursal.estadoApertura}
-                    </span>
-                  </Card>
-                );
-              }
-              return (<div>No hay más sucursales disponibles ahora mismo</div>)
-                // Devuelve null para las sucursales que no cumplen con la condición
-            })
+          sucursalesData.map((sucursal) => {
+            if (sucursal.estadoApertura === 'Abierto ahora') {
+              return (
+                <Card
+                  key={sucursal.id_sucursal}
+                  hoverable
+                  title={sucursal.snombre}
+                  style={{
+                    width: "auto",
+                    margin: "10px",
+                    border: sucursal.id_sucursal === sucursal ? "2px solid green" : "1px solid #A4A4A4",
+                  }}
+                  cover={
+                    <img
+                      alt="Descarga la aplicación móvil"
+                      src={`data:image/png;base64,${sucursal.imagensucursal}`}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  }
+                  className="text-center"
+                  onClick={() => handleSucursalSelect(sucursal.id_sucursal)}  // Agrega este evento onClick
+                >
+                  <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
+                  <span style={{ color: 'green' }}>
+                    {sucursal.estadoApertura}
+                  </span>
+                </Card>
+              );
+            }
+            return (<div>No hay más sucursales disponibles ahora mismo</div>)
+          })
         )}
-
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
           <Modal.Body>
@@ -727,7 +742,7 @@ const Pedidos = ({ regresar }) => {
               disabled={fileList.length === 0 || modoPedido === null}
               onClick={PagarPorEfectivo}
             >
-              Pagar: ${ Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
+              Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
             </Button>
 
             <Divider>O pague con paypal </Divider>
@@ -743,7 +758,7 @@ const Pedidos = ({ regresar }) => {
               disabled={modoPago !== 'E'}
               onClick={PagarPorEfectivo2}
             >
-              Pagar: ${ Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
+              Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
             </Button>
           </div>
         )}
@@ -788,7 +803,7 @@ const Pedidos = ({ regresar }) => {
                 disabled={fileList.length === 0 || modoPedido === null}
                 onClick={PagarPorEfectivo}
               >
-                Pagar: ${ Number(totalPrice)+Number(ivaPrecio().toFixed(2))}
+                Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
               </Button>
 
               <Divider>O pague con paypal </Divider>
