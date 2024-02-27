@@ -277,7 +277,7 @@ const ShoppingCart = () => {
                               (e.target.style.backgroundColor = "#000")
                             }
                           >
-                            Hacer pedido
+                            Realizar pedido
                           </Button>
                         </div>
                       </Col>
