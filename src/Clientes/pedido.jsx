@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
-import { Radio, InputNumber, Divider, Space, Card, Upload, message, Segmented, Avatar } from 'antd';
-import { notification, Alert } from 'antd';
+import { Radio, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
+import { notification, Alert,Tooltip } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -20,6 +20,9 @@ import imglocal from "./res/local.png";
 import imghogar from "./res/hogar.png";
 import imgtrabajao from "./res/localizacion.png";
 import imgotro from "./res/ubicacion.png";
+import imgtransfer from "./res/pagmovil.png";
+import imgefectivo from "./res/pagefectivo.png";
+import imgdividir from "./res/dividirpagos.png";
 const Pedidos = ({ regresar }) => {
   const [cart, setCart] = useContext(CartContext);
   const [mostrarPedido, setMostrarPedido] = useState(false);
@@ -29,7 +32,7 @@ const Pedidos = ({ regresar }) => {
   const [showCardForm, setShowCardForm] = useState(false);
 
   const [pagoCompletado, setPagoCompletado] = useState(false);
-  const [modoPago, setModoPago] = useState(null);
+  const [modoPago, setModoPago] = useState('T');
   const [fraccionadoValue, setFraccionadoValue] = useState(1);
   const [mostrarComponente, setMostrarComponente] = useState(false);
 
@@ -43,6 +46,7 @@ const Pedidos = ({ regresar }) => {
     latitud: undefined,
     longitud: undefined
   });
+
 
   const id_cuenta = localStorage.getItem('id_cuenta');
   useEffect(() => {
@@ -62,6 +66,7 @@ const Pedidos = ({ regresar }) => {
             latitud3: data.usuario?.ubicacion3?.latitud || undefined,
             longitud3: data.usuario?.ubicacion3?.longitud || undefined,
           });
+
         })
         .catch(error => console.error('Error al obtener datos del usuario:', error));
     } else {
@@ -455,10 +460,14 @@ const Pedidos = ({ regresar }) => {
       <Col>
         {modoPedido === 'D' && (
           <>
-            <Col md={12} className="d-flex justify-content-center align-items-center" style={{marginTop:'5px'}}>
+            <Col md={12} className="d-flex justify-content-center align-items-center" style={{ marginTop: '5px' }}>
               <Segmented
                 onChange={handleLocationChange}
                 options={[
+                  {
+
+                    value: 'any',
+                  },
                   {
                     label: (
                       <div
@@ -501,12 +510,14 @@ const Pedidos = ({ regresar }) => {
                 ]}
               />
             </Col>
-            
-            <h5>Coordenadas de {selectedLocation}:</h5>
+
+
             {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
-              `Latitud: ${locationData.latitud}, Longitud: ${locationData.longitud}`
+              <>
+                <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
+              </>
             ) : (
-              'Coordenadas no disponibles'
+              'No tienes una ubicación agregada'
             )}
           </>
         )}
@@ -520,18 +531,55 @@ const Pedidos = ({ regresar }) => {
           </Modal.Body>
         </Modal>
         <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
-        <Nav fill variant="tabs">
-          <Nav.Item>
-
-            <Nav.Link onClick={() => handleModoPagoChange('T')}>Transferencia</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link onClick={() => handleModoPagoChange('E')}>Efectivo</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link onClick={() => handleModoPagoChange('F')}>Fraccionado</Nav.Link>
-          </Nav.Item>
-        </Nav>
+        <Col md={12} className="d-flex justify-content-center align-items-center" style={{ marginTop: '5px' }}>
+          <Segmented
+            onChange={handleModoPagoChange}
+            options={[
+              {
+                label: (
+                  <Tooltip placement="top" title="Pagar por transferencia">
+                  <div
+                    style={{
+                      padding: 4,
+                    }}
+                  >
+                    <img src={imgtransfer} style={{ width: "100%" }} />
+                  </div>
+                  </Tooltip>
+                ),
+                value: 'T',
+              },
+              {
+                label: (
+                  <Tooltip placement="top" title="Pagar en efectivo" >
+                  <div
+                    style={{
+                      padding: 4,
+                    }}
+                  >
+                    <img src={imgefectivo} style={{ width: "100%" }} />
+                  </div>
+                  </Tooltip>
+                ),
+                value: 'E',
+              },
+              {
+                label: (
+                  <Tooltip placement="top" title="Dividir los pagos" >
+                  <div
+                    style={{
+                      padding: 4,
+                    }}
+                  >
+                    <img src={imgdividir} style={{ width: "100%" }} />
+                  </div>
+                  </Tooltip>
+                ),
+                value: 'F',
+              }
+            ]}
+          />
+        </Col>
         {modoPago === 'T' && (
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center'
