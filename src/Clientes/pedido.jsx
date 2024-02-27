@@ -12,9 +12,6 @@ import { Radio, InputNumber, Divider, Space, Card,Upload, message    } from 'ant
 import { notification } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-
-
-
 import PayPal from "./Paypal";
 import PayPal2 from "./Paypal2";
 import Map3 from "./Map3";
