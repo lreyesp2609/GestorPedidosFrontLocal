@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import Lottie from 'react-lottie';
+import dayjs from 'dayjs';
 import {
   Form, Modal, Button, Row, ButtonGroup,
   Col, Container, Nav
@@ -8,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
-import { Radio, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
+import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
 import { notification, Alert, Tooltip } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
@@ -30,7 +31,7 @@ const Pedidos = ({ regresar }) => {
   const [userData, setUserData] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState('Casa');
   const [showCardForm, setShowCardForm] = useState(false);
-
+  const format = 'HH:mm';
   const [pagoCompletado, setPagoCompletado] = useState(false);
   const [modoPago, setModoPago] = useState('E');
   const [fraccionadoValue, setFraccionadoValue] = useState(1);
@@ -41,7 +42,9 @@ const Pedidos = ({ regresar }) => {
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [sucursalesData, setSucursalesData] = useState([]);
   const [sucursal, setSucursal] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(1); // Inicialmente trabajando con la ubicación 1
+  const [currentLocation, setCurrentLocation] = useState(1);
+  const [currentHour, setCurrentHour] = useState(dayjs().hour());
+  const [HoraEntrega, setHoraEntrega] = useState(null);
 
   const listarsucursales = () => {
     fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
@@ -181,6 +184,13 @@ const Pedidos = ({ regresar }) => {
     (acc, curr) => acc + curr.quantity * curr.price,
     0
   );
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentHour(dayjs().hour());
+    }, 60000); // Actualiza cada minuto
+  
+    return () => clearInterval(intervalId);
+  }, []);
   const PagarPorEfectivo = () => {
     if (id_cuenta) {
       const detalles_pedido = cart.map(item => ({
@@ -202,6 +212,10 @@ const Pedidos = ({ regresar }) => {
       formData.append('imagen', fileList[0]?.originFileObj || null);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       formData.append('id_sucursal', sucursal);
+      if (HoraEntrega) {
+        formData.append('fecha_hora', HoraEntrega.hour()); 
+        formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
+      }
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -218,7 +232,7 @@ const Pedidos = ({ regresar }) => {
               description: '¡El pedido se ha completado con éxito!',
             });
             setCart([]);
-          regresar();
+            regresar();
           } else {
             notification.error({
               message: 'Fallo en el pedido',
@@ -261,7 +275,10 @@ const Pedidos = ({ regresar }) => {
       formData.append('estado_pago', 'En revisión');
       formData.append('id_sucursal', sucursal);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-      
+      if (HoraEntrega) {
+        formData.append('fecha_hora', HoraEntrega.hour()); 
+        formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
+      }
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -623,6 +640,7 @@ const Pedidos = ({ regresar }) => {
             return (<div>No hay más sucursales disponibles ahora mismo</div>)
           })
         )}
+
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
           <Modal.Body>
@@ -682,6 +700,19 @@ const Pedidos = ({ regresar }) => {
             ]}
           />
         </Col>
+        <br />
+        ¿No hay prisa? Selecciona la hora que deseas que se realice tu pedido:
+        <TimePicker
+          defaultValue={dayjs('00:00', format)}
+          format={format}
+          onChange={(hora) => setHoraEntrega(hora)}
+          disabledHours={() => Array.from({ length: currentHour }, (_, i) => i)}
+          disabledMinutes={(selectedHour) =>
+            selectedHour === currentHour
+              ? Array.from({ length: dayjs().minute() }, (_, i) => i)
+              : []
+          }
+        />
         {modoPago === 'T' && (
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center'
