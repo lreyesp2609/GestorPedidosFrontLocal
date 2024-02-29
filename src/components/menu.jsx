@@ -53,6 +53,7 @@ import ReportManagement from "./reporte.jsx";
 import ValidarPedido from "../Clientes/Validarpedido.jsx";
 import reportes from "./res/reportes.png";
 import maquina from "./res/maquina.png";
+import datosB from "./res/datosB.png";
 import PuntosFacturacion from "./puntosFacturacion.jsx";
 
 const MenuG = () => {
@@ -76,6 +77,7 @@ const MenuG = () => {
   const tooltipTitle17 = "Gestión de reportes";
   const tooltipTitle18 = "Validar pagos de pedidos";
   const tooltipTitle19 = "Gestiona tus puntos de facturación";
+  const tooltipTitle20 = "Agrega tus datos bancarios";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -577,6 +579,32 @@ const MenuG = () => {
                     onClick={() => handleCardClick("puntosfactura")}
                   >
                     <Meta title={tooltipTitle19}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Datos bancarios" color="#162703">
+                <Tooltip title={tooltipTitle20}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Datos bancarios"
+                        src={datosB}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("DatosBancarios")}
+                  >
+                    <Meta title={tooltipTitle20}></Meta>
                   </Card>
                 </Tooltip>
               </Badge.Ribbon>

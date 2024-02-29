@@ -32,6 +32,7 @@ import MenuComandas from "./components/menucomandas";
 import MapaUbicacion from "./components/MapaUbicacion";
 import LocationCard from "./components/cards";
 import Sucursalescliente from "./Clientes/sucursales";
+
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -62,7 +63,7 @@ function App() {
               <Route path="/" element={<NavBar/>} />
 
               {/* Rutas para otras secciones */}
-              <Route path="/Mapa" element={<MapComponent />} />
+        
               <Route path="/home" element={<AdminMenu />} />
               <Route path="/homemesero" element={<MenuMesero />} />
               <Route path="/cocina" element={<MenuCocina/>} />
@@ -72,6 +73,7 @@ function App() {
               <Route path="/Registro" element={<RegisterForm/>} />
               <Route path="/Comandas" element={<MenuComandas/>} />
               <Route path="/Sucursales" element={<Sucursalescliente/>} />
+           
             </Routes>
             </ShoppingCartProvider>
           </div>

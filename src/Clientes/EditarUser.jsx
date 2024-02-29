@@ -106,39 +106,36 @@ const EditarUser = () => {
   const handleSaveClick = async (values) => {
     try {
       if (!values) {
-        console.error(
-          "Error: No se han proporcionado valores para la edición."
-        );
+        console.error("Error: No se han proporcionado valores para la edición.");
         return;
       }
-      // Desestructurar propiedades de values solo si values está definido
-      const { telefono, snombre, capellido, ruc_cedula, razon_social, } = values;
-
+  
+      const { telefono, snombre, capellido, ruc_cedula, razon_social } = values;
+  
       console.log(locationData.latitud2);
       console.log(locationData.longitud2);
+      
       const formData = new FormData();
       formData.append("ctelefono", telefono);
       formData.append("snombre", snombre);
       formData.append("capellido", capellido);
       formData.append("ruc_cedula", ruc_cedula);
       formData.append("crazon_social", razon_social);
-      if(locationData.latitud1!=0 && locationData.longitud1!=0){
+     
+      
+      if (locationData.latitud1 !== 0 && locationData.longitud1 !== 0) {
         formData.append('latitud1', locationData.latitud1);
         formData.append('longitud1', locationData.longitud1);
       }
-      if(locationData.latitud2!=0 && locationData.longitud2!=0){
+      if (locationData.latitud2 !== 0 && locationData.longitud2 !== 0) {
         formData.append('latitud2', locationData.latitud2);
         formData.append('longitud2', locationData.longitud2);
       }
-      if(locationData.latitud3!=0 && locationData.longitud3!=0){
+      if (locationData.latitud3 !== 0 && locationData.longitud3 !== 0) {
         formData.append('latitud3', locationData.latitud3);
         formData.append('longitud3', locationData.longitud3);
       }
-      const imageInput = document.getElementById("imageInput");
-      const imageFile = imageInput?.files[0];
-      if (imageFile) {
-        formData.append("imagen", imageFile);
-      }
+ 
       const response = await fetch(
         `http://127.0.0.1:8000/Login/editar_usuario/${id_cuenta}/`,
         {
@@ -146,10 +143,10 @@ const EditarUser = () => {
           body: formData,
         }
       );
-
+  
       const data = await response.json();
       if (response.ok) {
-        message.success("Usuario editado con exito");
+        message.success("Usuario editado con éxito");
         ObtenerUsuario();
       } else {
         message.error(`Error al editar aviso: ${data.error}`);
@@ -159,6 +156,7 @@ const EditarUser = () => {
       message.error("Error en la solicitud de edición de aviso");
     }
   };
+  
 
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -167,6 +165,8 @@ const EditarUser = () => {
       const file = acceptedFiles[0];
       if (file) {
         setSelectedImage(URL.createObjectURL(file));
+        console.log("Imagen seleccionada:", file);
+        console.log("Imagen seleccionada:", selectedImage);
       }
     },
   });
@@ -232,13 +232,14 @@ const EditarUser = () => {
                   />
                 </div>
               )}
+
+
+
+
             </div>
-            <input
-  type="file"
-  id="imageInput"
-  {...getInputProps()}
-/>
-            <div style={{ textAlign: "center" }}>
+       
+
+       <div style={{ textAlign: "center" }}>
               <span style={{ color: "white" }}> {userData?.nombre_usuario || ""}</span>
             </div>
             <div style={{ textAlign: "center" }}>
@@ -376,7 +377,6 @@ const EditarUser = () => {
                             capellido: userData.capellido,
                             ruc_cedula: userData.ruc_cedula,
                             razon_social: userData.razon_social,
-
                           });
 
                         }}
