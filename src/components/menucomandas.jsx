@@ -36,7 +36,16 @@ const MenuComandas = () => {
         try {
             const response = await fetch('http://127.0.0.1:8000/Mesero/pedidos/');
             const data = await response.json();
-            const pedidosOrdenados = data.pedidos.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
+    
+            // Obtén la hora actual
+            const horaActual = new Date();
+    
+            // Filtra los pedidos cuya fecha es menor que la hora actual
+            const pedidosFiltrados = data.pedidos.filter(pedido => new Date(pedido.fecha_pedido) < horaActual);
+    
+            // Ordena los pedidos de más reciente a más antiguo
+            const pedidosOrdenados = pedidosFiltrados.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
+    
             setPedidos(pedidosOrdenados);
         } catch (error) {
             console.error('Error al obtener la lista de pedidos', error);
@@ -45,7 +54,7 @@ const MenuComandas = () => {
 
     useEffect(() => {
         obtenerPedidos();
-        const intervalId = setInterval(obtenerPedidos, 5000);
+        const intervalId = setInterval(obtenerPedidos, 8000);
         return () => clearInterval(intervalId);
     }, []);
 

@@ -85,7 +85,7 @@ const ListProductos = () => {
         <Row>
 
           {products.map((product, index) => (
-            <Col md={6}>
+            <Col >
               <AntCard
                 hoverable
                 key={product.id}
@@ -267,3 +267,4 @@ const ListProductos = () => {
 };
 
 export default ListProductos;
+ 

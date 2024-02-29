@@ -92,7 +92,7 @@ const ShoppingCart = () => {
     for (let i = 0; i < cart.length; i++) {
       const currentItem = cart[i];
       if (currentItem.iva == 1) {
-        iva += currentItem.quantity * currentItem.price * 0.15;
+        iva += currentItem.quantity * currentItem.price * 0.12;
       }
     }
     return iva;
@@ -277,7 +277,7 @@ const ShoppingCart = () => {
                               (e.target.style.backgroundColor = "#000")
                             }
                           >
-                            Hacer pedido
+                            Realizar pedido
                           </Button>
                         </div>
                       </Col>
@@ -301,5 +301,5 @@ const ShoppingCart = () => {
 
   );
 };
-
+ 
 export default ShoppingCart;
