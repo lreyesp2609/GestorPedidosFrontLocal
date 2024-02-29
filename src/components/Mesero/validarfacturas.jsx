@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button } from "react-bootstrap";
-import { notification } from "antd";
+import { Table, Button, notification, Modal, Input } from "antd";
 
 const ValidarFacturas = () => {
   const [facturas, setFacturas] = useState([]);
@@ -10,6 +9,10 @@ const ValidarFacturas = () => {
 
   const [userData, setUserData] = useState(null);
   const id_cuenta = localStorage.getItem("id_cuenta");
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [reversoMotivo, setReversoMotivo] = useState("");
+  const [currentFacturaId, setCurrentFacturaId] = useState(null);
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
@@ -35,7 +38,10 @@ const ValidarFacturas = () => {
     fetch("http://127.0.0.1:8000/Mesero/lista_facturas/")
       .then((response) => response.json())
       .then((data) => {
-        setFacturas(data.facturas);
+        const facturasFiltradas = data.facturas.filter(
+          (factura) => factura.estado !== "R"
+        );
+        setFacturas(facturasFiltradas);
       })
       .catch((error) => console.error("Error fetching facturas:", error));
   };
@@ -79,60 +85,79 @@ const ValidarFacturas = () => {
   const validarFactura = (idFactura) => {
     if (userData) {
       const idCuenta = userData.id_cuenta;
-      fetch(`http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({})
-      })
-      .then((response) => {
-        if (response.ok) {
-          console.log(`Factura con ID ${idFactura} validada con éxito.`);
-          notification.success({
-            message: 'Validación Exitosa',
-            description: `La factura con ID ${idFactura} se validó correctamente.`
-          });
-          cargarFacturas(); // Actualizar la lista de facturas
-        } else {
-          console.error(`Error al validar la factura con ID ${idFactura}.`);
+      fetch(
+        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
         }
-      })
-      .catch((error) => {
-        console.error("Error en la solicitud:", error);
-      });
+      )
+        .then((response) => {
+          if (response.ok) {
+            console.log(`Factura con ID ${idFactura} validada con éxito.`);
+            notification.success({
+              message: "Validación Exitosa",
+              description: `La factura con ID ${idFactura} se validó correctamente.`,
+            });
+            cargarFacturas(); // Actualizar la lista de facturas
+          } else {
+            console.error(
+              `Error al validar la factura con ID ${idFactura}.`
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error en la solicitud:", error);
+        });
     } else {
       console.error("Error: datos del usuario no disponibles.");
     }
   };
 
-  const deshacerValidacion = (idFactura) => {
-    console.log("Deshaciendo validación de factura con ID:", idFactura);
-    const motivoReverso = prompt("Por favor, ingrese el motivo del reverso:");
-    if (motivoReverso !== null) {
-      fetch(`http://127.0.0.1:8000/Mesero/crear_reverso_factura/${idFactura}/`, {
+  const showReversoModal = (idFactura) => {
+    setCurrentFacturaId(idFactura);
+    setModalVisible(true);
+  };
+
+  const handleReversoMotivoChange = (e) => {
+    setReversoMotivo(e.target.value);
+  };
+
+  const handleReversoConfirm = () => {
+    if (reversoMotivo.trim() !== "") {
+      fetch(`http://127.0.0.1:8000/Mesero/crear_reverso_factura/${currentFacturaId}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ motivo_reverso: motivoReverso })
+        body: JSON.stringify({ motivo_reverso: reversoMotivo })
       })
       .then((response) => {
         if (response.ok) {
-          console.log(`Reverso de factura con ID ${idFactura} creado con éxito.`);
+          console.log(`Reverso de factura con ID ${currentFacturaId} creado con éxito.`);
           notification.success({
             message: 'Reverso Exitoso',
-            description: `Se ha creado el reverso de la factura con ID ${idFactura}.`
+            description: `Se ha creado el reverso de la factura con ID ${currentFacturaId}.`
           });
           cargarFacturas(); // Actualizar la lista de facturas
+          setModalVisible(false);
+          setReversoMotivo("");
         } else {
-          console.error(`Error al crear el reverso de la factura con ID ${idFactura}.`);
+          console.error(`Error al crear el reverso de la factura con ID ${currentFacturaId}.`);
         }
       })
       .catch((error) => {
         console.error("Error en la solicitud:", error);
       });
     }
+  };
+
+  const handleReversoCancel = () => {
+    setModalVisible(false);
+    setReversoMotivo("");
   };
 
   const facturasNoValidadas = facturas.filter(
@@ -144,139 +169,221 @@ const ValidarFacturas = () => {
       )
   );
 
-  const tipoPedidoCompleto = (tipo) => {
-    switch (tipo) {
-      case 'D':
-        return 'A domicilio';
-      case 'R':
-        return 'A retirar';
-      case 'L':
-        return 'En local';
-      default:
-        return tipo;
-    }
-  };
+  const columns = [
+    {
+      title: "ID Factura",
+      dataIndex: "id_factura",
+      key: "id_factura",
+    },
+    {
+      title: "ID Pedido",
+      dataIndex: "id_pedido",
+      key: "id_pedido",
+    },
+    {
+      title: "Cliente",
+      dataIndex: "id_cliente",
+      key: "id_cliente",
+      render: (id_cliente) => clientes[id_cliente],
+    },
+    {
+      title: "Mesero",
+      dataIndex: "id_mesero",
+      key: "id_mesero",
+      render: (id_mesero) => meseros[id_mesero],
+    },
+    {
+      title: "Fecha Emisión",
+      dataIndex: "fecha_emision",
+      key: "fecha_emision",
+    },
+    {
+      title: "Total",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "IVA",
+      dataIndex: "iva",
+      key: "iva",
+    },
+    {
+      title: "Descuento",
+      dataIndex: "descuento",
+      key: "descuento",
+    },
+    {
+      title: "Subtotal",
+      dataIndex: "subtotal",
+      key: "subtotal",
+    },
+    {
+      title: "A Pagar",
+      dataIndex: "a_pagar",
+      key: "a_pagar",
+    },
+    {
+      title: "Código Factura",
+      dataIndex: "codigo_factura",
+      key: "codigo_factura",
+    },
+    {
+      title: "Código Autorización",
+      dataIndex: "codigo_autorizacion",
+      key: "codigo_autorizacion",
+    },
+    {
+      title: "Número Factura Desde",
+      dataIndex: "numero_factura_desde",
+      key: "numero_factura_desde",
+    },
+    {
+      title: "Número Factura Hasta",
+      dataIndex: "numero_factura_hasta",
+      key: "numero_factura_hasta",
+    },
+    {
+      title: "Acciones",
+      key: "acciones",
+      render: (text, record) => (
+        <span>
+          <Button
+            type="primary"
+            onClick={() => validarFactura(record.id_factura)}
+          >
+            Validar
+          </Button>{" "}
+          <Button
+            type="primary"
+            danger
+            onClick={() => showReversoModal(record.id_factura)}
+          >
+            Reverso
+          </Button>
+        </span>
+      ),
+    },
+  ];
+
+  const columnsValidadas = [
+    {
+      title: "ID Factura",
+      dataIndex: "id_factura",
+      key: "id_factura",
+    },
+    {
+      title: "ID Pedido",
+      dataIndex: "id_pedido",
+      key: "id_pedido",
+    },
+    {
+      title: "Cliente",
+      dataIndex: "id_cliente",
+      key: "id_cliente",
+      render: (id_cliente) => clientes[id_cliente],
+    },
+    {
+      title: "Mesero",
+      dataIndex: "id_mesero",
+      key: "id_mesero",
+      render: (id_mesero) => meseros[id_mesero],
+    },
+    {
+      title: "Fecha Emisión",
+      dataIndex: "fecha_emision",
+      key: "fecha_emision",
+    },
+    {
+      title: "Total",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "IVA",
+      dataIndex: "iva",
+      key: "iva",
+    },
+    {
+      title: "Descuento",
+      dataIndex: "descuento",
+      key: "descuento",
+    },
+    {
+      title: "Subtotal",
+      dataIndex: "subtotal",
+      key: "subtotal",
+    },
+    {
+      title: "A Pagar",
+      dataIndex: "a_pagar",
+      key: "a_pagar",
+    },
+    {
+      title: "Código Factura",
+      dataIndex: "codigo_factura",
+      key: "codigo_factura",
+    },
+    {
+      title: "Código Autorización",
+      dataIndex: "codigo_autorizacion",
+      key: "codigo_autorizacion",
+    },
+    {
+      title: "Número Factura Desde",
+      dataIndex: "numero_factura_desde",
+      key: "numero_factura_desde",
+    },
+    {
+      title: "Número Factura Hasta",
+      dataIndex: "numero_factura_hasta",
+      key: "numero_factura_hasta",
+    },
+    {
+      title: "Acciones",
+      key: "acciones",
+      render: (text, record) => (
+        <span>
+          <Button
+            type="primary"
+            danger
+            onClick={() => showReversoModal(record.id_factura)}
+          >
+            Reverso
+          </Button>
+        </span>
+      ),
+    },
+  ];
 
   return (
     <div>
       <h2>Lista de Facturas</h2>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>ID Factura</th>
-            <th>ID Pedido</th>
-            <th>Cliente</th>
-            <th>Mesero</th>
-            <th>Fecha Emisión</th>
-            <th>Total</th>
-            <th>IVA</th>
-            <th>Descuento</th>
-            <th>Subtotal</th>
-            <th>A Pagar</th>
-            <th>Código Factura</th>
-            <th>Código Autorización</th>
-            <th>Número Factura Desde</th>
-            <th>Número Factura Hasta</th>
-            <th>Estado de pago</th>
-            <th>Tipo de pedido</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {facturasNoValidadas.map((factura) => (
-            <tr key={factura.id_factura}>
-              <td>{factura.id_factura}</td>
-              <td>{factura.id_pedido}</td>
-              <td>{clientes[factura.id_cliente]}</td>
-              <td>{meseros[factura.id_mesero]}</td>
-              <td>{factura.fecha_emision}</td>
-              <td>{factura.total}</td>
-              <td>{factura.iva}</td>
-              <td>{factura.descuento}</td>
-              <td>{factura.subtotal}</td>
-              <td>{factura.a_pagar}</td>
-              <td>{factura.codigo_factura}</td>
-              <td>{factura.codigo_autorizacion}</td>
-              <td>{factura.numero_factura_desde}</td>
-              <td>{factura.numero_factura_hasta}</td>
-              <th>{factura.estado_pago}</th>
-              <td>{tipoPedidoCompleto(factura.tipo_de_pedido)}</td>
-              <td>
-                <Button
-                  variant="success"
-                  onClick={() => validarFactura(factura.id_factura)}
-                >
-                  Validar
-                </Button>{" "}
-                <Button
-                  variant="danger"
-                  onClick={() => deshacerValidacion(factura.id_factura)}
-                >
-                  Reverso
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <div style={{ overflowX: "auto" }}>
+        <Table columns={columns} dataSource={facturasNoValidadas} />
+      </div>
 
-      {/* Tabla de Facturas Validadas */}
       {facturasValidadas.length > 0 && (
         <div>
           <h2>Facturas Validadas</h2>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>ID Factura</th>
-                <th>ID Pedido</th>
-                <th>Cliente</th>
-                <th>Mesero</th>
-                <th>Fecha Emisión</th>
-                <th>Total</th>
-                <th>IVA</th>
-                <th>Descuento</th>
-                <th>Subtotal</th>
-                <th>A Pagar</th>
-                <th>Código Factura</th>
-                <th>Código Autorización</th>
-                <th>Número Factura Desde</th>
-                <th>Número Factura Hasta</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {facturasValidadas.map((factura) => (
-                <tr key={factura.id_factura}>
-                  <td>{factura.id_factura}</td>
-                  <td>{factura.id_pedido}</td>
-                  <td>{clientes[factura.id_cliente]}</td>
-                  <td>{meseros[factura.id_mesero]}</td>
-                  <td>{factura.fecha_emision}</td>
-                  <td>{factura.total}</td>
-                  <td>{factura.iva}</td>
-                  <td>{factura.descuento}</td>
-                  <td>{factura.subtotal}</td>
-                  <td>{factura.a_pagar}</td>
-                  <td>{factura.codigo_factura}</td>
-                  <td>{factura.codigo_autorizacion}</td>
-                  <td>{factura.numero_factura_desde}</td>
-                  <td>{factura.numero_factura_hasta}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      onClick={() =>
-                        deshacerValidacion(factura.id_factura)
-                      }
-                    >
-                      Reverso
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <div style={{ overflowX: "auto" }}>
+            <Table columns={columnsValidadas} dataSource={facturasValidadas} />
+          </div>
         </div>
       )}
+
+      <Modal
+        title="Motivo de Reverso"
+        visible={modalVisible}
+        onOk={handleReversoConfirm}
+        onCancel={handleReversoCancel}
+      >
+        <Input.TextArea
+          value={reversoMotivo}
+          onChange={handleReversoMotivoChange}
+          placeholder="Ingrese el motivo del reverso"
+          autoSize={{ minRows: 3, maxRows: 6 }}
+        />
+      </Modal>
     </div>
   );
 };
