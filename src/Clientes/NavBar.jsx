@@ -249,12 +249,13 @@ const NavBar = () => {
 
                 {Logeado && (
                   <Link
+                  onClick={() => MostrarComponente("Carrito")}
                     style={{
                       textDecoration: "none",
                       color: "inherit",
                       fontSize: "18px",
                     }}
-                    onClick={() => showDrawer()}
+
                   >
                     {" "}
                     <Nav.Link
@@ -286,6 +287,7 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Menu" && <ListProductos />}
           {ComponenteSeleccionado === "Perfil" && <EditarUser />}
           {ComponenteSeleccionado === "Historial" && <Historial />}
+          {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
           {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
           {ComponenteSeleccionado != "Carrusel" && (
             <Row>

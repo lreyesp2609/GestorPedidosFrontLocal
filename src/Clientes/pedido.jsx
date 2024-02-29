@@ -469,74 +469,71 @@ return(
         `}
       </style>
       <Divider>Realice la transferencia a la siguiente cuenta:</Divider>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Card style={{ width: 'auto', marginBottom: '16px' }}>
-          <p>Banco: Pichincha</p>
-          <p>Tipo de cuenta: Ahorros</p>
-          <p>Número de cuenta: 2207213048</p>
-          <p>Nombre: Angie Mayerli Díaz Veliz</p>
-          <p>Cedula: 0927711309</p>
-          <p>Email: angiediazv9@gmail.com</p>
-        </Card>
-        <Card style={{ width: 'auto' }}>
-          <p>Banco: Guayaquil</p>
-          <p>Tipo de cuenta: Ahorros</p>
-          <p>Número de cuenta: 00012119645</p>
-          <p>Nombre: Angie Mayerli Díaz Veliz</p>
-          <p>Cedula: 0927711309</p>
-          <p>Email: angiediazv9@gmail.com</p>
-        </Card>
-      </div>
-    </Col>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Card style={{ width: 'auto', marginBottom: '16px' }}>
+                <p>Banco: Pichincha</p>
+                <p>Tipo de cuenta: Ahorros</p>
+                <p>Número de cuenta: 2207213048</p>
+                <p>Nombre: Angie Mayerli Díaz Veliz</p>
+                <p>Cedula: 0927711309</p>
+                <p>Email: angiediazv9@gmail.com</p>
+              </Card>
+              <Card style={{ width: 'auto' }}>
+                <p>Banco: Guayaquil</p>
+                <p>Tipo de cuenta: Ahorros</p>
+                <p>Número de cuenta: 00012119645</p>
+                <p>Nombre: Angie Mayerli Díaz Veliz</p>
+                <p>Cedula: 0927711309</p>
+                <p>Email: angiediazv9@gmail.com</p>
+              </Card>
+            </div>
+          </Col>
 
-    <Col  style={{ textAlign: 'center' }}>
-    <div>
-      <style>
-        {`
-          @media only screen and (max-width: 600px) {
-            .ant-divider-inner-text {
-              font-size: 10px;
-            }
-          }
-        `}
-      </style>
-      <Divider orientation="left">
-        Comprobante de pago (foto, escaneo ó captura de pantalla)
-      </Divider>
-    </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-        <ImgCrop>
-          <Upload
-            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-            listType="picture-card"
-            fileList={fileList}
-            onChange={onChange}
-            onPreview={onPreview}
-            beforeUpload={beforeUpload}
-          >
-            {fileList.length < 1 && '+ Subir comprobante'}
-          </Upload>
-        </ImgCrop>
-      </div>
-      <div className="d-grid gap-2">
-      <Button 
-        disabled={fileList.length === 0 || modoPedido === null} 
-        onClick={PagarPorEfectivo}>
-        Pagar: ${totalPrice}
-      </Button>
-      </div> 
-      <Divider>O pague con PayPal</Divider>
+          <Col  style={{ textAlign: 'center' }}>
+          <div>
+            <style>
+              {`
+                @media only screen and (max-width: 600px) {
+                  .ant-divider-inner-text {
+                    font-size: 10px;
+                  }
+                }
+              `}
+            </style>
+            <Divider orientation="left">
+              Comprobante de pago (foto, escaneo ó captura de pantalla)
+            </Divider>
+          </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+              <ImgCrop>
+                <Upload
+                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                  listType="picture-card"
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={beforeUpload}
+                >
+                  {fileList.length < 1 && '+ Subir comprobante'}
+                </Upload>
+              </ImgCrop>
+            </div>
+            <div className="d-grid gap-2">
+            <Button 
+              disabled={fileList.length === 0 || modoPedido === null} 
+              onClick={PagarPorEfectivo}>
+              Pagar: ${totalPrice}
+            </Button>
+            </div> 
+            <Divider>O pague con PayPal</Divider>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-        <PayPal onSuccess={CerrarModalDespuesDePago} />
-      </div>
-    </Col>
-  </Row>
-)}
-
-             
-                 
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+              <PayPal onSuccess={CerrarModalDespuesDePago} />
+            </div>
+          </Col>
+        </Row>
+      )}
                 {modoPago === 'E' && (
                 <div className="d-grid gap-2">
                     <Button style={{ marginTop: '50px', marginBottom:'240px'}} 

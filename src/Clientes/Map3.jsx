@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent  } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-geosearch/dist/geosearch.css';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+
 
 const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
   const [center, setCenter] = useState([-1.0241157747979186, -79.46108497663826]);
@@ -40,7 +44,31 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
     setMarker(null);
   };
 
+  const SearchControlHandler = () => {
+    const map = useMap();
 
+    const searchControl = new GeoSearchControl({
+      provider: new OpenStreetMapProvider(),
+      style: 'bar',
+      showMarker: false,
+      showPopup: false,
+      maxMarkers: 1,
+      retainZoomLevel: false,
+      animateZoom: true,
+      autoClose: true,
+      searchLabel: 'Buscar ubicación',
+      keepResult: true,
+    });
+
+    useEffect(() => {
+      map.addControl(searchControl);
+      return () => {
+        map.removeControl(searchControl);
+      };
+    }, [map, searchControl]);
+
+    return null;
+  };
 
   
 
@@ -53,7 +81,6 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
 
         <MapClickHandler />
@@ -63,6 +90,9 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
             <Popup>{`Latitud: ${marker.latitude.toFixed(4)}, Longitud: ${marker.longitude.toFixed(4)}`}</Popup>
           </Marker>
         )}
+
+      <SearchControlHandler />
+
       </MapContainer>
       <div>
         <button onClick={handleGetCurrentLocation}>
