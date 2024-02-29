@@ -16,14 +16,30 @@ const SRIAutorizacion = () => {
     try {
       // Verifica si el código de autorización tiene exactamente 49 dígitos
       if (codigoAutorizacion.length !== 49) {
-        throw new Error("El código de autorización debe tener exactamente 49 dígitos");
+        throw new Error(
+          "El código de autorización debe tener exactamente 49 dígitos"
+        );
       }
-  
+
+      // Verifica si se ingresó la fecha de autorización
+      const fechaAutorizacion = form.getFieldValue("fecha_autorizacion");
+      if (!fechaAutorizacion) {
+        throw new Error("Por favor ingresa la fecha de autorización");
+      }
+
+      // Verifica si se ingresó la fecha de vencimiento
+      const fechaVencimiento = form.getFieldValue("fecha_vencimiento");
+      if (!fechaVencimiento) {
+        throw new Error("Por favor ingresa la fecha de vencimiento");
+      }
+
       const formData = new FormData();
       formData.append("codigo_autorizacion", codigoAutorizacion);
-      formData.append("fecha_vencimiento", form.getFieldValue("fecha_vencimiento"));
-      formData.append("fecha_autorizacion", form.getFieldValue("fecha_autorizacion"));
-  
+      formData.append("ruc", form.getFieldValue("ruc")); // Agregar RUC al formData
+      formData.append("nombre", form.getFieldValue("nombre")); // Agregar nombre al formData
+      formData.append("fecha_vencimiento", fechaVencimiento);
+      formData.append("fecha_autorizacion", fechaAutorizacion);
+
       const response = await fetch(
         `http://127.0.0.1:8000/CodigoFactura/crear_codigoautorizacion/1/`,
         {
@@ -41,10 +57,11 @@ const SRIAutorizacion = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      message.error(error.message || "Hubo un error al crear el código de autorización");
+      message.error(
+        error.message || "Hubo un error al crear el código de autorización"
+      );
     }
   };
-  
 
   const handleCancel = () => {
     setVisible(false);
@@ -52,8 +69,12 @@ const SRIAutorizacion = () => {
 
   const handleChangeCodigoAutorizacion = (e) => {
     const value = e.target.value;
+    // Limitar la longitud del código de autorización a 49 dígitos
     if (value.length <= 49) {
       setCodigoAutorizacion(value);
+    } else {
+      // Si se superan los 49 dígitos, cortar el valor para que solo tenga los primeros 49 dígitos
+      setCodigoAutorizacion(value.slice(0, 49));
     }
   };
 
@@ -79,17 +100,55 @@ const SRIAutorizacion = () => {
             label="Código de Autorización"
             name="codigo_autorizacion"
             rules={[
-              { required: true, message: "Por favor ingresa el código de autorización" },
+              {
+                required: true,
+                message: "Por favor ingresa el código de autorización",
+              },
               { pattern: /^\d*$/, message: "Por favor ingresa solo números" },
-              { max: 49, message: "El código de autorización debe tener 49 dígitos" }
             ]}
           >
-            <Input value={codigoAutorizacion} onChange={handleChangeCodigoAutorizacion} />
+            <Input
+              value={codigoAutorizacion}
+              onChange={handleChangeCodigoAutorizacion}
+              maxLength={49} // Establecer la longitud máxima permitida a 49 caracteres
+            />
           </Form.Item>
-          <Form.Item label="Fecha de Vencimiento" name="fecha_vencimiento">
+          <Form.Item
+            label="RUC"
+            name="ruc"
+            rules={[{ required: true, message: "Por favor ingresa el RUC" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Nombre"
+            name="nombre"
+            rules={[{ required: true, message: "Por favor ingresa el nombre" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Fecha de Autorización"
+            name="fecha_autorizacion"
+            rules={[
+              {
+                required: true,
+                message: "Por favor ingresa la fecha de autorización",
+              },
+            ]}
+          >
             <Input type="date" />
           </Form.Item>
-          <Form.Item label="Fecha de Autorización" name="fecha_autorizacion">
+          <Form.Item
+            label="Fecha de Vencimiento"
+            name="fecha_vencimiento"
+            rules={[
+              {
+                required: true,
+                message: "Por favor ingresa la fecha de vencimiento",
+              },
+            ]}
+          >
             <Input type="date" />
           </Form.Item>
         </Form>
