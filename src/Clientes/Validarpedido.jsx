@@ -13,7 +13,7 @@ const ValidarPedido =()=>{
     const [sortedInfo, setSortedInfo] = useState({});
     const [selectedValue, setSelectedValue] = useState(null);
     const [filteredPagado, setFilteredPagado] = useState(false);
-
+    const [idcuenta, setidcuenta] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
       setIsModalOpen(true);
@@ -21,7 +21,7 @@ const ValidarPedido =()=>{
     useEffect(() => {
       const obtenerPedidos = async () => {
         try {
- 
+          devolverid();
           const response = await fetch(`http://127.0.0.1:8000/cliente/obtener_pedido2/`);
           
           if (!response.ok) {
@@ -74,11 +74,40 @@ const ValidarPedido =()=>{
     setSelectedPaymentState(estadoPago);
     setModalVisible(true);
   };
+
+  const devolverid = async () => {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/Login/id/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem('token'),
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const cuenta = data.id_cuenta;
+            setidcuenta(cuenta);
+        } else {
+            // Manejar errores de la solicitud a la API
+            window.location.href = '/';
+        }
+    } catch (error) {
+        // Manejar errores de la solicitud
+        console.error('Error en la solicitud:', error);
+    }
+  }
+
+
   const handleValidarPago = async (recordPago) => {
     try {
+      
       const formData = new FormData();
       formData.append('estado_pago', 'Pagado');  // Cambia al estado deseado al validar
-
+      formData.append('id_cuenta', idcuenta); 
       // Realiza la solicitud POST a la API
       const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
         method: 'POST',
