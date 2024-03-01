@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, notification } from "antd";
+import { Table, Button, notification, Modal, Input } from "antd";
 
 const ValidarFacturas = () => {
   const [facturas, setFacturas] = useState([]);
   const [meseros, setMeseros] = useState({});
   const [clientes, setClientes] = useState({});
   const [facturasValidadas, setFacturasValidadas] = useState([]);
-
   const [userData, setUserData] = useState(null);
+  const [idFacturaSeleccionada, setIdFacturaSeleccionada] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [motivoReverso, setMotivoReverso] = useState("");
+
   const id_cuenta = localStorage.getItem("id_cuenta");
 
   const ObtenerUsuario = async () => {
@@ -34,7 +37,10 @@ const ValidarFacturas = () => {
     fetch("http://127.0.0.1:8000/Mesero/lista_facturas/")
       .then((response) => response.json())
       .then((data) => {
-        setFacturas(data.facturas);
+        const facturasFiltradas = data.facturas.filter(
+          (factura) => factura.estado !== "R"
+        );
+        setFacturas(facturasFiltradas);
       })
       .catch((error) => console.error("Error fetching facturas:", error));
   };
@@ -70,7 +76,8 @@ const ValidarFacturas = () => {
       (factura) =>
         factura.codigo_factura &&
         factura.numero_factura_desde &&
-        factura.numero_factura_hasta
+        factura.numero_factura_hasta &&
+        factura.estado !== "R"
     );
     setFacturasValidadas(facturasFiltradas);
   }, [facturas]);
@@ -78,58 +85,85 @@ const ValidarFacturas = () => {
   const validarFactura = (idFactura) => {
     if (userData) {
       const idCuenta = userData.id_cuenta;
-      fetch(`http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({})
-      })
-      .then((response) => {
-        if (response.ok) {
-          console.log(`Factura con ID ${idFactura} validada con éxito.`);
-          notification.success({
-            message: 'Validación Exitosa',
-            description: `La factura con ID ${idFactura} se validó correctamente.`
-          });
-          cargarFacturas(); // Actualizar la lista de facturas
-        } else {
-          console.error(`Error al validar la factura con ID ${idFactura}.`);
+      fetch(
+        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
         }
-      })
-      .catch((error) => {
-        console.error("Error en la solicitud:", error);
-      });
+      )
+        .then((response) => {
+          if (response.ok) {
+            console.log(`Factura con ID ${idFactura} validada con éxito.`);
+            notification.success({
+              message: "Validación Exitosa",
+              description: `La factura con ID ${idFactura} se validó correctamente.`,
+            });
+            cargarFacturas(); // Actualizar la lista de facturas
+          } else {
+            console.error(
+              `Error al validar la factura con ID ${idFactura}.`
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error en la solicitud:", error);
+        });
     } else {
       console.error("Error: datos del usuario no disponibles.");
     }
   };
 
-  const deshacerValidacion = (idFactura) => {
-    console.log("Deshaciendo validación de factura con ID:", idFactura);
-    const motivoReverso = prompt("Por favor, ingrese el motivo del reverso:");
-    if (motivoReverso !== null) {
-      fetch(`http://127.0.0.1:8000/Mesero/crear_reverso_factura/${idFactura}/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ motivo_reverso: motivoReverso })
-      })
-      .then((response) => {
-        if (response.ok) {
-          console.log(`Reverso de factura con ID ${idFactura} creado con éxito.`);
-          notification.success({
-            message: 'Reverso Exitoso',
-            description: `Se ha creado el reverso de la factura con ID ${idFactura}.`
-          });
-          cargarFacturas(); // Actualizar la lista de facturas
-        } else {
-          console.error(`Error al crear el reverso de la factura con ID ${idFactura}.`);
+  const abrirModal = (idFactura) => {
+    setIdFacturaSeleccionada(idFactura);
+    setModalVisible(true);
+  };
+
+  const cerrarModal = () => {
+    setIdFacturaSeleccionada(null);
+    setModalVisible(false);
+    setMotivoReverso("");
+  };
+
+  const confirmarReverso = () => {
+    if (motivoReverso.trim() !== "") {
+      cerrarModal();
+      fetch(
+        `http://127.0.0.1:8000/Mesero/crear_reverso_factura/${idFacturaSeleccionada}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ motivo_reverso: motivoReverso }),
         }
-      })
-      .catch((error) => {
-        console.error("Error en la solicitud:", error);
+      )
+        .then((response) => {
+          if (response.ok) {
+            console.log(
+              `Reverso de factura con ID ${idFacturaSeleccionada} creado con éxito.`
+            );
+            notification.success({
+              message: "Reverso Exitoso",
+              description: `Se ha creado el reverso de la factura con ID ${idFacturaSeleccionada}.`,
+            });
+            cargarFacturas(); // Actualizar la lista de facturas
+          } else {
+            console.error(
+              `Error al crear el reverso de la factura con ID ${idFacturaSeleccionada}.`
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error en la solicitud:", error);
+        });
+    } else {
+      notification.error({
+        message: "Error",
+        description: "Por favor, ingrese un motivo para el reverso.",
       });
     }
   };
@@ -142,6 +176,11 @@ const ValidarFacturas = () => {
         factura.numero_factura_hasta
       )
   );
+
+  const deshacerValidacion = (idFactura) => {
+    setIdFacturaSeleccionada(idFactura);
+    setModalVisible(true);
+  };
 
   const columns = [
     {
@@ -321,8 +360,8 @@ const ValidarFacturas = () => {
       key: "numero_factura_hasta"
     },
     {
-      title: "Acciones",
-      key: "acciones",
+      title: "Reversión",
+      key: "reversión",
       render: (text, record) => (
         <span>
           <Button
@@ -340,18 +379,31 @@ const ValidarFacturas = () => {
   return (
     <div>
       <h2>Lista de Facturas</h2>
-      <div style={{ overflowX: 'auto' }}>
+      <div style={{ overflowX: "auto" }}>
         <Table columns={columns} dataSource={facturasNoValidadas} />
       </div>
 
       {facturasValidadas.length > 0 && (
         <div>
           <h2>Facturas Validadas</h2>
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: "auto" }}>
             <Table columns={columnsValidadas} dataSource={facturasValidadas} />
           </div>
         </div>
       )}
+
+      <Modal
+        title="Motivo del Reverso"
+        visible={modalVisible}
+        onOk={confirmarReverso}
+        onCancel={cerrarModal}
+      >
+        <Input
+          placeholder="Ingrese el motivo del reverso"
+          value={motivoReverso}
+          onChange={(e) => setMotivoReverso(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 };
