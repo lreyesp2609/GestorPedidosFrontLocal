@@ -295,6 +295,32 @@ const MenuM = () => {
               </Badge.Ribbon>
             </Col>
             <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Reversiones">
+                <Tooltip title={tooltipTitle1}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Reversiones"
+                        src={imgfacturas}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("reversion")}
+                  >
+                    <Meta title={tooltipTitle1}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
   <Badge.Ribbon text="Validar Facturas">
     <Tooltip title={tooltipTitle2}>
       {hasPermission ? (
@@ -423,6 +449,16 @@ const MenuM = () => {
             </Row>
           </>
         )}
+        {currentPage === "reversion" && (
+          <>
+            <Row>
+              <Divider>Gestión de facturación</Divider>
+              <Col md={12}>
+                <ReversionesFacturas/>
+              </Col>
+            </Row>
+          </>
+        )}
         {currentPage === "validarfacturas" && (
           <>
             {/* Renderizar el componente ValidarFacturas solo si el usuario tiene permiso */}
@@ -445,16 +481,6 @@ const MenuM = () => {
                 </Col>
               </Row>
             )}
-          </>
-        )}
-        {currentPage === "reversion" && (
-          <>
-            <Row>
-              <Divider>Gestión de facturación</Divider>
-              <Col md={12}>
-                <ReversionesFacturas/>
-              </Col>
-            </Row>
           </>
         )}
       </Row>
