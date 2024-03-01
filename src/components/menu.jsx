@@ -55,7 +55,7 @@ import reportes from "./res/reportes.png";
 import maquina from "./res/maquina.png";
 import datosB from "./res/datosB.png";
 import PuntosFacturacion from "./puntosFacturacion.jsx";
-
+import DatosB from "./DatosBancarios.jsx";
 const MenuG = ({menuSelect}) => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
@@ -837,6 +837,16 @@ const MenuG = ({menuSelect}) => {
           </>
         )}
       </Row>
+      {currentPage == "DatosBancarios" && (
+          <>
+            <Divider>Ingrese sus datos bancarios</Divider>
+            <Row>
+              <Col md={12}>
+                <DatosB />
+              </Col>
+            </Row>
+          </>
+        )}
     </>
   );
 };
