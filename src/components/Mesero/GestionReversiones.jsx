@@ -84,9 +84,8 @@ const ReversionesFacturas = () => {
 
   const validarFactura = (idFactura) => {
     if (userData) {
-      const idCuenta = userData.id_cuenta;
       fetch(
-        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`,
+        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
         {
           method: "POST",
           headers: {
@@ -262,24 +261,9 @@ const ReversionesFacturas = () => {
         <span>
           <Button
             type="primary"
-            onClick={() => validarFactura(record.id_factura)}
-          >
-            Validar
-          </Button>{" "}
-        </span>
-      )
-    },
-    {
-      title: "Reversión",
-      key: "reversión",
-      render: (text, record) => (
-        <span>
-          <Button
-            type="primary"
-            danger
             onClick={() => deshacerValidacion(record.id_factura)}
           >
-            Reverso
+            Ver Detalles
           </Button>
         </span>
       )
@@ -366,10 +350,9 @@ const ReversionesFacturas = () => {
         <span>
           <Button
             type="primary"
-            danger
             onClick={() => deshacerValidacion(record.id_factura)}
           >
-            Reverso
+            Generar nota de credito
           </Button>
         </span>
       )
@@ -393,16 +376,11 @@ const ReversionesFacturas = () => {
       )}
 
       <Modal
-        title="Motivo del Reverso"
+        title="Detalles del Reverso"
         visible={modalVisible}
         onOk={confirmarReverso}
         onCancel={cerrarModal}
       >
-        <Input
-          placeholder="Ingrese el motivo del reverso"
-          value={motivoReverso}
-          onChange={(e) => setMotivoReverso(e.target.value)}
-        />
       </Modal>
     </div>
   );
