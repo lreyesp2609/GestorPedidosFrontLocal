@@ -15,71 +15,131 @@ const VerReversionesPedidos = () => {
     const [selectedOpcion, setSelectedOpcion] = useState('ReversionPedido');
     const [currentPage, setCurrentPage] = useState(1);
     const [total, setTotal] = useState(0);
+    const [facturas, setFacturas] = useState([]);
+    const [detalleFactura, setDetalleFactura] = useState({});
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
+        cargarFacturas();
+    }, []);
+
+    const cargarFacturas = () => {
+        fetch('http://127.0.0.1:8000/Mesero/lista_facturas/')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error al obtener los movimientos de inventario');
+                    throw new Error('Error al obtener las facturas');
                 }
                 return response.json();
             })
             .then(data => {
-                const movimientosReversion = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'R' || movimiento.tipo_movimiento === 'P' && movimiento.sestado === '0');
-                setMovimientos(movimientosReversion);
-                setTotal(movimientosReversion.length);
+                setFacturas(data.facturas);
             })
             .catch(error => {
-                console.error('Error al obtener los movimientos de inventario:', error);
+                console.error('Error al obtener las facturas:', error);
             });
-    }, []);
+    };
+
+    const handleReversionFactura = (idFactura) => {
+        // Aquí puedes implementar la lógica para la reversión de la factura
+        console.log("Reversión de factura con ID:", idFactura);
+    };
 
     const columns = [
         {
-            title: 'Tipo de Movimiento',
-            dataIndex: 'tipo_movimiento',
-            key: 'tipo_movimiento',
-            render: (text) => (
-                <span>{text === 'P' ? 'Original' : text === 'R' ? 'Reversión' : ''}</span>
-            ),
-        },
+            title: "ID Factura",
+            dataIndex: "id_factura",
+            key: "id_factura"
+          },
+          {
+            title: "ID Pedido",
+            dataIndex: "id_pedido",
+            key: "id_pedido"
+          },
+          {
+            title: "Cliente",
+            dataIndex: "id_cliente",
+            key: "id_cliente"
+          },
+          {
+            title: "Mesero",
+            dataIndex: "id_mesero",
+            key: "id_mesero"
+          },
+          {
+            title: "Fecha Emisión",
+            dataIndex: "fecha_emision",
+            key: "fecha_emision"
+          },
+          {
+            title: "Total",
+            dataIndex: "total",
+            key: "total"
+          },
+          {
+            title: "IVA",
+            dataIndex: "iva",
+            key: "iva"
+          },
+          {
+            title: "Descuento",
+            dataIndex: "descuento",
+            key: "descuento"
+          },
+          {
+            title: "Subtotal",
+            dataIndex: "subtotal",
+            key: "subtotal"
+          },
+          {
+            title: "A Pagar",
+            dataIndex: "a_pagar",
+            key: "a_pagar"
+          },
+          {
+            title: "Código Factura",
+            dataIndex: "codigo_factura",
+            key: "codigo_factura"
+          },
+          {
+            title: "Código Autorización",
+            dataIndex: "codigo_autorizacion",
+            key: "codigo_autorizacion"
+          },
+          {
+            title: "Número Factura Desde",
+            dataIndex: "numero_factura_desde",
+            key: "numero_factura_desde"
+          },
+          {
+            title: "Número Factura Hasta",
+            dataIndex: "numero_factura_hasta",
+            key: "numero_factura_hasta"
+          },
+          {
+            title: "Estado de pago",
+            dataIndex: "estado_pago",
+            key: "estado_pago"
+          },
+          {
+            title: "Tipo de pedido",
+            dataIndex: "tipo_de_pedido",
+            key: "tipo_de_pedido"
+          },
         {
-            title: 'ID Movimiento',
-            dataIndex: 'id_movimiento',
-            key: 'id_movimiento',
-        },
-        {
-            title: 'Fecha/Hora',
-            dataIndex: 'fechahora',
-            key: 'fechahora',
-        },
-        {
-            title: 'Observación',
-            dataIndex: 'observacion',
-            key: 'observacion',
-        },
-        {
-            title: 'Detalles',
-            key: 'detalles',
+            title: 'Acciones',
+            key: 'acciones',
             render: (text, record) => (
-                <Button type="primary" onClick={() => showDetalle(record)}>Ver Detalles</Button>
+                <Button type="primary" onClick={() => handleReversionFactura(record.id_factura)}>Reversión</Button>
             ),
         },
     ];
 
     const showDetalle = (record) => {
-        setDetalleMovimiento(record);
+        setDetalleFactura(record);
         setDetalleVisible(true);
     };
 
     const handleCloseDetalle = () => {
         setDetalleVisible(false);
-    };
-
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-        // Aquí podrías cargar datos paginados desde el servidor si fuera necesario
     };
 
     const Changueopcion = (value) => {
@@ -149,13 +209,14 @@ const VerReversionesPedidos = () => {
 
                 {selectedOpcion === 'ReversionPedido' && (
                     <>
-                        <Divider>Control mesas</Divider>
+                        <Divider>Lista de facturas</Divider>
                         <Col md={12}>
+                         <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
                             <Row>
-                                <Table dataSource={movimientos} columns={columns} />
+                                <Table dataSource={facturas} columns={columns} />
 
                                 <Modal
-                                    title="Detalle de Movimiento"
+                                    title="Detalle de Factura"
                                     visible={detalleVisible}
                                     onCancel={handleCloseDetalle}
                                     footer={[
@@ -164,18 +225,11 @@ const VerReversionesPedidos = () => {
                                         </Button>
                                     ]}
                                 >
-                                    <p><strong>Fecha/Hora:</strong> {detalleMovimiento.fechahora}</p>
-                                    <p><strong>Detalles:</strong></p>
-                                    <ul>
-                                        {detalleMovimiento.detalles && detalleMovimiento.detalles.map(detalle => (
-                                            <li key={detalle.id_detalle_movimiento}>
-                                                Producto:  {detalle.nombre_articulo} {detalle.nombre_producto} Cantidad: {detalle.cantidad}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <p><strong>ID Factura:</strong> {detalleFactura.id_factura}</p>
+                                    {/* Aquí puedes agregar más detalles de la factura si es necesario */}
                                 </Modal>
                             </Row>
-
+                        </div>
                         </Col>
                     </>
                 )}

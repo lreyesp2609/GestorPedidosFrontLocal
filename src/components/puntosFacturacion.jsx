@@ -52,6 +52,7 @@ const PuntosFacturacion = () => {
       formData.append("nombre_punto", values.nombre_punto);
       formData.append("id_mesero", values.id_mesero);
       formData.append("sestado", values.sestado === "Activo" ? "1" : "0");
+      formData.append("ruc", values.ruc);
 
       // Validar si el mesero ya está asignado a un punto de facturación
       const validationResponse = await fetch("http://127.0.0.1:8000/CodigoFactura/validar_punto_facturacion/", {
@@ -140,6 +141,9 @@ const PuntosFacturacion = () => {
           >
             <Form form={form} onFinish={handleSubmit}>
               <Item label="Nombre del Punto" name="nombre_punto" rules={[{ required: true }]}>
+                <Input />
+              </Item>
+              <Item label="RUC" name="ruc" rules={[{ required: true, message: 'Por favor ingrese el RUC' }, { max: 10, message: 'El RUC debe tener como máximo 10 caracteres' }]}>
                 <Input />
               </Item>
               <Item label="Mesero" name="id_mesero" rules={[{ required: true }]}>

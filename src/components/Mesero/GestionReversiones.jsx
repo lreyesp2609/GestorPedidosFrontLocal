@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, notification, Modal, Input } from "antd";
 
-const ValidarFacturas = () => {
+const ReversionesFacturas = () => {
   const [facturas, setFacturas] = useState([]);
   const [meseros, setMeseros] = useState({});
   const [clientes, setClientes] = useState({});
@@ -38,7 +38,7 @@ const ValidarFacturas = () => {
       .then((response) => response.json())
       .then((data) => {
         const facturasFiltradas = data.facturas.filter(
-          (factura) => factura.estado !== "R"
+          (factura) => factura.estado === "R"
         );
         setFacturas(facturasFiltradas);
       })
@@ -77,15 +77,16 @@ const ValidarFacturas = () => {
         factura.codigo_factura &&
         factura.numero_factura_desde &&
         factura.numero_factura_hasta &&
-        factura.estado !== "R"
+        factura.estado === "R"
     );
     setFacturasValidadas(facturasFiltradas);
   }, [facturas]);
 
   const validarFactura = (idFactura) => {
     if (userData) {
+      const idCuenta = userData.id_cuenta;
       fetch(
-        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
+        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`,
         {
           method: "POST",
           headers: {
@@ -407,4 +408,4 @@ const ValidarFacturas = () => {
   );
 };
 
-export default ValidarFacturas;
+export default ReversionesFacturas;

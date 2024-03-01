@@ -19,6 +19,8 @@ const AdminMenu = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const [menuSeleccionado, setMenuSeleccionado] = useState("home");
+    const[spaceMenu, setSpaceMenu]=useState(9);
     const obtenerInformacionEmpresa = async () => {
         try {
             const respuesta = await fetch('http://127.0.0.1:8000/empresa/infoEmpresa/', {
@@ -53,6 +55,16 @@ const AdminMenu = () => {
     useEffect(() => {
         obtenerInformacionEmpresa();
     }, []);
+    const cambioMenu = (value) =>{
+        console.log("Menu desde qui:"+value)
+        setMenuSeleccionado(value);
+        if(value=="home"){
+            setSpaceMenu(9);
+        }else{
+            setSpaceMenu(12);
+        }
+        
+    }
 
     const toggleSidebar = () => {
         setCollapsed(!collapsed);
@@ -140,7 +152,7 @@ const AdminMenu = () => {
                 </Navbar>
                 <Row>
                     <Col md={3}>
-                        {empresaInfo && sucursalesInfo && (
+                        {empresaInfo && sucursalesInfo && menuSeleccionado=="home" &&(
                             <Card
                                 hoverable
                                 style={{ width: '100%', margin: '16px' }}
@@ -180,13 +192,13 @@ const AdminMenu = () => {
  
                             </Card>)}
                     </Col>
-                    <Col md={9}>
+                    <Col md={spaceMenu}>
                         <Card
                             hoverable
                             style={{ height: '96%', width: '100%', margin: '16px', marginLeft: '2px', marginBottom: '16px', cursor: 'default' }}
                             className="text-center"
                         >
-                            <MenuG />
+                            <MenuG menuSelect={cambioMenu} />
                         </Card>
                     </Col>
                 </Row>

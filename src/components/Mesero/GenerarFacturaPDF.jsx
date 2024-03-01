@@ -107,7 +107,6 @@ const GenerarFacturaPDF = ({
       // Calcular la posición X para centrar el texto completo
       const contribuyenteX =
         doc.internal.pageSize.getWidth() - textoContribuyenteWidth + 1.7;
-
       // Calcular la posición Y para el texto completo (debajo de la dirección)
       const contribuyenteY = direccionY + 5; // Colocar el texto debajo de la dirección
 
@@ -117,6 +116,19 @@ const GenerarFacturaPDF = ({
         contribuyenteX,
         contribuyenteY
       );
+
+      // Ajustar la posición vertical para el nombre y el RUC del mesero
+      const meseroNombreY = contribuyenteY + 5; // Ajusta según sea necesario para el espacio entre el texto "Contribuyente Negocio Popular Régimen RIMPE" y el nombre del mesero
+      const meseroRUCY = meseroNombreY + 5; // Ajusta según sea necesario para el espacio entre el nombre del mesero y el RUC
+      const marginLeftMesero = 30.5; // Ajusta este valor para mover los textos hacia la derecha
+
+      // Agregar nombre y apellido del mesero
+      const meseroNombreApellido = `Mesero: ${facturaData.nombre_mesero} ${facturaData.apellido_mesero}`; // Concatena el nombre y apellido del mesero
+      doc.text(meseroNombreApellido, marginLeftMesero, meseroNombreY);
+
+      // Agregar RUC del mesero
+      const meseroRUC = `RUC: ${facturaData.ruc}`; // Reemplaza facturaData.ruc_mesero con el RUC real del mesero
+      doc.text(meseroRUC, marginLeftMesero, meseroRUCY);
     }
 
     // Agregar detalles de la factura

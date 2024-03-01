@@ -56,7 +56,7 @@ import maquina from "./res/maquina.png";
 import datosB from "./res/datosB.png";
 import PuntosFacturacion from "./puntosFacturacion.jsx";
 import DatosB from "./DatosBancarios.jsx";
-const MenuG = () => {
+const MenuG = ({menuSelect}) => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";
   const tooltipTitle2 = "Agrega y edita tus empleados";
@@ -84,11 +84,13 @@ const MenuG = () => {
   const handleCardClick = (page) => {
     console.log("Clicked on:", page);
     setCurrentPage(page);
+    menuSelect(page);
   };
 
   const handleAtrasClick = (page) => {
     console.log("Clicked on:", page);
     setCurrentPage("home");
+    menuSelect("home");
   };
 
   const cardStyle = {

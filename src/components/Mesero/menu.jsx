@@ -30,6 +30,7 @@ import RealizarPedidoMesero from "./pedidomesa";
 import FacturasMesero from "./facturasmesero";
 import RealizarPedidoLocal from "./pedidoslocal";
 import ValidarFacturas from "./validarfacturas";
+import ReversionesFacturas from "./GestionReversiones";
 
 const MenuM = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -74,6 +75,7 @@ const MenuM = () => {
   const tooltipTitle = "Realiza pedidos a las mesas";
   const tooltipTitle1 = "Ver tus facturas";
   const tooltipTitle2 = "Gestiona tus pedidos";
+  const tooltipTitle3 = "Gestion de reversiones";
 
   const [userData, setUserData] = useState(null);
   const id_cuenta = localStorage.getItem("id_cuenta");
@@ -443,6 +445,16 @@ const MenuM = () => {
                 </Col>
               </Row>
             )}
+          </>
+        )}
+        {currentPage === "reversion" && (
+          <>
+            <Row>
+              <Divider>Gestión de facturación</Divider>
+              <Col md={12}>
+                <ReversionesFacturas/>
+              </Col>
+            </Row>
           </>
         )}
       </Row>
