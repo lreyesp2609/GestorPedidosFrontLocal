@@ -293,56 +293,56 @@ const MenuM = () => {
               </Badge.Ribbon>
             </Col>
             <Col xs={24} sm={12} md={5} lg={3}>
-  <Badge.Ribbon text="Validar Facturas">
-    <Tooltip title={tooltipTitle2}>
-      {hasPermission ? (
-        <Card
-          hoverable
-          style={cardStyle}
-          cover={
-            <Image
-              alt="Validar Facturas"
-              src={validando}
-              style={{
-                padding: "5%",
-                height: "150px",
-                width: "auto",
-              }}
-              preview={false}
-            />
-          }
-          className="text-center"
-          onClick={() => handleCardClick("validarfacturas")}
-        >
-          <Meta title={tooltipTitle2}></Meta>
-        </Card>
-      ) : (
-        <div
-          style={{
-            ...cardStyle,
-            cursor: "not-allowed",
-            backgroundColor: "#E8E8E8",
-          }}
-        >
-          <Image
-            alt="Validar Facturas"
-            src={validando}
-            style={{
-              padding: "5%",
-              height: "150px",
-              width: "auto",
-            }}
-            preview={false}
-          />
-          <Meta title={tooltipTitle2}></Meta>
-          <p style={{ textAlign: "center", color: "red" }}>
-            No tienes acceso a este módulo
-          </p>
-        </div>
-      )}
-    </Tooltip>
-  </Badge.Ribbon>
-</Col>
+              <Badge.Ribbon text="Validar Facturas">
+                <Tooltip title={tooltipTitle2}>
+                  {hasPermission ? (
+                    <Card
+                      hoverable
+                      style={cardStyle}
+                      cover={
+                        <Image
+                          alt="Validar Facturas"
+                          src={validando}
+                          style={{
+                            padding: "5%",
+                            height: "150px",
+                            width: "auto",
+                          }}
+                          preview={false}
+                        />
+                      }
+                      className="text-center"
+                      onClick={() => handleCardClick("validarfacturas")}
+                    >
+                      <Meta title={tooltipTitle2}></Meta>
+                    </Card>
+                  ) : (
+                    <div
+                      style={{
+                        ...cardStyle,
+                        cursor: "not-allowed",
+                        backgroundColor: "#E8E8E8",
+                      }}
+                    >
+                      <Image
+                        alt="Validar Facturas"
+                        src={validando}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                      <Meta title={tooltipTitle2}></Meta>
+                      <p style={{ textAlign: "center", color: "red" }}>
+                        No tienes acceso a este módulo
+                      </p>
+                    </div>
+                  )}
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
 
             <Col md={6}>
               <div
