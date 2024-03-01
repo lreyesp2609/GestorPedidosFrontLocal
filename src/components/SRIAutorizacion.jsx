@@ -90,7 +90,6 @@ const SRIAutorizacion = () => {
       setCodigoAutorizacion(value.slice(0, 49));
     }
   };
-
   const columns = [
     {
       title: "ID",
@@ -122,7 +121,25 @@ const SRIAutorizacion = () => {
       dataIndex: "nombre",
       key: "nombre",
     },
+    {
+      title: "Estado",
+      key: "estado",
+      render: (record) => {
+        const fechaVencimiento = new Date(record.fecha_vencimiento);
+        const now = new Date();
+        const isExpired = fechaVencimiento < now;
+        const estadoStyle = {
+          color: isExpired ? "red" : "green",
+        };
+        return (
+          <span style={estadoStyle}>
+            {isExpired ? "Código caducado" : "Código válido"}
+          </span>
+        );
+      },
+    },
   ];
+  
 
   return (
     <div>
