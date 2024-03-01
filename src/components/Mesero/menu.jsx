@@ -30,6 +30,7 @@ import RealizarPedidoMesero from "./pedidomesa";
 import FacturasMesero from "./facturasmesero";
 import RealizarPedidoLocal from "./pedidoslocal";
 import ValidarFacturas from "./validarfacturas";
+import ReversionesFacturas from "./GestionReversiones";
 
 const MenuM = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -74,6 +75,7 @@ const MenuM = () => {
   const tooltipTitle = "Realiza pedidos a las mesas";
   const tooltipTitle1 = "Ver tus facturas";
   const tooltipTitle2 = "Gestiona tus pedidos";
+  const tooltipTitle3 = "Gestion de reversiones";
 
   const [userData, setUserData] = useState(null);
   const id_cuenta = localStorage.getItem("id_cuenta");
@@ -293,6 +295,32 @@ const MenuM = () => {
               </Badge.Ribbon>
             </Col>
             <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Reversiones">
+                <Tooltip title={tooltipTitle3}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="reversiones"
+                        src={imgtomarpedido}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("reversion")}
+                  >
+                    <Meta title={tooltipTitle3}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
   <Badge.Ribbon text="Validar Facturas">
     <Tooltip title={tooltipTitle2}>
       {hasPermission ? (
@@ -443,6 +471,16 @@ const MenuM = () => {
                 </Col>
               </Row>
             )}
+          </>
+        )}
+        {currentPage === "reversion" && (
+          <>
+            <Row>
+              <Divider>Gestión de facturación</Divider>
+              <Col md={12}>
+                <ReversionesFacturas/>
+              </Col>
+            </Row>
           </>
         )}
       </Row>
