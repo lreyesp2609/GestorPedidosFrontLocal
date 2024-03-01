@@ -84,9 +84,8 @@ const ValidarFacturas = () => {
 
   const validarFactura = (idFactura) => {
     if (userData) {
-      const idCuenta = userData.id_cuenta;
       fetch(
-        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${idCuenta}/${idFactura}/`,
+        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
         {
           method: "POST",
           headers: {

@@ -1,12 +1,25 @@
-import React, { useState } from "react";
-import { Button, Modal, Form, Input, message } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Modal, Form, Input, message, Table } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
 
 const SRIAutorizacion = () => {
   const [visible, setVisible] = useState(false);
   const [codigoAutorizacion, setCodigoAutorizacion] = useState("");
+  const [codigosAutorizacion, setCodigosAutorizacion] = useState([]);
   const [form] = Form.useForm(); // Agregar form aquí
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/CodigoFactura/vercodigo/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setCodigosAutorizacion(data.codigos_autorizacion);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
   const showModal = () => {
     setVisible(true);
@@ -77,6 +90,56 @@ const SRIAutorizacion = () => {
       setCodigoAutorizacion(value.slice(0, 49));
     }
   };
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id_codigosauto",
+      key: "id_codigosauto",
+    },
+    {
+      title: "Código de Autorización",
+      dataIndex: "codigo_autorizacion",
+      key: "codigo_autorizacion",
+    },
+    {
+      title: "Fecha de Vencimiento",
+      dataIndex: "fecha_vencimiento",
+      key: "fecha_vencimiento",
+    },
+    {
+      title: "Fecha de Autorización",
+      dataIndex: "fecha_autorizacion",
+      key: "fecha_autorizacion",
+    },
+    {
+      title: "RUC",
+      dataIndex: "ruc",
+      key: "ruc",
+    },
+    {
+      title: "Nombre",
+      dataIndex: "nombre",
+      key: "nombre",
+    },
+    {
+      title: "Estado",
+      key: "estado",
+      render: (record) => {
+        const fechaVencimiento = new Date(record.fecha_vencimiento);
+        const now = new Date();
+        const isExpired = fechaVencimiento < now;
+        const estadoStyle = {
+          color: isExpired ? "red" : "green",
+        };
+        return (
+          <span style={estadoStyle}>
+            {isExpired ? "Código caducado" : "Código válido"}
+          </span>
+        );
+      },
+    },
+  ];
+  
 
   return (
     <div>
@@ -153,6 +216,8 @@ const SRIAutorizacion = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Table columns={columns} dataSource={codigosAutorizacion} />
     </div>
   );
 };

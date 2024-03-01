@@ -295,32 +295,6 @@ const MenuM = () => {
               </Badge.Ribbon>
             </Col>
             <Col xs={24} sm={12} md={5} lg={3}>
-              <Badge.Ribbon text="Reversiones">
-                <Tooltip title={tooltipTitle3}>
-                  <Card
-                    hoverable
-                    style={cardStyle}
-                    cover={
-                      <Image
-                        alt="reversiones"
-                        src={imgtomarpedido}
-                        style={{
-                          padding: "5%",
-                          height: "150px",
-                          width: "auto",
-                        }}
-                        preview={false}
-                      />
-                    }
-                    className="text-center"
-                    onClick={() => handleCardClick("reversion")}
-                  >
-                    <Meta title={tooltipTitle3}></Meta>
-                  </Card>
-                </Tooltip>
-              </Badge.Ribbon>
-            </Col>
-            <Col xs={24} sm={12} md={5} lg={3}>
   <Badge.Ribbon text="Validar Facturas">
     <Tooltip title={tooltipTitle2}>
       {hasPermission ? (
