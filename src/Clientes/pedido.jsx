@@ -10,7 +10,7 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
-import { notification, Alert, Tooltip } from 'antd';
+import { notification, Alert, Tooltip, Pagination  } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -45,7 +45,32 @@ const Pedidos = ({ regresar }) => {
   const [currentLocation, setCurrentLocation] = useState(1);
   const [currentHour, setCurrentHour] = useState(dayjs().hour());
   const [HoraEntrega, setHoraEntrega] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 2;
+  const [data, setData] = useState([]); 
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/empleado/obtener_datosB/');
+      const result = await response.json();
 
+      setData(result.Cuentas);
+    } catch (error) {
+      console.error('Error al obtener datos de la API:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []); 
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+  };
+
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return data.slice(startIndex, endIndex);
+  };
   const listarsucursales = () => {
     fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
       .then((response) => response.json())
@@ -719,36 +744,49 @@ const Pedidos = ({ regresar }) => {
             , justifyContent: 'center'
           }}>
             <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
-            <div style={{
-              display: 'flex', alignItems: 'center'
-              , justifyContent: 'center'
-            }}>
-              <Card
-                style={{
-                  width: 400,
-                  marginRight: '10px',
-                }}
-              >
-                <p>Banco: Pichincha</p>
-                <p>Tipo de cuenta: Ahorros</p>
-                <p>Número de cuenta: 2207213048</p>
-                <p>Nombre: Angie Mayerli Díaz Veliz</p>
-                <p>Cedula: 0927711309</p>
-                <p>Email: angiediazv9@gmail.com</p>
-              </Card>
-              <Card
-                style={{
-                  width: 400,
-                }}
-              >
-                <p>Banco: Guayaquil</p>
-                <p>Tipo de cuenta: Ahorros</p>
-                <p>Número de cuenta: 00012119645</p>
-                <p>Nombre: Angie Mayerli Díaz Veliz</p>
-                <p>Cedula: 0927711309</p>
-                <p>Email: angiediazv9@gmail.com</p>
-              </Card>
-            </div>
+            <Row
+        gutter={[16, 16]}
+        justify="center"
+        style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}
+      >
+              {getPaginatedData().map((cuenta, index) => (
+                <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
+                  <Card
+                    style={{
+                      width: 300,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                Banco: {cuenta.nombre_banco}
+              </p>
+              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                Tipo de cuenta: {cuenta.tipo_cuenta}
+              </p>
+              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                Número de cuenta: {cuenta.num_cuenta}
+              </p>
+              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                Nombre: {cuenta.nombreapellidos}
+              </p>
+              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                Cedula: {cuenta.identificacion}
+              </p>
+              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                Email: {cuenta.correoelectronico}
+              </p>
+                  </Card>
+                </Col>
+              ))}
+              
+            </Row>
+            <Pagination
+                  current={currentPage}
+                  total={data.length}
+                  pageSize={pageSize}
+                  onChange={handlePageChange}
+                  style={{ marginTop: '16px', textAlign: 'center' }}
+                />
             <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
             <div rotationSlider style={{
               display: 'flex', alignItems: 'center'

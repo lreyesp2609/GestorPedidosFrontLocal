@@ -583,22 +583,10 @@ const EditarUser = () => {
                         />
                       </Col>
                     </Row>
-                  </Form.Group>
+                </Form.Group>
 
-                  {/*<Form.Group style={{ marginTop:'10px' }}>
-                 <Row>
-                    <Col>
-                    <Form.Label>Apellido</Form.Label>
-                    <Form.Control type='password'  />
-                    </Col>
-                    <Col>
-                    <Form.Label>nueva contraseña</Form.Label>
-                    <Form.Control   />
-                    </Col>
-                  </Row>
-                    </Form.Group> */}
                 </Form>
-              </Col>
+                </Col>*
             </Row>
           </Col>
         </Row>
