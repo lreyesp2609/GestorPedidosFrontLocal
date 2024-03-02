@@ -150,7 +150,7 @@ const ValidarPedido =()=>{
     try {
       const formData = new FormData();
       formData.append('estado_pago', 'Denegado');  // Cambia al estado deseado al denegar
-
+      formData.append('id_cuenta', idcuenta); 
       // Realiza la solicitud POST a la API
       const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
         method: 'POST',
