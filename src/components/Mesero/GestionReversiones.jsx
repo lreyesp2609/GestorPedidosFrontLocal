@@ -9,7 +9,7 @@ const ReversionesFacturas = () => {
   const [userData, setUserData] = useState(null);
   const [idFacturaSeleccionada, setIdFacturaSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [motivoReverso, setMotivoReverso] = useState("");
+  const [detalleFactura, setDetalleFactura] = useState(null);
 
   const id_cuenta = localStorage.getItem("id_cuenta");
 
@@ -82,39 +82,6 @@ const ReversionesFacturas = () => {
     setFacturasValidadas(facturasFiltradas);
   }, [facturas]);
 
-  const validarFactura = (idFactura) => {
-    if (userData) {
-      fetch(
-        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      )
-        .then((response) => {
-          if (response.ok) {
-            console.log(`Factura con ID ${idFactura} validada con éxito.`);
-            notification.success({
-              message: "Validación Exitosa",
-              description: `La factura con ID ${idFactura} se validó correctamente.`,
-            });
-            cargarFacturas(); // Actualizar la lista de facturas
-          } else {
-            console.error(
-              `Error al validar la factura con ID ${idFactura}.`
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error en la solicitud:", error);
-        });
-    } else {
-      console.error("Error: datos del usuario no disponibles.");
-    }
-  };
 
   const abrirModal = (idFactura) => {
     setIdFacturaSeleccionada(idFactura);
@@ -127,45 +94,7 @@ const ReversionesFacturas = () => {
     setMotivoReverso("");
   };
 
-  const confirmarReverso = () => {
-    if (motivoReverso.trim() !== "") {
-      cerrarModal();
-      fetch(
-        `http://127.0.0.1:8000/Mesero/crear_reverso_factura/${idFacturaSeleccionada}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ motivo_reverso: motivoReverso }),
-        }
-      )
-        .then((response) => {
-          if (response.ok) {
-            console.log(
-              `Reverso de factura con ID ${idFacturaSeleccionada} creado con éxito.`
-            );
-            notification.success({
-              message: "Reverso Exitoso",
-              description: `Se ha creado el reverso de la factura con ID ${idFacturaSeleccionada}.`,
-            });
-            cargarFacturas(); // Actualizar la lista de facturas
-          } else {
-            console.error(
-              `Error al crear el reverso de la factura con ID ${idFacturaSeleccionada}.`
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error en la solicitud:", error);
-        });
-    } else {
-      notification.error({
-        message: "Error",
-        description: "Por favor, ingrese un motivo para el reverso.",
-      });
-    }
-  };
+  
 
   const facturasNoValidadas = facturas.filter(
     (factura) =>
@@ -176,10 +105,7 @@ const ReversionesFacturas = () => {
       )
   );
 
-  const deshacerValidacion = (idFactura) => {
-    setIdFacturaSeleccionada(idFactura);
-    setModalVisible(true);
-  };
+
 
   const columns = [
     {
@@ -350,7 +276,7 @@ const ReversionesFacturas = () => {
         <span>
           <Button
             type="primary"
-            onClick={() => deshacerValidacion(record.id_factura)}
+            onClick={""}
           >
             Generar nota de credito
           </Button>
@@ -378,7 +304,7 @@ const ReversionesFacturas = () => {
       <Modal
         title="Detalles del Reverso"
         visible={modalVisible}
-        onOk={confirmarReverso}
+        onOk={abrirModal}
         onCancel={cerrarModal}
       >
       </Modal>
