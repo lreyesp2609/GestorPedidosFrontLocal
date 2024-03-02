@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, notification, Modal, Input } from "antd";
+import { Table, Button, Modal } from "antd";
 
 const ReversionesFacturas = () => {
   const [facturas, setFacturas] = useState([]);
@@ -10,6 +10,7 @@ const ReversionesFacturas = () => {
   const [idFacturaSeleccionada, setIdFacturaSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [detalleFactura, setDetalleFactura] = useState(null);
+  const [detalleNotaCredito, setDetalleNotaCredito] = useState(null);
 
   const id_cuenta = localStorage.getItem("id_cuenta");
 
@@ -82,7 +83,6 @@ const ReversionesFacturas = () => {
     setFacturasValidadas(facturasFiltradas);
   }, [facturas]);
 
-
   const abrirModal = (idFactura) => {
     setIdFacturaSeleccionada(idFactura);
     setModalVisible(true);
@@ -91,10 +91,31 @@ const ReversionesFacturas = () => {
   const cerrarModal = () => {
     setIdFacturaSeleccionada(null);
     setModalVisible(false);
-    setMotivoReverso("");
+    setDetalleFactura(null);
+    setDetalleNotaCredito(null);
   };
 
-  
+  const obtenerDetallesFactura = async (idFactura) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/Mesero/lista_facturas_con_detalles/${idFactura}/`);
+      const data = await response.json();
+      const factura = data.facturas_con_detalles.find(f => f.id_factura === idFactura);
+      setDetalleFactura(factura);
+      obtenerDetallesNotaCredito(idFactura);
+    } catch (error) {
+      console.error('Error al obtener detalles de la factura:', error);
+    }
+  };
+
+  const obtenerDetallesNotaCredito = async (idFactura) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/Mesero/listar_notas_credito/${idFactura}/`);
+      const data = await response.json();
+      setDetalleNotaCredito(data.nota_credito);
+    } catch (error) {
+      console.error('Error al obtener detalles de la nota de crédito:', error);
+    }
+  };
 
   const facturasNoValidadas = facturas.filter(
     (factura) =>
@@ -104,7 +125,6 @@ const ReversionesFacturas = () => {
         factura.numero_factura_hasta
       )
   );
-
 
 
   const columns = [
@@ -187,7 +207,10 @@ const ReversionesFacturas = () => {
         <span>
           <Button
             type="primary"
-            onClick={() => deshacerValidacion(record.id_factura)}
+            onClick={() => {
+              obtenerDetallesFactura(record.id_factura);
+              abrirModal(record.id_factura);
+            }}
           >
             Ver Detalles
           </Button>
@@ -274,12 +297,7 @@ const ReversionesFacturas = () => {
       key: "reversión",
       render: (text, record) => (
         <span>
-          <Button
-            type="primary"
-            onClick={""}
-          >
-            Generar nota de credito
-          </Button>
+          <Button type="primary">Generar nota de credito</Button>
         </span>
       )
     }
@@ -304,9 +322,31 @@ const ReversionesFacturas = () => {
       <Modal
         title="Detalles del Reverso"
         visible={modalVisible}
-        onOk={abrirModal}
+        onOk={cerrarModal}
         onCancel={cerrarModal}
       >
+        {detalleFactura && (
+          <div>
+            <h3>Detalles de la reversión</h3>
+            <p>Fecha de Emisión de la Factura: {detalleFactura.fecha_emision}</p>
+            {detalleNotaCredito && (
+              <div>
+                <p>Fecha de Emisión del Reverso: {detalleNotaCredito.fecha_emision}</p>
+                <p>Motivo: {detalleNotaCredito.motivo}</p>
+              </div>
+            )}
+            <h4>Productos</h4>
+            <ul>
+              {detalleFactura.detalles_factura.map((detalle, index) => (
+                <li key={index}>
+                  {detalle.nombre_producto || detalle.id_combo} - Cantidad:{" "}
+                  {detalle.cantidad}
+                </li>
+              ))}
+            </ul>
+            <p>Total a Pagar: {detalleFactura.a_pagar}</p>
+          </div>
+        )}
       </Modal>
     </div>
   );
