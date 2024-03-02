@@ -1,103 +1,257 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSucursal, selectedTipoEmpleado, selectedReport,
+  facturasEmitidas, clientes, productos, combos, sucursal, setPdfBlob, handleShowViewer }) => {
 
-const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData }) => {
+  const generarReportePDF = () => {
+    const doc = new jsPDF();
 
-    // Función para generar el reporte PDF
-    const generarReportePDF = () => {
-        // Crear un nuevo documento PDF
-        const doc = new jsPDF();
+    const topRectY = 0;
+    const bottomRectY = doc.internal.pageSize.getHeight() - 20;
+    const rectWidth = doc.internal.pageSize.getWidth();
+    const rectHeight = 30;
+    const rectHeighty = 20;
 
-        // Definir coordenadas y dimensiones de las franjas
-        const topRectY = 0; // Coordenada Y de la franja superior
-        const bottomRectY = doc.internal.pageSize.getHeight() - 20; // Coordenada Y de la franja inferior
-        const rectWidth = doc.internal.pageSize.getWidth(); // Ancho de la franja es igual al ancho de la página
-        const rectHeight = 30; // Altura de las franjas
-        const rectHeighty = 20; // Altura de las franjas
+    doc.setFillColor(194, 18, 18);
 
-        doc.setFillColor(194, 18, 18); // Rojo: RGB(255, 0, 0)
+    doc.rect(0, topRectY, rectWidth, rectHeight, 'F');
+    doc.rect(0, bottomRectY, rectWidth, rectHeighty, 'F');
 
-        // Dibujar franja superior
-        doc.rect(0, topRectY, rectWidth, rectHeight, 'F');
+    if (logoEmpresa) {
+      const logo = new Image();
+      logo.src = logoEmpresa;
+      const logoWidth = 30;
+      const logoX = 5;
+      const logoY = 0;
+      doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoWidth);
+    }
 
-        // Dibujar franja inferior
-        doc.rect(0, bottomRectY, rectWidth, rectHeighty, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(15);
+    doc.text(`${empresaInfo.enombre}`, 32, 12);
+    doc.setFontSize(12);
+    doc.text(`${empresaInfo.direccion}`, 32, 17);
+    doc.setFontSize(11);
+    doc.text(`${empresaInfo.etelefono}`, 32, 22);
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
 
-        // Agregar logo de la empresa al PDF si está disponible
-        if (logoEmpresa) {
-            
-            const logo = new Image();
-            logo.src = logoEmpresa;
-            const logoWidth = 30; // Ancho del logo
-            const logoX = 5; // Coordenada X del logo
-            const logoY = 0; // Coordenada Y del logo
-            doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoWidth); // Colocar el logo en el lado izquierdo
-        }
-        
-        doc.setTextColor(255, 255, 255); // Blanco: RGB(255, 255, 255)
-        doc.setFontSize(15);
-        doc.text(`${empresaInfo.enombre}`, 32, 12); // Información de la empresa al lado del logo
-        doc.setFontSize(12);
-        doc.text(`${empresaInfo.direccion}`, 32, 17);
-        doc.setFontSize(11);
-        doc.text(`${empresaInfo.etelefono}`, 32, 22);
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0); 
+    if (selectedReport === 'empleados') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte de Empleados', 10, 40);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
+      doc.text(`Datos filtrados por sucursal "${selectedSucursal}" y tipos de empleados "${selectedTipoEmpleado}"`, 10, 47);
 
-        // Agregar título y encabezados de la tabla de empleados
-        doc.text('Reporte de Empleados', 10, 40);
-        
-        const headers = [['Nombre', 'Apellido', 'Teléfono', 'Ciudad', 'Fecha']];
+      const headers = ['Nombre', 'Apellido', 'Teléfono', 'Ciudad', 'Fecha'];
+      const data = empleadosData.map(empleado => [
+        empleado.nombre,
+        empleado.apellido,
+        empleado.telefono,
+        empleado.ciudad,
+        empleado.fecha,
+      ]);
 
-        // Extraer datos de los empleados para la tabla
-        const data = empleadosData.map(empleado => [
-            empleado.nombre,
-            empleado.apellido,
-            empleado.telefono,
-            empleado.ciudad,
-            empleado.fecha,
-        ]);
+      // Calcular el total de empleados
+      const totalEmpleados = data.length;
 
-        // Agregar la tabla de empleados al PDF
-        doc.autoTable({
-            startY: 48,
-            head: headers,
-            body: data,
-        });
+      doc.autoTable({
+        startY: 53,
+        head: [headers],
+        body: data,
+        margin: { left: 20, right: 20 },
+      });
 
-        // Obtener la fecha actual
-        const fechaEmision = new Date().toLocaleDateString();
-
-        // Agregar la fecha de emisión al PDF
-        const fechaHoraEmision = new Date().toLocaleString();
-
-        // Agregar la fecha y hora de emisión al PDF
-        // Obtener el ancho de la página
-        const pageWidth = doc.internal.pageSize.getWidth();
-
-        // Obtener el ancho del texto
-        const fontSize = 10;
-        const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
-
-        // Calcular la posición del texto
-        const xPosition = pageWidth - fechaTextWidth - 10; // 10 es el margen derecho
-        const yPosition = doc.internal.pageSize.getHeight() - 10; // 10 es el margen inferior
-
-        // Establecer el tamaño de fuente y renderizar el texto
-        doc.setFontSize(fontSize);
-        doc.setTextColor(255, 255, 255);
-        doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
+      doc.setFont("helvetica", "bold");
+      doc.text('Total de Empleados:', 20, doc.lastAutoTable.finalY + 10);
+      doc.text(totalEmpleados.toString(), 60, doc.lastAutoTable.finalY + 10);
+    }
 
 
-        // Guardar el documento PDF
-        doc.save('reporte_empleados.pdf');
-    };
+    if (selectedReport === 'facturas') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte de Facturas Emitidas', 10, 40);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
 
-    // Llamamos a la función para generar el reporte PDF
-    generarReportePDF();
+      const headers = ['Código', 'Cliente', 'Fecha Emisión', 'Mesero', 'Total', 'IVA', 'Descuento', 'Subtotal', 'Pagar'];
+      const data = facturasEmitidas.map(factura => [
+        factura.codigo_factura,
+        factura.cliente_completo,
+        factura.fecha_emision,
+        factura.mesero_completo,
+        factura.total,
+        factura.iva,
+        factura.descuento,
+        factura.subtotal,
+        factura.a_pagar,
+      ]);
+      doc.autoTable({
+        startY: 48,
+        head: [headers],
+        body: data,
+        margin: { left: 10, right: 10 },
+      });
+    }
 
-    return null; // No necesitamos renderizar ningún elemento visible en el DOM
+    if (selectedReport === 'clientes') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte de Clientes', 10, 40);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
+
+      // Cabeceras para la tabla de clientes
+      const headers = ['Código', 'Nombres', 'RUC/Cédula', 'Teléfono', 'Puntos', 'Registro'];
+
+      // Transformar los datos de clientes en un array bidimensional para la tabla
+      const data = clientes.map(cliente => [
+        cliente.id_cliente,
+        `${cliente.snombre || ''} ${cliente.capellido || ''}`,
+        cliente.ruc_cedula,
+        cliente.ctelefono,
+        cliente.cpuntos,
+        cliente.cregistro,
+      ]);
+
+      // Añadir la tabla de clientes al PDF
+      doc.autoTable({
+        startY: 48,
+        head: [headers],
+        body: data,
+        margin: { left: 10, right: 10 },
+      });
+    }
+
+    if (selectedReport === 'productos') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte de Productos', 10, 40);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
+
+
+      // Cabeceras para la tabla de clientes
+      const headers = ['Código', 'Nombre', 'Categoría', 'Precio', 'Puntos'];
+
+      // Transformar los datos de clientes en un array bidimensional para la tabla
+      const data = productos.map(productos => [
+        productos.id_producto,
+        productos.nombreproducto,
+        productos.catnombre,
+        productos.preciounitario,
+        productos.puntosp,
+      ]);
+
+      // Añadir la tabla de clientes al PDF
+      doc.autoTable({
+        startY: 48,
+        head: [headers],
+        body: data,
+        margin: { left: 10, right: 10 },
+      });
+    }
+
+    if (selectedReport === 'combos') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte de Combos', 10, 40);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
+
+
+      // Cabeceras para la tabla de clientes
+      const headers = ['Código', 'Nombre', 'Categoría', 'Precio', 'Puntos'];
+
+      // Transformar los datos de clientes en un array bidimensional para la tabla
+      const data = combos.map(combos => [
+        combos.id_combo,
+        combos.nombrecb,
+        combos.nombrecat,
+        combos.preciounitario,
+        combos.puntos,
+      ]);
+      // Añadir la tabla de clientes al PDF
+      doc.autoTable({
+        startY: 48,
+        head: [headers],
+        body: data,
+        margin: { left: 10, right: 10 },
+      });
+    }
+
+    if (selectedReport === 'sucursal') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte de Sucursales', 10, 40);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
+
+      // Cabeceras para la tabla de clientes
+      const headers = ['Código', 'Nombre', 'Apertura', 'Estado', 'Teléfono', 'Empleados'];
+
+      // Transformar los datos de clientes en un array bidimensional para la tabla
+      const data = sucursal.map(sucursal => [
+        sucursal.id_sucursal,
+        sucursal.snombre,
+        sucursal.fsapertura,
+        sucursal.sestado === '1' ? 'Activo' : 'No Activo',
+        sucursal.sdireccion,
+        sucursal.cantidadempleados,
+      ]);
+
+      // Calcular el total de empleados de todas las sucursales
+      const totalEmpleados = data.reduce((total, current) => total + current[5], 0);
+
+      // Añadir la tabla de clientes al PDF
+      doc.autoTable({
+        startY: 48,
+        head: [headers],
+        body: data,
+        margin: { left: 18, right: 18 },
+      });
+
+      const finalY = doc.lastAutoTable.finalY || 48;
+
+      doc.setFont("helvetica", "bold");
+      doc.text('Total de empleados:', 150, finalY + 10); // Alineado a la derecha
+      doc.text(totalEmpleados.toString(), 187, finalY + 10); // Alineado a la derecha
+    }
+
+    let fileName = '';
+    if (selectedReport === 'empleados') {
+      fileName = 'reporte_empleados.pdf';
+    } else if (selectedReport === 'facturas') {
+      fileName = 'reporte_facturas_emitidas.pdf';
+    } else if (selectedReport === 'clientes') {
+      fileName = 'reporte_clientes.pdf';
+    } else if (selectedReport === 'productos') {
+      fileName = 'reporte_productos.pdf';
+    } else if (selectedReport === 'combos') {
+      fileName = 'reporte_combos.pdf';
+    } else if (selectedReport === 'sucursal') {
+      fileName = 'reporte_sucursal.pdf';
+    }
+
+    const fechaHoraEmision = new Date().toLocaleString();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const fontSize = 10;
+    const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
+    const xPosition = pageWidth - fechaTextWidth - 10;
+    const yPosition = doc.internal.pageSize.getHeight() - 10;
+    doc.setFontSize(fontSize);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
+
+
+    doc.save(fileName);
+    setPdfBlob(doc.output('blob'));
+    handleShowViewer();
+  };
+  generarReportePDF();
+  return null;
 };
-
 export default GenerarReportePDF;
