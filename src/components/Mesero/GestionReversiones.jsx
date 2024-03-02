@@ -361,14 +361,14 @@ const ReversionesFacturas = () => {
 
   return (
     <div>
-      <h2>Lista de Facturas</h2>
+      <h2>Reversion de Facturas</h2>
       <div style={{ overflowX: "auto" }}>
         <Table columns={columns} dataSource={facturasNoValidadas} />
       </div>
 
       {facturasValidadas.length > 0 && (
         <div>
-          <h2>Facturas Validadas</h2>
+          <h2>Reversion de Facturas Validadas</h2>
           <div style={{ overflowX: "auto" }}>
             <Table columns={columnsValidadas} dataSource={facturasValidadas} />
           </div>
