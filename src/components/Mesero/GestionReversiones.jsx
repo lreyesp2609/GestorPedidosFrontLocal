@@ -107,15 +107,15 @@ const ReversionesFacturas = () => {
     }
   };
 
-  const obtenerDetallesNotaCredito = async (idFactura) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/Mesero/listar_notas_credito/${idFactura}/`);
-      const data = await response.json();
-      setDetalleNotaCredito(data.nota_credito);
-    } catch (error) {
-      console.error('Error al obtener detalles de la nota de crédito:', error);
-    }
-  };
+const obtenerDetallesNotaCredito = async (id_notacredito) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/Mesero/listar_notas_credito/${id_notacredito}/`);
+    const data = await response.json();
+    setDetalleNotaCredito(data.nota_credito);
+  } catch (error) {
+    console.error('Error al obtener detalles de la nota de crédito:', error);
+  }
+};
 
   const facturasNoValidadas = facturas.filter(
     (factura) =>
@@ -320,34 +320,34 @@ const ReversionesFacturas = () => {
       )}
 
       <Modal
-        title="Detalles del Reverso"
-        visible={modalVisible}
-        onOk={cerrarModal}
-        onCancel={cerrarModal}
-      >
-        {detalleFactura && (
-          <div>
-            <h3>Detalles de la reversión</h3>
-            <p>Fecha de Emisión de la Factura: {detalleFactura.fecha_emision}</p>
-            {detalleNotaCredito && (
-              <div>
-                <p>Fecha de Emisión del Reverso: {detalleNotaCredito.fecha_emision}</p>
-                <p>Motivo: {detalleNotaCredito.motivo}</p>
-              </div>
-            )}
-            <h4>Productos</h4>
-            <ul>
-              {detalleFactura.detalles_factura.map((detalle, index) => (
-                <li key={index}>
-                  {detalle.nombre_producto || detalle.id_combo} - Cantidad:{" "}
-                  {detalle.cantidad}
-                </li>
-              ))}
-            </ul>
-            <p>Total a Pagar: {detalleFactura.a_pagar}</p>
-          </div>
-        )}
-      </Modal>
+  title="Detalles del Reverso"
+  visible={modalVisible}
+  onOk={cerrarModal}
+  onCancel={cerrarModal}
+>
+  {detalleFactura && (
+    <div>
+      <h3>Detalles de la reversión</h3>
+      <p>Fecha de Emisión de la Factura: {detalleFactura.fecha_emision}</p>
+      {detalleNotaCredito && (
+        <div>
+          <p>Fecha de Emisión del Reverso: {detalleNotaCredito.fecha_emision}</p>
+          <p>Motivo: {detalleNotaCredito.motivo}</p>
+        </div>
+      )}
+      <h4>Productos</h4>
+      <ul>
+        {detalleFactura.detalles_factura.map((detalle, index) => (
+          <li key={index}>
+            {detalle.nombre_producto || detalle.id_combo} - Cantidad:{" "}
+            {detalle.cantidad}
+          </li>
+        ))}
+      </ul>
+      <p>Total a Pagar: {detalleFactura.a_pagar}</p>
+    </div>
+  )}
+</Modal>
     </div>
   );
 };
