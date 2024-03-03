@@ -34,6 +34,7 @@ import ReversionesFacturas from "./GestionReversiones";
 
 const MenuM = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [CantPedidosP, setCantPedidosP] = useState(0);
   const [pedidos, setPedidos] = useState([]);
   const [hasPermission, setHasPermission] = useState(false);
   const [permissionNotification, setPermissionNotification] = useState({
@@ -166,6 +167,8 @@ const MenuM = () => {
       .then((response) => response.json())
       .then((data) => {
         setPedidos(data.pedidos);
+        const pedidosPendientes = data.pedidos.filter((pedido) => pedido.estado_del_pedido === 'P');
+        setCantPedidosP(pedidosPendientes.length);
         console.log(data.pedidos);
       })
       .catch((error) => console.error("Error fetching pedidos:", error));
@@ -242,135 +245,139 @@ const MenuM = () => {
       <Row>
         {currentPage === "homemesero" && (
           <>
-            <Col xs={24} sm={12} md={5} lg={3}>
-              <Badge.Ribbon text="Pedidos">
-                <Tooltip title={tooltipTitle}>
-                  <Card
-                    hoverable
-                    style={cardStyle}
-                    cover={
-                      <Image
-                        alt="Pedidos"
-                        src={imgtomarpedido}
-                        style={{
-                          padding: "5%",
-                          height: "150px",
-                          width: "auto",
-                        }}
-                        preview={false}
-                      />
-                    }
-                    className="text-center"
-                    onClick={() => handleCardClick("pedidos")}
-                  >
-                    <Meta title={tooltipTitle}></Meta>
-                  </Card>
-                </Tooltip>
-              </Badge.Ribbon>
+            <Col md={6}>
+              <Row>
+                <Col md={6}>
+                  <Badge.Ribbon text="Pedidos">
+                    <Tooltip title={tooltipTitle}>
+                      <Card
+                        hoverable
+                        style={cardStyle}
+                        cover={
+                          <Image
+                            alt="Pedidos"
+                            src={imgtomarpedido}
+                            style={{
+                              padding: "5%",
+                              height: "150px",
+                              width: "auto",
+                            }}
+                            preview={false}
+                          />
+                        }
+                        className="text-center"
+                        onClick={() => handleCardClick("pedidos")}
+                      >
+                        <Meta title={tooltipTitle}></Meta>
+                      </Card>
+                    </Tooltip>
+                  </Badge.Ribbon>
+                </Col>
+                <Col md={6}>
+                  <Badge.Ribbon text="Facturas">
+                    <Tooltip title={tooltipTitle1}>
+                      <Card
+                        hoverable
+                        style={cardStyle}
+                        cover={
+                          <Image
+                            alt="Facturas"
+                            src={imgfacturas}
+                            style={{
+                              padding: "5%",
+                              height: "150px",
+                              width: "auto",
+                            }}
+                            preview={false}
+                          />
+                        }
+                        className="text-center"
+                        onClick={() => handleCardClick("facturas")}
+                      >
+                        <Meta title={tooltipTitle1}></Meta>
+                      </Card>
+                    </Tooltip>
+                  </Badge.Ribbon>
+                </Col>
+                <Col md={6}>
+                  <Badge.Ribbon text="Reversiones">
+                    <Tooltip title={tooltipTitle1}>
+                      <Card
+                        hoverable
+                        style={cardStyle}
+                        cover={
+                          <Image
+                            alt="Reversiones"
+                            src={imgfacturas}
+                            style={{
+                              padding: "5%",
+                              height: "150px",
+                              width: "auto",
+                            }}
+                            preview={false}
+                          />
+                        }
+                        className="text-center"
+                        onClick={() => handleCardClick("reversion")}
+                      >
+                        <Meta title={tooltipTitle1}></Meta>
+                      </Card>
+                    </Tooltip>
+                  </Badge.Ribbon>
+                </Col>
+                <Col md={6}>
+                  <Badge.Ribbon text="Validar Facturas">
+                    <Tooltip title={tooltipTitle2}>
+                      {hasPermission ? (
+                        <Card
+                          hoverable
+                          style={cardStyle}
+                          cover={
+                            <Image
+                              alt="Validar Facturas"
+                              src={validando}
+                              style={{
+                                padding: "5%",
+                                height: "150px",
+                                width: "auto",
+                              }}
+                              preview={false}
+                            />
+                          }
+                          className="text-center"
+                          onClick={() => handleCardClick("validarfacturas")}
+                        >
+                          <Meta title={tooltipTitle2}></Meta>
+                        </Card>
+                      ) : (
+                        <div
+                          style={{
+                            ...cardStyle,
+                            cursor: "not-allowed",
+                            backgroundColor: "#E8E8E8",
+                          }}
+                        >
+                          <Image
+                            alt="Validar Facturas"
+                            src={validando}
+                            style={{
+                              padding: "5%",
+                              height: "150px",
+                              width: "auto",
+                            }}
+                            preview={false}
+                          />
+                          <Meta title={tooltipTitle2}></Meta>
+                          <p style={{ textAlign: "center", color: "red" }}>
+                            No tienes acceso a este módulo
+                          </p>
+                        </div>
+                      )}
+                    </Tooltip>
+                  </Badge.Ribbon>
+                </Col>
+              </Row>
             </Col>
-            <Col xs={24} sm={12} md={5} lg={3}>
-              <Badge.Ribbon text="Facturas">
-                <Tooltip title={tooltipTitle1}>
-                  <Card
-                    hoverable
-                    style={cardStyle}
-                    cover={
-                      <Image
-                        alt="Facturas"
-                        src={imgfacturas}
-                        style={{
-                          padding: "5%",
-                          height: "150px",
-                          width: "auto",
-                        }}
-                        preview={false}
-                      />
-                    }
-                    className="text-center"
-                    onClick={() => handleCardClick("facturas")}
-                  >
-                    <Meta title={tooltipTitle1}></Meta>
-                  </Card>
-                </Tooltip>
-              </Badge.Ribbon>
-            </Col>
-            <Col xs={24} sm={12} md={5} lg={3}>
-              <Badge.Ribbon text="Reversiones">
-                <Tooltip title={tooltipTitle1}>
-                  <Card
-                    hoverable
-                    style={cardStyle}
-                    cover={
-                      <Image
-                        alt="Reversiones"
-                        src={imgfacturas}
-                        style={{
-                          padding: "5%",
-                          height: "150px",
-                          width: "auto",
-                        }}
-                        preview={false}
-                      />
-                    }
-                    className="text-center"
-                    onClick={() => handleCardClick("reversion")}
-                  >
-                    <Meta title={tooltipTitle1}></Meta>
-                  </Card>
-                </Tooltip>
-              </Badge.Ribbon>
-            </Col>
-            <Col xs={24} sm={12} md={5} lg={3}>
-  <Badge.Ribbon text="Validar Facturas">
-    <Tooltip title={tooltipTitle2}>
-      {hasPermission ? (
-        <Card
-          hoverable
-          style={cardStyle}
-          cover={
-            <Image
-              alt="Validar Facturas"
-              src={validando}
-              style={{
-                padding: "5%",
-                height: "150px",
-                width: "auto",
-              }}
-              preview={false}
-            />
-          }
-          className="text-center"
-          onClick={() => handleCardClick("validarfacturas")}
-        >
-          <Meta title={tooltipTitle2}></Meta>
-        </Card>
-      ) : (
-        <div
-          style={{
-            ...cardStyle,
-            cursor: "not-allowed",
-            backgroundColor: "#E8E8E8",
-          }}
-        >
-          <Image
-            alt="Validar Facturas"
-            src={validando}
-            style={{
-              padding: "5%",
-              height: "150px",
-              width: "auto",
-            }}
-            preview={false}
-          />
-          <Meta title={tooltipTitle2}></Meta>
-          <p style={{ textAlign: "center", color: "red" }}>
-            No tienes acceso a este módulo
-          </p>
-        </div>
-      )}
-    </Tooltip>
-  </Badge.Ribbon>
-</Col>
 
             <Col md={6}>
               <div
@@ -382,9 +389,9 @@ const MenuM = () => {
               >
                 <Divider>Pedidos</Divider>
                 <Card>
-                  <p>Pedidos actuales:</p>
-                  <p>Pedidos pendientes:</p>
-                  <p>Pedidos listos:</p>
+                  <p>Pedidos actuales: {pedidos.length}</p>
+                  <p>Pedidos pendientes: {pedidos.length - CantPedidosP}</p>
+                  <p>Pedidos listos: {CantPedidosP}</p>
                 </Card>
                 <Divider>Pedidos</Divider>
                 <div className="table-responsive">
@@ -454,7 +461,7 @@ const MenuM = () => {
             <Row>
               <Divider>Gestión de facturación</Divider>
               <Col md={12}>
-                <ReversionesFacturas/>
+                <ReversionesFacturas />
               </Col>
             </Row>
           </>
