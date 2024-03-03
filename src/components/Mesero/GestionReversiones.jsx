@@ -86,6 +86,7 @@ const ReversionesFacturas = () => {
   const abrirModal = (idFactura) => {
     setIdFacturaSeleccionada(idFactura);
     setModalVisible(true);
+    obtenerDetalles(idFactura);
   };
 
   const cerrarModal = () => {
@@ -95,27 +96,24 @@ const ReversionesFacturas = () => {
     setDetalleNotaCredito(null);
   };
 
-  const obtenerDetallesFactura = async (idFactura) => {
+  const obtenerDetalles = async (idFactura) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/Mesero/lista_facturas_con_detalles/${idFactura}/`);
+      const response = await fetch(`http://127.0.0.1:8000/Mesero/factura_detalles_nota_credito/${idFactura}/`);
       const data = await response.json();
-      const factura = data.facturas_con_detalles.find(f => f.id_factura === idFactura);
-      setDetalleFactura(factura);
-      obtenerDetallesNotaCredito(idFactura);
+  
+      if (data.factura) {
+        setDetalleFactura(data.factura);
+      }
+  
+      if (data.nota_credito) {
+        setDetalleNotaCredito(data.nota_credito);
+      } else {
+        setDetalleNotaCredito(null);
+      }
     } catch (error) {
-      console.error('Error al obtener detalles de la factura:', error);
+      console.error('Error al obtener detalles:', error);
     }
   };
-
-const obtenerDetallesNotaCredito = async (id_notacredito) => {
-  try {
-    const response = await fetch(`http://127.0.0.1:8000/Mesero/listar_notas_credito/${id_notacredito}/`);
-    const data = await response.json();
-    setDetalleNotaCredito(data.nota_credito);
-  } catch (error) {
-    console.error('Error al obtener detalles de la nota de crédito:', error);
-  }
-};
 
   const facturasNoValidadas = facturas.filter(
     (factura) =>
@@ -208,7 +206,7 @@ const obtenerDetallesNotaCredito = async (id_notacredito) => {
           <Button
             type="primary"
             onClick={() => {
-              obtenerDetallesFactura(record.id_factura);
+              obtenerDetalles(record.id_factura);
               abrirModal(record.id_factura);
             }}
           >
