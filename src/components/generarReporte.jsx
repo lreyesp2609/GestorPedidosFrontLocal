@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
+
 import 'jspdf-autotable';
 const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSucursal, selectedTipoEmpleado, selectedReport,
-  facturasEmitidas, clientes, productos, combos, sucursal, setPdfBlob, handleShowViewer }) => {
-
+  facturasEmitidas, clientes, productos, combos, sucursal, ventasmesero, setPdfBlob, handleShowViewer, selectedVenta, dateRange,
+  selectedMesero, selectedProducto }) => {
+  console.log(dateRange);
   const generarReportePDF = () => {
     const doc = new jsPDF();
 
@@ -221,6 +223,191 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       doc.text(totalEmpleados.toString(), 187, finalY + 10); // Alineado a la derecha
     }
 
+    if (selectedReport === 'venta') {
+      if (selectedVenta === 'mesero') {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text('Reporte de Ventas por Meseros', 10, 40);
+        doc.setFont("helvetica");
+        doc.setFontSize(10);
+        doc.text(`Ventas filtradas por el mesero "${selectedMesero}"`, 10, 48);
+
+        const headers = ['CodCliente', 'Nombres', 'Fecha Pedido', 'Método de pago', 'Mesero', 'CodVenta', 'Precio',];
+        const metodoPagoMap = {
+          'E': 'Efectivo',
+          'T': 'Transferencia',
+          'F': 'Fraccionado',
+        };
+
+        if (dateRange && dateRange.length >= 2) {
+          // Filtrar los datos por rango de fechas
+          const filteredData = ventasmesero.filter(venta => {
+            const fechaPedido = new Date(venta.fecha_pedido);
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            // Ajustar la comparación para incluir el límite superior del rango
+            return fechaPedido >= fechaDesde && fechaPedido <= fechaHasta.setDate(fechaHasta.getDate() + 1);
+          });
+
+          if (filteredData.length === 0) {
+            doc.text('No hay ventas del empleado en el rango de fechas seleccionado.', 10, 48);
+          } else {
+            const data = filteredData.map(venta => [
+              venta.cliente.id_cliente,
+              `${venta.cliente.snombre || ''} ${venta.cliente.capellido || ''}`,
+              venta.fecha_pedido,
+              metodoPagoMap[venta.metodo_de_pago],
+              venta.nombre_mesero,
+              venta.id_pedido,
+              venta.precio,
+            ]);
+
+            doc.autoTable({
+              startY: 53,
+              head: [headers],
+              body: data,
+              margin: { left: 8, right: 8 },
+            });
+            // Calcular la suma de los precios de las ventas
+            const totalVenta = filteredData.reduce((total, venta) => total + parseFloat(venta.precio), 0);
+
+            // Obtener el ancho del documento
+            const docWidth = doc.internal.pageSize.width;
+
+            // Obtener el ancho del texto
+            const textWidth = doc.getStringUnitWidth(`Total de ventas: $ ${totalVenta.toFixed(2)}`) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+
+            // Colocar el texto a mano derecha
+            doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
+
+          }
+        } else {
+          console.error('dateRange no está definido o no tiene al menos dos elementos.');
+        }
+      }
+
+      if (selectedVenta === 'sucursal') {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text('Reporte de Ventas por Sucursales', 10, 40);
+        doc.setFont("helvetica");
+        doc.setFontSize(10);
+        doc.text(`Ventas filtradas por la sucursal "${selectedSucursal}"`, 10, 48);
+
+        const headers = ['Cliente', 'Fecha Pedido', 'Método de pago', 'Mesero', 'Sucursal', 'CodVenta', 'Precio'];
+
+        const metodoPagoMap = {
+          'E': 'Efectivo',
+          'T': 'Transferencia',
+          'F': 'Fraccionado',
+        };
+
+        if (dateRange && dateRange.length >= 2) {
+          // Filtrar los datos por rango de fechas
+          const filteredData = ventasmesero.filter(venta => {
+            const fechaPedido = new Date(venta.fecha_pedido);
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            // Ajustar la comparación para incluir el límite superior del rango
+            return fechaPedido >= fechaDesde && fechaPedido <= fechaHasta.setDate(fechaHasta.getDate() + 1);
+          });
+
+          if (filteredData.length === 0) {
+            doc.text('No hay ventas de la sucursal en el rango de fechas seleccionado.', 10, 48);
+          } else {
+            const data = filteredData.map(venta => [
+              `${venta.cliente.snombre || ''} ${venta.cliente.capellido || ''}`,
+              venta.fecha_pedido,
+              metodoPagoMap[venta.metodo_de_pago],
+              venta.mesero ? `${venta.mesero.nombre} ${venta.mesero.apellido}` : 'App',
+              venta.nombre_sucursal,
+              venta.id_pedido,
+              venta.precio,
+            ]);
+
+            doc.autoTable({
+              startY: 53,
+              head: [headers],
+              body: data,
+              margin: { left: 8, right: 8 },
+            });
+            // Calcular la suma de los precios de las ventas
+            const totalVenta = filteredData.reduce((total, venta) => total + parseFloat(venta.precio), 0);
+
+            // Obtener el ancho del documento
+            const docWidth = doc.internal.pageSize.width;
+
+            // Obtener el ancho del texto
+            const textWidth = doc.getStringUnitWidth(`Total de ventas: $ ${totalVenta.toFixed(2)}`) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+
+            // Colocar el texto a mano derecha
+            doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
+          }
+        } else {
+          console.error('dateRange no está definido o no tiene al menos dos elementos.');
+        }
+      }
+      if (selectedVenta === 'productos') {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text('Reporte de Ventas por Producto', 10, 40);
+        doc.setFont("helvetica");
+        doc.setFontSize(10);
+        doc.text(`Ventas filtradas por el producto "${selectedProducto}"`, 10, 48);
+
+        const headers = ['CodVenta', 'Fecha Pedido', 'Detalle de Pedido', 'Empleado', 'Precio'];
+
+        if (dateRange && dateRange.length >= 2) {
+          // Filtrar los datos por rango de fechas
+          const filteredData = ventasmesero.filter(venta => {
+            const fechaPedido = new Date(venta.fecha_pedido);
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            // Ajustar la comparación para incluir el límite superior del rango
+            return fechaPedido >= fechaDesde && fechaPedido <= fechaHasta.setDate(fechaHasta.getDate() + 1);
+          });
+
+          if (filteredData.length === 0) {
+            doc.text('No hay ventas del producto en el rango de fechas seleccionado.', 10, 48);
+          } else {
+            const data = [];
+
+            filteredData.forEach(venta => {
+              const detalle_pedido = venta.detalle_pedido.map(detalle => `${detalle.nombreproducto} (${detalle.cantidad})`).join('\n');
+              data.push([
+                venta.id_pedido,
+                venta.fecha_pedido,
+                detalle_pedido,
+                venta.mesero ? `${venta.mesero.nombre} ${venta.mesero.apellido}` : 'App',
+                venta.precio,
+              ]);
+            });
+
+            doc.autoTable({
+              startY: 53,
+              head: [headers],
+              body: data,
+              margin: { left: 15, right: 15 },
+            });
+
+            // Calcular la suma de los precios de las ventas
+            const totalVenta = filteredData.reduce((total, venta) => total + parseFloat(venta.precio), 0);
+
+            // Obtener el ancho del documento
+            const docWidth = doc.internal.pageSize.width;
+
+            // Obtener el ancho del texto
+            const textWidth = doc.getStringUnitWidth(`Total de ventas: $ ${totalVenta.toFixed(2)}`) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+
+            // Colocar el texto a mano derecha
+            doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
+          }
+        } else {
+          console.error('dateRange no está definido o no tiene al menos dos elementos.');
+        }
+      }
+    }
+
     let fileName = '';
     if (selectedReport === 'empleados') {
       fileName = 'reporte_empleados.pdf';
@@ -234,6 +421,16 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       fileName = 'reporte_combos.pdf';
     } else if (selectedReport === 'sucursal') {
       fileName = 'reporte_sucursal.pdf';
+    } else if (selectedReport === 'venta') {
+      if (selectedVenta === 'mesero') {
+        fileName = 'reporte_ventas_m.pdf';
+      }
+      if (selectedVenta === 'sucursal') {
+        fileName = 'reporte_ventas_s.pdf';
+      }
+      if (selectedVenta === 'productos') {
+        fileName = 'reporte_ventas_p.pdf';
+      }
     }
 
     const fechaHoraEmision = new Date().toLocaleString();
