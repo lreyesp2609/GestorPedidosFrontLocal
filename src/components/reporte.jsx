@@ -3,6 +3,7 @@ import { Modal, Input, Button, Table, Select, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import GenerarReportePDF from "./generarReporte";
 import moment from 'moment';
+import { notification } from 'antd';
 
 const { Column } = Table;
 const { Option } = Select;
@@ -30,12 +31,23 @@ const ReportManagement = () => {
   const [modalVisibleCombos, setModalVisibleCombos] = useState(false);
   const [pdfBlob, setPdfBlob] = useState(null);
   const [pdfViewerVisible, setPdfViewerVisible] = useState(null);
-
   const [modalVisibleVentas, setModalVisibleVentas] = useState(false);
   const [selectedVenta, setSelectedVenta] = useState(null);
   const [selectedVentasName, setSelectedVentasName] = useState("");
   const [showSucursalOptions, setShowSucursalOptions] = useState(false);
+  const [showMeseroOptions, setShowMeseroOptions] = useState(false);
+  const [showProductoOptions, setShowProductoOptions] = useState(false);
   const [dateRange, setDateRange] = useState(null);
+  const [meseros, setMeseros] = useState([]);
+  const [selectedMesero, setSelectedMesero] = useState(null);
+  const [selectedMeseroName, setSelectedMeseroName] = useState("")
+  const [productos, setProductos] = useState([]);
+  const [selectedProducto, setSelectedProducto] = useState(null);
+  const [selectedProductoName, setSelectedProductoName] = useState("")
+  const [tipoproductos, setTipoProductos] = useState([]);
+  const [selectedTipoProducto, setSelectedTipoProducto] = useState(null);
+  const [selectedTipoProductoName, setSelectedTipoProductoName] = useState("")
+  const [showTipoProductoOptions, setShowTipoProductoOptions] = useState(false);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -106,7 +118,32 @@ const ReportManagement = () => {
     fetchCategorias();
     fetchEmpresaInfo();
     fetchCategoriasCombos();
+    fetchMeseros();
+    fetchProductos();
+    fetchTipoProductos();
   }, []);
+
+  const fetchTipoProductos = () => {
+    setLoading(true);
+    fetch("http://127.0.0.1:8000/producto/listarproductos/")
+      .then((response) => response.json())
+      .then((data) => {
+        setTipoProductos(data.tipoproductos);
+      })
+      .catch((error) => console.error("Error fetching tipo productos:", error))
+      .finally(() => setLoading(false));
+  };
+
+  const fetchProductos = () => {
+    setLoading(true);
+    fetch("http://127.0.0.1:8000/producto/listar/")
+      .then((response) => response.json())
+      .then((data) => {
+        setProductos(data.productos);
+      })
+      .catch((error) => console.error("Error fetching productos:", error))
+      .finally(() => setLoading(false));
+  };
 
   const fetchCategorias = () => {
     setLoading(true);
@@ -139,6 +176,17 @@ const ReportManagement = () => {
         setSucursales(data.sucursales);
       })
       .catch((error) => console.error("Error fetching sucursales:", error))
+      .finally(() => setLoading(false));
+  };
+
+  const fetchMeseros = () => {
+    setLoading(true);
+    fetch("http://127.0.0.1:8000/Mesero/listar_meseros/")
+      .then((response) => response.json())
+      .then((data) => {
+        setMeseros(data.meseros);
+      })
+      .catch((error) => console.error("Error fetching meseros:", error))
       .finally(() => setLoading(false));
   };
 
@@ -347,11 +395,62 @@ const ReportManagement = () => {
 
   const handleVentas = () => {
     console.log("Tipo de Reporte Seleccionado:", selectedVenta);
-    console.log("Sucursal Seleccionada:", selectedSucursal);
-    console.log("Rango de Fechas:", dateRange);
-    // Aquí puedes realizar más acciones, como generar el reporte
-    // Cerrar el modal después de generar el reporte
-    setModalVisibleVentas(false);
+    console.log("Mesero seleccionado:", selectedMesero);
+    console.log("Sucursal seleccionada:", selectedSucursal);
+
+    if (dateRange && dateRange.length === 2) {
+      let url;
+      if (selectedVenta === "mesero") {
+        if (selectedMesero === "todas") {
+          url = "http://127.0.0.1:8000/Mesero/listapedidospagados/";
+        } else {
+          url = `http://127.0.0.1:8000/Mesero/listapedidospagado/${selectedMesero}/`;
+        }
+      } else if (selectedVenta === "sucursal") {
+        if (selectedSucursal === "todas") {
+          url = "http://127.0.0.1:8000/Mesero/listapedidossucursal/";
+        } else {
+          url = `http://127.0.0.1:8000/Mesero/listapedidossucursalid/${selectedSucursal}/`;
+        }
+      } else if (selectedVenta === "productos") {
+        if (selectedProducto === "todas") {
+          url = "http://127.0.0.1:8000/Mesero/listapedidosproducto/";
+        } else {
+          url = `http://127.0.0.1:8000/Mesero/listapedidosproductos/${selectedProducto}/`;
+        }
+      } else if (selectedVenta === "tipoproducto") {
+        if (selectedTipoProducto === "todas") {
+          url = "http://127.0.0.1:8000/Mesero/listapedidosproducto/";
+        } else {
+          url = `http://127.0.0.1:8000/Mesero/listapedidosproductos/${selectedTipoProducto}/`;
+        }
+      }
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Datos de pedidos obtenidos:", data.pedidos);
+          console.log("Rango fecha:", dateRange);
+          GenerarReportePDF({
+            empresaInfo: empresaInfo,
+            logoEmpresa: logoEmpresa,
+            selectedReport: "venta",
+            selectedSucursal: selectedSucursalName,
+            selectedMesero: selectedMeseroName,
+            selectedProducto: selectedProductoName,
+            selectedTipoProducto: selectedTipoProducto,
+            selectedVenta: selectedVenta,
+            ventasmesero: data.pedidos,
+            dateRange: dateRange,
+            handleShowViewer: handleShowViewer,
+            setPdfBlob: setPdfBlob
+          });
+          setModalVisibleVentas(false);
+        })
+        .catch((error) => console.error("Error al obtener los datos de pedidos:", error));
+    } else {
+      console.error("Rango de fechas no válido:", dateRange);
+    }
   };
 
   const handleShowViewer = () => {
@@ -391,7 +490,7 @@ const ReportManagement = () => {
                 setSelectedReport("sucursal");
                 handleSucursal(true);
               } else if (record.reportName === "Reporte de ventas") {
-                setSelectedReport("ventas");
+                setSelectedReport("venta");
                 setModalVisibleVentas(true);
               }
             }}>
@@ -536,21 +635,53 @@ const ReportManagement = () => {
               onChange={(value, option) => {
                 setSelectedVenta(value);
                 setSelectedVentasName(option.children);
-                // Si se selecciona "Sucursal", mostrar las opciones adicionales
-                if (value === "sucursal") {
-                  setShowSucursalOptions(true);
-                } else {
-                  setShowSucursalOptions(false);
-                }
+                setShowSucursalOptions(value === "sucursal");
+                setShowMeseroOptions(value === "mesero");
+                setShowProductoOptions(value === "productos");
+                setShowTipoProductoOptions(value === "tipoproducto");
               }}
             >
               <Select.Option value="sucursal">Sucursal</Select.Option>
               <Select.Option value="mesero">Mesero</Select.Option>
-              <Select.Option value="motorizado">Motorizado</Select.Option>
-              <Select.Option value="producto">Producto</Select.Option>
+              <Select.Option value="productos">Producto</Select.Option>
               <Select.Option value="tipoproducto">Tipo de producto</Select.Option>
             </Select>
           </div>
+
+          {/* Opciones adicionales para "Mesero" */}
+          {showMeseroOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione un mesero:</p>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="Seleccione un mesero"
+                onChange={(value, option) => {
+                  setSelectedMesero(value);
+                  setSelectedMeseroName(option.children);
+                }}
+              >
+                <Option key="todas" value="todas">
+                  Todas los meseros
+                </Option>
+                {meseros.map((mesero) => (
+                  <Option key={mesero.id_mesero} value={mesero.id_mesero}>
+                    {mesero.nombre + ' ' + mesero.apellido}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          )}
+
+          {showMeseroOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione el rango de fechas:</p>
+              <DatePicker.RangePicker
+                style={{ width: "100%" }}
+                onChange={(dates) => setDateRange(dates)}
+                disabledDate={(current) => current && current > moment().endOf('day')}
+              />
+            </div>
+          )}
 
           {/* Opciones adicionales para "Sucursal" */}
           {showSucursalOptions && (
@@ -559,7 +690,10 @@ const ReportManagement = () => {
               <Select
                 style={{ width: "100%" }}
                 placeholder="Seleccione una sucursal"
-                onChange={(value) => setSelectedSucursal(value)}
+                onChange={(value, option) => {
+                  setSelectedSucursal(value);
+                  setSelectedSucursalName(option.children);
+                }}
               >
                 <Option key="todas" value="todas">
                   Todas las sucursales
@@ -573,8 +707,77 @@ const ReportManagement = () => {
             </div>
           )}
 
-          {/* Selector de rango de fechas */}
           {showSucursalOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione el rango de fechas:</p>
+              <DatePicker.RangePicker
+                style={{ width: "100%" }}
+                onChange={(dates) => setDateRange(dates)}
+                disabledDate={(current) => current && current > moment().endOf('day')}
+              />
+            </div>
+          )}
+
+          {/* Opciones adicionales para "Producto" */}
+          {showProductoOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione un producto:</p>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="Seleccione un producto"
+                onChange={(value, option) => {
+                  setSelectedProducto(value);
+                  setSelectedProductoName(option.children);
+                }}
+              >
+                <Option key="todas" value="todas">
+                  Todas los productos
+                </Option>
+                {productos.map((producto) => (
+                  <Option key={producto.id_producto} value={producto.id_producto}>
+                    {producto.nombreproducto}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          )}
+
+          {showProductoOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione el rango de fechas:</p>
+              <DatePicker.RangePicker
+                style={{ width: "100%" }}
+                onChange={(dates) => setDateRange(dates)}
+                disabledDate={(current) => current && current > moment().endOf('day')}
+              />
+            </div>
+          )}
+
+          {/* Opciones adicionales para "Tipo producto" */}
+          {showTipoProductoOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione un tipo de producto:</p>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="Seleccione un tipo de producto"
+                onChange={(value, option) => {
+                  setTipoProductos(value);
+                  setSelectedTipoProducto(option.children);
+                }}
+              >
+                <Option key="todas" value="todas">
+                  Todos los tipos de producto
+                </Option>
+                {tipoproductos.map((tipoproducto) => (
+                  <Option key={tipoproducto.id_tipoproducto} value={tipoproducto.id_tipoproducto}>
+                    {tipoproducto.tpnombre}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          )}
+
+          {showTipoProductoOptions && (
             <div style={{ marginBottom: "20px" }}>
               <p>Seleccione el rango de fechas:</p>
               <DatePicker.RangePicker
@@ -592,8 +795,6 @@ const ReportManagement = () => {
           </div>
         </div>
       </Modal>
-
-
 
       {pdfViewerVisible && (
         <Modal
