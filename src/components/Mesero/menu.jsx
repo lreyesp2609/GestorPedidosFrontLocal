@@ -25,6 +25,7 @@ import {
 import imgtomarpedido from "./res/imgtomarpedido.png";
 import imgfacturas from "./res/imgfacturas.png";
 import validando from "./res/validando.png";
+import ReversoFactura from "./res/ReversoFactura.png";
 
 import RealizarPedidoMesero from "./pedidomesa";
 import FacturasMesero from "./facturasmesero";
@@ -301,14 +302,14 @@ const MenuM = () => {
                 </Col>
                 <Col md={6}>
                   <Badge.Ribbon text="Reversiones">
-                    <Tooltip title={tooltipTitle1}>
+                    <Tooltip title={tooltipTitle3}>
                       <Card
                         hoverable
                         style={cardStyle}
                         cover={
                           <Image
                             alt="Reversiones"
-                            src={imgfacturas}
+                            src={ReversoFactura}
                             style={{
                               padding: "5%",
                               height: "150px",
@@ -320,7 +321,7 @@ const MenuM = () => {
                         className="text-center"
                         onClick={() => handleCardClick("reversion")}
                       >
-                        <Meta title={tooltipTitle1}></Meta>
+                        <Meta title={tooltipTitle3}></Meta>
                       </Card>
                     </Tooltip>
                   </Badge.Ribbon>
