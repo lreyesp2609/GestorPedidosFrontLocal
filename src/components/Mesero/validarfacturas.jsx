@@ -84,6 +84,41 @@ const ValidarFacturas = () => {
 
   const validarFactura = (idFactura) => {
     if (userData) {
+      // Hacer una solicitud para verificar el estado del pedido
+      fetch(
+        `http://127.0.0.1:8000/cliente/verificar_pedido_validado/${idFactura}/`
+      )
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Error al verificar el estado del pedido");
+          }
+        })
+        .then((data) => {
+          // Verificar el estado del pedido y mostrar notificaciones según corresponda
+          if (data.status === "En revisión") {
+            notification.info({
+              message: "Pedido en revisión",
+              description: `El pedido asociado a la factura ${idFactura} todavía se encuentra en revisión.`,
+            });
+          } else if (data.status === "Denegado") {
+            notification.error({
+              message: "Pedido denegado",
+              description: `El pedido asociado a la factura ${idFactura} se ha denegado.`,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error al verificar el estado del pedido:", error);
+          notification.error({
+            message: "Error al verificar el estado del pedido",
+            description:
+              "Ha ocurrido un error al verificar el estado del pedido. Por favor, inténtelo de nuevo más tarde.",
+          });
+        });
+
+      // Luego, realizar la validación de la factura como lo estás haciendo actualmente
       fetch(
         `http://127.0.0.1:8000/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
         {
@@ -96,20 +131,18 @@ const ValidarFacturas = () => {
       )
         .then((response) => {
           if (response.ok) {
-            console.log(`Factura con ID ${idFactura} validada con éxito.`);
-            notification.success({
-              message: "Validación Exitosa",
-              description: `La factura con ID ${idFactura} se validó correctamente.`,
-            });
-            cargarFacturas(); // Actualizar la lista de facturas
+            return response.json();
           } else {
-            console.error(
-              `Error al validar la factura con ID ${idFactura}.`
-            );
+            throw new Error("Error al validar la factura");
           }
         })
-        .catch((error) => {
-          console.error("Error en la solicitud:", error);
+        .then((data) => {
+          console.log(`Factura con ID ${idFactura} validada con éxito.`);
+          notification.success({
+            message: "Validación Exitosa",
+            description: data.message,
+          });
+          cargarFacturas();
         });
     } else {
       console.error("Error: datos del usuario no disponibles.");
@@ -185,74 +218,74 @@ const ValidarFacturas = () => {
     {
       title: "ID Factura",
       dataIndex: "id_factura",
-      key: "id_factura"
+      key: "id_factura",
     },
     {
       title: "ID Pedido",
       dataIndex: "id_pedido",
-      key: "id_pedido"
+      key: "id_pedido",
     },
     {
       title: "Cliente",
       dataIndex: "id_cliente",
       key: "id_cliente",
-      render: (id_cliente) => clientes[id_cliente]
+      render: (id_cliente) => clientes[id_cliente],
     },
     {
       title: "Mesero",
       dataIndex: "id_mesero",
       key: "id_mesero",
-      render: (id_mesero) => meseros[id_mesero]
+      render: (id_mesero) => meseros[id_mesero],
     },
     {
       title: "Fecha Emisión",
       dataIndex: "fecha_emision",
-      key: "fecha_emision"
+      key: "fecha_emision",
     },
     {
       title: "Total",
       dataIndex: "total",
-      key: "total"
+      key: "total",
     },
     {
       title: "IVA",
       dataIndex: "iva",
-      key: "iva"
+      key: "iva",
     },
     {
       title: "Descuento",
       dataIndex: "descuento",
-      key: "descuento"
+      key: "descuento",
     },
     {
       title: "Subtotal",
       dataIndex: "subtotal",
-      key: "subtotal"
+      key: "subtotal",
     },
     {
       title: "A Pagar",
       dataIndex: "a_pagar",
-      key: "a_pagar"
+      key: "a_pagar",
     },
     {
       title: "Código Factura",
       dataIndex: "codigo_factura",
-      key: "codigo_factura"
+      key: "codigo_factura",
     },
     {
       title: "Código Autorización",
       dataIndex: "codigo_autorizacion",
-      key: "codigo_autorizacion"
+      key: "codigo_autorizacion",
     },
     {
       title: "Número Factura Desde",
       dataIndex: "numero_factura_desde",
-      key: "numero_factura_desde"
+      key: "numero_factura_desde",
     },
     {
       title: "Número Factura Hasta",
       dataIndex: "numero_factura_hasta",
-      key: "numero_factura_hasta"
+      key: "numero_factura_hasta",
     },
     {
       title: "Acciones",
@@ -266,7 +299,7 @@ const ValidarFacturas = () => {
             Validar
           </Button>{" "}
         </span>
-      )
+      ),
     },
     {
       title: "Reversión",
@@ -281,82 +314,82 @@ const ValidarFacturas = () => {
             Reverso
           </Button>
         </span>
-      )
-    }
+      ),
+    },
   ];
 
   const columnsValidadas = [
     {
       title: "ID Factura",
       dataIndex: "id_factura",
-      key: "id_factura"
+      key: "id_factura",
     },
     {
       title: "ID Pedido",
       dataIndex: "id_pedido",
-      key: "id_pedido"
+      key: "id_pedido",
     },
     {
       title: "Cliente",
       dataIndex: "id_cliente",
       key: "id_cliente",
-      render: (id_cliente) => clientes[id_cliente]
+      render: (id_cliente) => clientes[id_cliente],
     },
     {
       title: "Mesero",
       dataIndex: "id_mesero",
       key: "id_mesero",
-      render: (id_mesero) => meseros[id_mesero]
+      render: (id_mesero) => meseros[id_mesero],
     },
     {
       title: "Fecha Emisión",
       dataIndex: "fecha_emision",
-      key: "fecha_emision"
+      key: "fecha_emision",
     },
     {
       title: "Total",
       dataIndex: "total",
-      key: "total"
+      key: "total",
     },
     {
       title: "IVA",
       dataIndex: "iva",
-      key: "iva"
+      key: "iva",
     },
     {
       title: "Descuento",
       dataIndex: "descuento",
-      key: "descuento"
+      key: "descuento",
     },
     {
       title: "Subtotal",
       dataIndex: "subtotal",
-      key: "subtotal"
+      key: "subtotal",
     },
     {
       title: "A Pagar",
       dataIndex: "a_pagar",
-      key: "a_pagar"
+      key: "a_pagar",
     },
     {
       title: "Código Factura",
       dataIndex: "codigo_factura",
-      key: "codigo_factura"
+      key: "codigo_factura",
     },
     {
       title: "Código Autorización",
       dataIndex: "codigo_autorizacion",
-      key: "codigo_autorizacion"
+      key: "codigo_autorizacion",
     },
     {
       title: "Número Factura Desde",
       dataIndex: "numero_factura_desde",
-      key: "numero_factura_desde"
+      key: "numero_factura_desde",
     },
     {
       title: "Número Factura Hasta",
       dataIndex: "numero_factura_hasta",
-      key: "numero_factura_hasta"
+      key: "numero_factura_hasta",
     },
     {
       title: "Reversión",
@@ -371,8 +404,8 @@ const ValidarFacturas = () => {
             Reverso
           </Button>
         </span>
-      )
-    }
+      ),
+    },
   ];
 
   return (

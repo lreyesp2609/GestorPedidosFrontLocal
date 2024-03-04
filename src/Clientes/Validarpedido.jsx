@@ -13,8 +13,6 @@ const ValidarPedido = () => {
   const [pedidos, setPedidos] = useState([]);
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
-  const [selectedValue, setSelectedValue] = useState(null);
-  const [filteredPagado, setFilteredPagado] = useState(false);
   const [idcuenta, setidcuenta] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
