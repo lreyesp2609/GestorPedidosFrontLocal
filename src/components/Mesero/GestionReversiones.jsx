@@ -115,6 +115,8 @@ const ReversionesFacturas = () => {
     }
   };
 
+
+
   const facturasNoValidadas = facturas.filter(
     (factura) =>
       !(
@@ -333,12 +335,13 @@ const ReversionesFacturas = () => {
           <p>Motivo: {detalleNotaCredito.motivo}</p>
         </div>
       )}
-      <h4>Productos</h4>
+      <h3>Productos</h3>
       <ul>
         {detalleFactura.detalles_factura.map((detalle, index) => (
           <li key={index}>
-            {detalle.nombre_producto || detalle.id_combo} - Cantidad:{" "}
-            {detalle.cantidad}
+            {detalle.nombre_producto || detalle.id_combo} | Cantidad:{"  "}
+            {detalle.cantidad} | Precio:{" "}
+            {detalle.precio_unitario}
           </li>
         ))}
       </ul>
