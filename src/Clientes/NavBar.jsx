@@ -64,11 +64,12 @@ const NavBar = () => {
 
   const manejarMouseOver = (e) => {
     e.target.style.backgroundColor = "black";
+    e.target.style.color = "white";
   };
 
   const manejarMouseOut = (e) => {
     e.target.style.backgroundColor = "";
-    e.target.style.color = "white";
+    e.target.style.color = "black";
   };
   const logoStyle = {
     color: "white",
@@ -249,7 +250,7 @@ const NavBar = () => {
 
                 {Logeado && (
                   <Link
-                  onClick={() => MostrarComponente("Carrito")}
+                  onClick={() => showDrawer()}
                     style={{
                       textDecoration: "none",
                       color: "inherit",

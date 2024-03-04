@@ -10,7 +10,7 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
-import { notification, Alert, Tooltip, Pagination  } from 'antd';
+import { notification, Alert, Tooltip, Pagination } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -47,7 +47,7 @@ const Pedidos = ({ regresar }) => {
   const [HoraEntrega, setHoraEntrega] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 2;
-  const [data, setData] = useState([]); 
+  const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/empleado/obtener_datosB/');
@@ -61,7 +61,7 @@ const Pedidos = ({ regresar }) => {
 
   useEffect(() => {
     fetchData();
-  }, []); 
+  }, []);
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
   };
@@ -111,6 +111,47 @@ const Pedidos = ({ regresar }) => {
       .catch((error) => {
         console.error('Error al obtener los datos de sucursales:', error);
       });
+  };
+
+  const verificarUbicacion = (newLocationData) => {
+    if (id_cuenta) {
+      const formData = new FormData();
+      formData.append('latitud', newLocationData.latitud);
+      formData.append('longitud', newLocationData.longitud);
+
+      // Realiza la solicitud POST al backend
+      fetch('http://127.0.0.1:8000/sucursal/secSucursal/', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(responseData => {
+          // Maneja la respuesta del backend según sea necesario
+          if (responseData.sucursal) {
+            notification.success({
+              message: 'Sucursal disponible'
+            });
+            console.log(responseData.sucursal.id_sucursal);
+            setSucursal(responseData.sucursal.id_sucursal);
+          } else {
+            notification.error({
+              message: '¡Algo salió mal!',
+              description: 'No hay sucursales disponibles actualmente',
+            });
+          }
+        })
+        .catch(error => {
+          notification.error({
+            message: '¡Algo salió mal!',
+            description: '¡No se pudo buscar la sucursal!',
+          });
+          console.error('Error en la solicitud:', error);
+        })
+    } else {
+      console.error('ID de cuenta no encontrado en localStorage');
+    }
+
+
   };
 
 
@@ -183,6 +224,7 @@ const Pedidos = ({ regresar }) => {
     }
     console.log('Nuevos datos de ubicación:', newLocationData);
     setLocationData((prevLocationData) => ({ ...prevLocationData, ...newLocationData }));
+    verificarUbicacion(newLocationData);
   };
 
   const HacerClick = () => {
@@ -213,7 +255,7 @@ const Pedidos = ({ regresar }) => {
     const intervalId = setInterval(() => {
       setCurrentHour(dayjs().hour());
     }, 60000); // Actualiza cada minuto
-  
+
     return () => clearInterval(intervalId);
   }, []);
   const PagarPorEfectivo = () => {
@@ -238,7 +280,7 @@ const Pedidos = ({ regresar }) => {
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       formData.append('id_sucursal', sucursal);
       if (HoraEntrega) {
-        formData.append('fecha_hora', HoraEntrega.hour()); 
+        formData.append('fecha_hora', HoraEntrega.hour());
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
       }
       // Realiza la solicitud POST al backend
@@ -301,7 +343,7 @@ const Pedidos = ({ regresar }) => {
       formData.append('id_sucursal', sucursal);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       if (HoraEntrega) {
-        formData.append('fecha_hora', HoraEntrega.hour()); 
+        formData.append('fecha_hora', HoraEntrega.hour());
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
       }
       // Realiza la solicitud POST al backend
@@ -635,6 +677,7 @@ const Pedidos = ({ regresar }) => {
         {modoPedido === 'R' && (
           sucursalesData.map((sucursal) => {
             if (sucursal.estadoApertura === 'Abierto ahora') {
+
               return (
                 <Card
                   key={sucursal.id_sucursal}
@@ -664,6 +707,7 @@ const Pedidos = ({ regresar }) => {
             }
             return (<div>No hay más sucursales disponibles ahora mismo</div>)
           })
+
         )}
 
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
@@ -745,10 +789,10 @@ const Pedidos = ({ regresar }) => {
           }}>
             <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
             <Row
-        gutter={[16, 16]}
-        justify="center"
-        style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}
-      >
+              gutter={[16, 16]}
+              justify="center"
+              style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}
+            >
               {getPaginatedData().map((cuenta, index) => (
                 <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
                   <Card
@@ -758,35 +802,35 @@ const Pedidos = ({ regresar }) => {
                     }}
                   >
                     <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Banco: {cuenta.nombre_banco}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Tipo de cuenta: {cuenta.tipo_cuenta}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Número de cuenta: {cuenta.num_cuenta}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Nombre: {cuenta.nombreapellidos}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Cedula: {cuenta.identificacion}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Email: {cuenta.correoelectronico}
-              </p>
+                      Banco: {cuenta.nombre_banco}
+                    </p>
+                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      Tipo de cuenta: {cuenta.tipo_cuenta}
+                    </p>
+                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      Número de cuenta: {cuenta.num_cuenta}
+                    </p>
+                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      Nombre: {cuenta.nombreapellidos}
+                    </p>
+                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      Cedula: {cuenta.identificacion}
+                    </p>
+                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      Email: {cuenta.correoelectronico}
+                    </p>
                   </Card>
                 </Col>
               ))}
-              
+
             </Row>
             <Pagination
-                  current={currentPage}
-                  total={data.length}
-                  pageSize={pageSize}
-                  onChange={handlePageChange}
-                  style={{ marginTop: '16px', textAlign: 'center' }}
-                />
+              current={currentPage}
+              total={data.length}
+              pageSize={pageSize}
+              onChange={handlePageChange}
+              style={{ marginTop: '16px', textAlign: 'center' }}
+            />
             <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
             <div rotationSlider style={{
               display: 'flex', alignItems: 'center'
