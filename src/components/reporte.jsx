@@ -128,7 +128,7 @@ const ReportManagement = () => {
     fetch("http://127.0.0.1:8000/producto/listarproductos/")
       .then((response) => response.json())
       .then((data) => {
-        setTipoProductos(data.tipoproductos);
+        setTipoProductos(data.tipos_productos);
       })
       .catch((error) => console.error("Error fetching tipo productos:", error))
       .finally(() => setLoading(false));
@@ -397,6 +397,7 @@ const ReportManagement = () => {
     console.log("Tipo de Reporte Seleccionado:", selectedVenta);
     console.log("Mesero seleccionado:", selectedMesero);
     console.log("Sucursal seleccionada:", selectedSucursal);
+    console.log("Tipo seleccionado:", selectedTipoProducto);
 
     if (dateRange && dateRange.length === 2) {
       let url;
@@ -420,9 +421,9 @@ const ReportManagement = () => {
         }
       } else if (selectedVenta === "tipoproducto") {
         if (selectedTipoProducto === "todas") {
-          url = "http://127.0.0.1:8000/Mesero/listapedidosproducto/";
+          url = "http://127.0.0.1:8000/Mesero/listapedidostipoproducto/";
         } else {
-          url = `http://127.0.0.1:8000/Mesero/listapedidosproductos/${selectedTipoProducto}/`;
+          url = `http://127.0.0.1:8000/Mesero/listapedidostipoproductos/${selectedTipoProducto}/`;
         }
       }
 
@@ -438,7 +439,7 @@ const ReportManagement = () => {
             selectedSucursal: selectedSucursalName,
             selectedMesero: selectedMeseroName,
             selectedProducto: selectedProductoName,
-            selectedTipoProducto: selectedTipoProducto,
+            selectedTipoProducto: selectedTipoProductoName,
             selectedVenta: selectedVenta,
             ventasmesero: data.pedidos,
             dateRange: dateRange,
@@ -761,8 +762,8 @@ const ReportManagement = () => {
                 style={{ width: "100%" }}
                 placeholder="Seleccione un tipo de producto"
                 onChange={(value, option) => {
-                  setTipoProductos(value);
-                  setSelectedTipoProducto(option.children);
+                  setSelectedTipoProducto(value);
+                  setSelectedTipoProductoName(option.children);
                 }}
               >
                 <Option key="todas" value="todas">
