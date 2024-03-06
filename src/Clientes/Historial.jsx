@@ -89,7 +89,7 @@ const Historial = () => {
       console.error("Error al obtener la información del cliente:", error);
     }
   };
-  
+
 
   const obtenerTipoDePedido = (inicial) => {
     switch (inicial) {
@@ -131,7 +131,12 @@ const Historial = () => {
         }
 
         const data = await response.json();
-        setPedidos(data.Pedidos);
+        const pedidosOrdenados = data.Pedidos.sort((a, b) => {
+          return new Date(b.fecha_pedido) - new Date(a.fecha_pedido);
+        });
+        console.log("pedidos: ");
+        console.log(pedidosOrdenados);
+        setPedidos(pedidosOrdenados);
       } catch (error) {
         console.error("Error al obtener pedidos:", error.message);
       }
@@ -158,7 +163,7 @@ const Historial = () => {
   };
 
   return (
-    <div  style={{ marginLeft: "30px", marginRight: "50px", marginTop:'20px' }}>
+    <div style={{ marginLeft: "30px", marginRight: "50px", marginTop: '20px' }} >
       {facturaData && (
         <GenerarFacturaPDF
           facturaData={facturaData}
@@ -171,93 +176,135 @@ const Historial = () => {
           obtenerMetodoDePago={obtenerMetodoDePago}
         />
       )}
-      <Table dataSource={pedidos} pagination={{ pageSize: 5 }}>
-        <ColumnGroup title="Nombres">
+      <div class="table-responsive">
+        <Table dataSource={pedidos} pagination={{ pageSize: 5 }} class="table">
+        <Column title="Pedido" dataIndex="id_pedido" key="id_pedido" />
           <Column
-            title="Primer Nombre"
-            dataIndex="nombre_usuario"
-            key="nombre_usuario"
+            title="Fecha"
+            dataIndex="fecha_pedido"
+            key="fecha_pedido"
+            render={(fecha_pedido) => (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Tag color="blue">{new Date(fecha_pedido).toLocaleDateString()}</Tag>
+              </div>
+            )}
           />
           <Column
-            title="Primer Apellido"
-            dataIndex="apellido_usuario"
-            key="nombre_usuario"
+            title="Hora"
+            dataIndex="fecha_pedido"
+            key="fecha_pedido"
+            render={(fecha_pedido) => (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Tag color="green">{new Date(fecha_pedido).toLocaleTimeString()}</Tag>
+              </div>
+            )}
           />
-        </ColumnGroup>
-        <Column
-          title="Estado del pedido"
-          dataIndex="estado_del_pedido"
-          key="estado_del_pedido"
-          render={(estado) => (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <Tag
-                color={
-                  estado === "O"
-                    ? "rgb(6, 0, 94)"
+          <Column
+            title="Metodo de pago"
+            dataIndex="tipo_pago"
+            key="tipo_pago"
+            render={(tipo) => (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Tag
+                  color={
+                    tipo === "E"
+                      ? "rgb(17,54, 11)"
+                      : tipo === "T"
+                        ? "#0080C0"
+                        : tipo === "X"
+                          ? "#F46A0F"
+                          : tipo === "F"
+                            ? "#004080"
+                            : "default"
+                  }
+                >
+                  {tipo === "E"
+                    ? "Pago en efectivo"
+                    : tipo === "T"
+                      ? "Pago por transferencia"
+                      : tipo === "X"
+                        ? "Pago por tarjeta"
+                        : tipo === "F"
+                          ? "Pagos divididos"
+                          : tipo}
+                </Tag>
+              </div>
+            )}
+          />
+          <Column
+            title="Estado del pedido"
+            dataIndex="estado_del_pedido"
+            key="estado_del_pedido"
+            render={(estado) => (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Tag
+                  color={
+                    estado === "O"
+                      ? "rgb(6, 0, 94)"
+                      : estado === "P"
+                        ? "rgb(62, 0, 100)"
+                        : estado === "C"
+                          ? "rgb(211, 116, 0)"
+                          : estado === "E"
+                          ? "#008080"
+                          : "default"
+                  }
+                >
+                  {estado === "O"
+                    ? "Ordenado"
                     : estado === "P"
-                    ? "rgb(62, 0, 100)"
-                    : estado === "C"
-                    ? "rgb(211, 116, 0)"
-                    : "default"
-                }
-              >
-                {estado === "O"
-                  ? "Ordenado"
-                  : estado === "P"
-                  ? "En Proceso"
-                  : estado === "C"
-                  ? "En camino"
-                  : estado}
-              </Tag>
-            </div>
-          )}
-        />
-        <Column
-          title="Estado del pago"
-          dataIndex="Pago"
-          key="Pago"
-          render={(estado) => (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <Tag
-                color={
-                  estado === "En revisón"
-                    ? "rgb(6, 0, 94)"
+                      ? "En Proceso"
+                      : estado === "C"
+                        ? "En camino"
+                        : estado === "E"
+                          ? "Entregado"
+                        : estado}
+                </Tag>
+              </div>
+            )}
+          />
+          <Column
+            title="Estado del pago"
+            dataIndex="Pago"
+            key="Pago"
+            render={(estado) => (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Tag
+                  color={
+                    estado === "En revisón"
+                      ? "rgb(6, 0, 94)"
+                      : estado === "Pagado"
+                        ? "rgb(17, 54, 11)"
+                        : estado === "Denegado"
+                          ? "rgb(110, 1, 1)"
+                          : "default"
+                  }
+                >
+                  {estado === "En revisón"
+                    ? "En revisón"
                     : estado === "Pagado"
-                    ? "rgb(17, 54, 11)"
-                    : estado === "Denegado"
-                    ? "rgb(110, 1, 1)"
-                    : "default"
-                }
-              >
-                {estado === "En revisón"
-                  ? "En revisón"
-                  : estado === "Pagado"
-                  ? "Pagado"
-                  : estado === "Denegado"
-                  ? "Denegado"
-                  : estado}
-              </Tag>
-            </div>
-          )}
-        />
-        <Column title="Total" dataIndex="Total" key="precio_unitario" />
-        <Column
-          title="Fecha de Pedido"
-          dataIndex="fecha_pedido"
-          key="fecha_pedido"
-        />
-        <Column
-          title="Acciones"
-          key="acciones"
-          render={(text, record) => (
-            <Space size="middle">
-              <Button onClick={() => generarFactura(record)}>
-                Generar factura
-              </Button>
-            </Space>
-          )}
-        />
-      </Table>
+                      ? "Pagado"
+                      : estado === "Denegado"
+                        ? "Denegado"
+                        : estado}
+                </Tag>
+              </div>
+            )}
+          />
+          <Column
+            title="Acciones"
+            key="acciones"
+            render={(text, record) => (
+              <Space size="middle">
+                <Button onClick={() => generarFactura(record)}>
+                  Generar factura
+                </Button>
+              </Space>
+            )}
+          />
+          <Column title="Total" dataIndex="Total" key="precio_unitario" />
+        </Table>
+      </div>
     </div>
   );
 };
