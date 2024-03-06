@@ -194,6 +194,7 @@ const Pedidos = ({ regresar }) => {
   };
   const handleModoPedidoChange = (value) => {
     setModoPedido(value);
+    
   };
   const handleLocationChange = (value) => {
     setSelectedLocation(value);
@@ -403,7 +404,7 @@ const Pedidos = ({ regresar }) => {
 
       formData.append('precio', number(totalPrice) + Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
-      formData.append('metodo_de_pago', 'T'); // Asumo que 'E' es el método de pago en efectivo
+      formData.append('metodo_de_pago', 'P'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
       formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
       formData.append('impuesto', 0);
@@ -423,6 +424,8 @@ const Pedidos = ({ regresar }) => {
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
             });
+            setCart([]);
+            regresar();
           } else {
             console.error('Error al realizar el pedido:', responseData.message);
           }
@@ -452,11 +455,13 @@ const Pedidos = ({ regresar }) => {
 
       formData.append('precio', Number(totalPrice) + Number(ivaPrecio().toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
-      formData.append('metodo_de_pago', 'F'); // Asumo que 'E' es el método de pago en efectivo
+      formData.append('metodo_de_pago', 'X'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
       formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
       formData.append('impuesto', 0);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      formData.append('estado_pago', 'Pagado');
+      formData.append('id_sucursal', sucursal);
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -860,8 +865,9 @@ const Pedidos = ({ regresar }) => {
 
             <Divider>O pague con paypal </Divider>
             <div style={{ width: '400px' }} >
-              <PayPal onSuccess={CerrarModalDespuesDePago} />
+            <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
             </div>
+            
           </div>
         )}
 
@@ -921,7 +927,7 @@ const Pedidos = ({ regresar }) => {
 
               <Divider>O pague con paypal </Divider>
               <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue} />
+                <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
               </div>
             </div>
           )}
