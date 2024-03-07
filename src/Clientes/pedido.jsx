@@ -194,7 +194,7 @@ const Pedidos = ({ regresar }) => {
   };
   const handleModoPedidoChange = (value) => {
     setModoPedido(value);
-    
+
   };
   const handleLocationChange = (value) => {
     setSelectedLocation(value);
@@ -792,14 +792,13 @@ const Pedidos = ({ regresar }) => {
             display: 'flex', flexDirection: 'column', alignItems: 'center'
             , justifyContent: 'center'
           }}>
-            <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
+
             <Row
-              gutter={[16, 16]}
               justify="center"
-              style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}
             >
+              <Divider style={{ display: 'flex', justifyContent: 'center', marginTop: "10px" }}>Realize la transfrencia a la siguiente cuenta:</Divider>
               {getPaginatedData().map((cuenta, index) => (
-                <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
+                <Col key={index} md={12} style={{ display: 'flex', justifyContent: 'center', marginTop: "10px" }}>
                   <Card
                     style={{
                       width: 300,
@@ -827,112 +826,128 @@ const Pedidos = ({ regresar }) => {
                   </Card>
                 </Col>
               ))}
-
-            </Row>
-            <Pagination
-              current={currentPage}
-              total={data.length}
-              pageSize={pageSize}
-              onChange={handlePageChange}
-              style={{ marginTop: '16px', textAlign: 'center' }}
-            />
-            <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-            <div rotationSlider style={{
-              display: 'flex', alignItems: 'center'
-              , justifyContent: 'center'
-            }}>
-              <ImgCrop >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-card"
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={beforeUpload}
-
-                >
-                  {fileList.length < 1 && '+ Subir comprobante'}
-                </Upload>
-              </ImgCrop>
-            </div>
-
-            <Button style={{ marginTop: '10px', width: '400px' }}
-              disabled={fileList.length === 0 || modoPedido === null}
-              onClick={PagarPorEfectivo}
-            >
-              Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-            </Button>
-
-            <Divider>O pague con paypal </Divider>
-            <div style={{ width: '400px' }} >
-            <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
-            </div>
-            
-          </div>
-        )}
-
-        {modoPago === 'E' && (
-          <div className="d-grid gap-2">
-            <Button style={{ marginTop: '50px', marginBottom: '240px' }}
-              disabled={modoPago !== 'E'}
-              onClick={PagarPorEfectivo2}
-            >
-              Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-            </Button>
-          </div>
-        )}
-
-        <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          {modoPago === 'F' && (
-            <Space align="center">
-              <InputNumber
-                min={0}
-                value={fraccionadoValue}
-                onChange={handleFraccionadoInputChange}
-                style={{ marginLeft: '10px' }}
+              <Pagination
+                current={currentPage}
+                total={data.length}
+                pageSize={pageSize}
+                onChange={handlePageChange}
+                style={{ marginTop: '16px', textAlign: 'center' }}
               />
-              <Button onClick={PagarPorFraccionado}>
-                Pagar: ${fraccionadoValue.toFixed(2)}
-              </Button>
-            </Space>
-          )}
-          {mostrarComponente && modoPago === 'F' && (
-            <div>
-              <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-              <div rotationSlider style={{
-                display: 'flex', alignItems: 'center'
-                , justifyContent: 'center'
-              }}>
-                <ImgCrop >
-                  <Upload
-                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={onChange}
-                    onPreview={onPreview}
-                    beforeUpload={beforeUpload}
+            </Row>
+            <Row>
+              <Col md={12}>
+                <p>Comprobante de pago (foto, escaneo ó captura de pantalla)</p>
+              </Col>
+              <Col md={12} justifyContent='center'>
+                <div rotationSlider>
+                  <ImgCrop style={{ display: 'flex', justifyContent: 'center', marginTop: "10px" }}>
+                    <Upload
+                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      beforeUpload={beforeUpload}
 
-                  >
-                    {fileList.length < 1 && '+ Subir comprobante'}
-                  </Upload>
-                </ImgCrop>
+                    >
+                      {fileList.length < 1 && '+ Subir comprobante'}
+                    </Upload>
+                  </ImgCrop>
+                </div>
+              </Col>
+              <Col md={12}>
+                <Button style={{ marginTop: '10px', width: '100%' }}
+                  disabled={fileList.length === 0 || modoPedido === null}
+                  onClick={PagarPorEfectivo}
+                >
+                  Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                </Button>
+              </Col>
+              <Col md={12}>
+                <Divider>O pague con paypal </Divider>
+              </Col>
+              <Col md={12}>
+                <div style={{ width: '100%' }} >
+                  <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
+                </div>
+              </Col>
+              
+            </Row>
+          </div>
+        )}
+        <Row>
+          <Col md={12}>
+            {modoPago === 'E' && (
+              <div className="d-grid gap-2">
+                <Button style={{ marginTop: '50px', marginBottom: '240px' }}
+                  disabled={modoPago !== 'E'}
+                  onClick={PagarPorEfectivo2}
+                >
+                  Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                </Button>
               </div>
+            )}
+          </Col>
+        </Row>
+        <Row>
+        <Col md={12}>
+                <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
+                  {modoPago === 'F' && (
+                    <Space align="center">
+                      <InputNumber
+                        min={0}
+                        value={fraccionadoValue}
+                        onChange={handleFraccionadoInputChange}
+                        style={{ marginLeft: '10px' }}
+                      />
+                      <Button onClick={PagarPorFraccionado}>
+                        Pagar: ${fraccionadoValue.toFixed(2)}
+                      </Button>
+                    </Space>
+                  )}
+                  {mostrarComponente && modoPago === 'F' && (
+                    <div>
+                      <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                      <div rotationSlider style={{
+                        display: 'flex', alignItems: 'center'
+                        , justifyContent: 'center'
+                      }}>
+                        <ImgCrop >
+                          <Upload
+                            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                            listType="picture-card"
+                            fileList={fileList}
+                            onChange={onChange}
+                            onPreview={onPreview}
+                            beforeUpload={beforeUpload}
 
-              <Button style={{ marginTop: '10px', width: '400px' }}
-                disabled={fileList.length === 0 || modoPedido === null}
-                onClick={PagarPorEfectivo}
-              >
-                Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-              </Button>
+                          >
+                            {fileList.length < 1 && '+ Subir comprobante'}
+                          </Upload>
+                        </ImgCrop>
+                      </div>
 
-              <Divider>O pague con paypal </Divider>
-              <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
-              </div>
-            </div>
-          )}
+                      <Button style={{ marginTop: '10px', width: '400px' }}
+                        disabled={fileList.length === 0 || modoPedido === null}
+                        onClick={PagarPorEfectivo}
+                      >
+                        Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                      </Button>
 
-        </div>
+                      <Divider>O pague con paypal </Divider>
+                      <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
+                        <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </Col>
+        </Row>
+
+
+
+
 
       </Col>
       <Col>
