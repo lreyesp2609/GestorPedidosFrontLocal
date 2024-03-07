@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Button } from "antd";
+import { Modal, Space, Table, Tag, Button, QRCode,Alert } from "antd";
 import jsPDF from "jspdf";
 import GenerarFacturaPDF from "./GenerarFacturaCliente";
+import { CheckCircleOutlined, SyncOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Row, Col } from "react-bootstrap";
+
 
 const { Column, ColumnGroup } = Table;
 
@@ -14,6 +17,8 @@ const Historial = () => {
   const [logoEmpresa, setLogoEmpresa] = useState(null);
   const [combos, setCombos] = useState([]);
   const [clienteData, setClienteData] = useState(null);
+  const [MostrarModal, setMostrarModal] = useState(false);
+  const [datosQR, setDatosQR] = useState(null);
 
   useEffect(() => {
     fetchProductos();
@@ -104,6 +109,12 @@ const Historial = () => {
     }
   };
 
+  const mostrarModal = (pedido) => {
+    console.log(pedido);
+    setMostrarModal(true);
+    setDatosQR(JSON.stringify(pedido))
+  };
+
   const obtenerMetodoDePago = (inicial) => {
     switch (inicial) {
       case "E":
@@ -178,7 +189,7 @@ const Historial = () => {
       )}
       <div class="table-responsive">
         <Table dataSource={pedidos} pagination={{ pageSize: 5 }} class="table">
-        <Column title="Pedido" dataIndex="id_pedido" key="id_pedido" />
+          <Column title="Pedido" dataIndex="id_pedido" key="id_pedido" />
           <Column
             title="Fecha"
             dataIndex="fecha_pedido"
@@ -246,8 +257,15 @@ const Historial = () => {
                         : estado === "C"
                           ? "rgb(211, 116, 0)"
                           : estado === "E"
-                          ? "#008080"
-                          : "default"
+                            ? "#008080"
+                            : "default"
+                  }
+                  icon={
+                    estado === "E"
+                      ? <CheckCircleOutlined />
+                      : estado === "P"
+                        ? <SyncOutlined spin />
+                        : ""
                   }
                 >
                   {estado === "O"
@@ -258,7 +276,7 @@ const Historial = () => {
                         ? "En camino"
                         : estado === "E"
                           ? "Entregado"
-                        : estado}
+                          : estado}
                 </Tag>
               </div>
             )}
@@ -278,6 +296,13 @@ const Historial = () => {
                         : estado === "Denegado"
                           ? "rgb(110, 1, 1)"
                           : "default"
+                  }
+                  icon={
+                    estado === "Pagado"
+                      ? <CheckCircleOutlined />
+                      : estado === "Denegado"
+                        ? <CloseCircleOutlined />
+                        : ""
                   }
                 >
                   {estado === "En revisón"
@@ -299,12 +324,37 @@ const Historial = () => {
                 <Button onClick={() => generarFactura(record)}>
                   Generar factura
                 </Button>
+                <Button onClick={() => mostrarModal(record)}>
+                  Mostrar QR
+                </Button>
               </Space>
             )}
           />
           <Column title="Total" dataIndex="Total" key="precio_unitario" />
         </Table>
       </div>
+      <Modal visible={MostrarModal} onCancel={() => setMostrarModal(false)} footer={null} title={"Codigo de pedido"}>
+        <Row>
+          <Col md={12} style={{padding:"25px"}}>
+            <Alert
+              message="¡Escanea este código QR para confirmar la entrega o retirar tu pedido!"
+              description="
+              Muestra el código al motorizado o en el local según sea necesario."
+              type="success"
+              showIcon
+            />
+            <div style={{ display: 'flex', justifyContent: 'center',marginTop: "10px"}}>
+            <QRCode
+              errorLevel="H"
+              size={250}
+              value={datosQR}
+              icon={logoEmpresa}
+            />
+            </div>
+            
+          </Col>
+        </Row>
+      </Modal>
     </div>
   );
 };
