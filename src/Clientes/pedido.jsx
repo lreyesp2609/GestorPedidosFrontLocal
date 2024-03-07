@@ -76,35 +76,7 @@ const Pedidos = ({ regresar }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data.sucursales);
-        const now = new Date();
-        const dayOfWeek = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][now.getDay()];
-        const month = now.getMonth() + 1; // Los meses en JavaScript son de 0 a 11, así que sumamos 1
-        const day = now.getDate();
-        console.log('Día de la semana actual:', dayOfWeek);
-
-        const sucursalesConEstado = data.sucursales.map((sucursal) => {
-          const horarioAbierto = sucursal.horario && sucursal.horario.detalles
-            ? sucursal.horario.detalles.find(
-              (detalle) => {
-                const fechaInicio = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horainicio}`);
-                const fechaFin = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horafin}`);
-
-                console.log('Fecha de inicio:', fechaInicio);
-                console.log('Fecha de fin:', fechaFin);
-                console.log('dia actual:', detalle.dia);
-                console.log('Fecha actual:', now);
-                return detalle.dia === dayOfWeek &&
-                  fechaInicio <= now &&
-                  fechaFin >= now;
-              }
-            )
-            : null;
-
-          return {
-            ...sucursal,
-            estadoApertura: horarioAbierto ? 'Abierto ahora' : 'Cerrado',
-          };
-        });
+        const sucursalesConEstado = obtenerhorarios(data.sucursales);
         setSucursalesData(sucursalesConEstado);
         console.log(sucursalesConEstado);
       })
@@ -126,13 +98,22 @@ const Pedidos = ({ regresar }) => {
       })
         .then(response => response.json())
         .then(responseData => {
-          // Maneja la respuesta del backend según sea necesario
           if (responseData.sucursal) {
-            notification.success({
-              message: 'Sucursal disponible'
-            });
-            console.log(responseData.sucursal.id_sucursal);
-            setSucursal(responseData.sucursal.id_sucursal);
+            const sucursalesConEstado = obtenerhorarios(responseData.sucursal);
+            if (sucursalesConEstado[0].estadoApertura === 'Abierto ahora') {
+              notification.success({
+                message: 'Sucursal disponible'
+              });
+              setSucursal(sucursalesConEstado[0].id_sucursal);
+            }
+            else {
+              console.log("Ubicacion:");
+              console.log(sucursalesConEstado);
+              notification.error({
+                message: 'No hay sucursales abiertas actualmente',
+                description: 'Prueba más tarde o revisa otras sucursales',
+              });
+            }
           } else {
             notification.error({
               message: '¡Algo salió mal!',
@@ -154,7 +135,42 @@ const Pedidos = ({ regresar }) => {
 
   };
 
+  const obtenerhorarios = (listSucursales) => {
 
+    try {
+      const now = new Date();
+      const dayOfWeek = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][now.getDay()];
+      const month = now.getMonth() + 1; // Los meses en JavaScript son de 0 a 11, así que sumamos 1
+      const day = now.getDate();
+      console.log('Día de la semana actual:', dayOfWeek);
+      const sucursalesConEstado = listSucursales.map((sucursal) => {
+        const horarioAbierto = sucursal.horario && sucursal.horario.detalles
+          ? sucursal.horario.detalles.find(
+            (detalle) => {
+              const fechaInicio = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horainicio}`);
+              const fechaFin = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horafin}`);
+
+              console.log('Fecha de inicio:', fechaInicio);
+              console.log('Fecha de fin:', fechaFin);
+              console.log('dia actual:', detalle.dia);
+              console.log('Fecha actual:', now);
+              return detalle.dia === dayOfWeek &&
+                fechaInicio <= now &&
+                fechaFin >= now;
+            }
+          )
+          : null;
+
+        return {
+          ...sucursal,
+          estadoApertura: horarioAbierto ? 'Abierto ahora' : 'Cerrado',
+        };
+      });
+      return sucursalesConEstado;
+    } catch (error) {
+      console.error('Error al trabajar con fechas:', error);
+    }
+  }
   const [locationData, setLocationData] = useState({
     latitud: undefined,
     longitud: undefined
@@ -710,10 +726,11 @@ const Pedidos = ({ regresar }) => {
                 </Card>
               );
             }
-            return (<div>No hay más sucursales disponibles ahora mismo</div>)
+            return (null)
           })
 
         )}
+        <div>No hay más sucursales disponibles ahora mismo</div>
 
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
@@ -871,7 +888,7 @@ const Pedidos = ({ regresar }) => {
                   <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
                 </div>
               </Col>
-              
+
             </Row>
           </div>
         )}
@@ -890,59 +907,59 @@ const Pedidos = ({ regresar }) => {
           </Col>
         </Row>
         <Row>
-        <Col md={12}>
-                <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-                  {modoPago === 'F' && (
-                    <Space align="center">
-                      <InputNumber
-                        min={0}
-                        value={fraccionadoValue}
-                        onChange={handleFraccionadoInputChange}
-                        style={{ marginLeft: '10px' }}
-                      />
-                      <Button onClick={PagarPorFraccionado}>
-                        Pagar: ${fraccionadoValue.toFixed(2)}
-                      </Button>
-                    </Space>
-                  )}
-                  {mostrarComponente && modoPago === 'F' && (
-                    <div>
-                      <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-                      <div rotationSlider style={{
-                        display: 'flex', alignItems: 'center'
-                        , justifyContent: 'center'
-                      }}>
-                        <ImgCrop >
-                          <Upload
-                            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                            listType="picture-card"
-                            fileList={fileList}
-                            onChange={onChange}
-                            onPreview={onPreview}
-                            beforeUpload={beforeUpload}
+          <Col md={12}>
+            <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
+              {modoPago === 'F' && (
+                <Space align="center">
+                  <InputNumber
+                    min={0}
+                    value={fraccionadoValue}
+                    onChange={handleFraccionadoInputChange}
+                    style={{ marginLeft: '10px' }}
+                  />
+                  <Button onClick={PagarPorFraccionado}>
+                    Pagar: ${fraccionadoValue.toFixed(2)}
+                  </Button>
+                </Space>
+              )}
+              {mostrarComponente && modoPago === 'F' && (
+                <div>
+                  <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                  <div rotationSlider style={{
+                    display: 'flex', alignItems: 'center'
+                    , justifyContent: 'center'
+                  }}>
+                    <ImgCrop >
+                      <Upload
+                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={beforeUpload}
 
-                          >
-                            {fileList.length < 1 && '+ Subir comprobante'}
-                          </Upload>
-                        </ImgCrop>
-                      </div>
-
-                      <Button style={{ marginTop: '10px', width: '400px' }}
-                        disabled={fileList.length === 0 || modoPedido === null}
-                        onClick={PagarPorEfectivo}
                       >
-                        Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-                      </Button>
+                        {fileList.length < 1 && '+ Subir comprobante'}
+                      </Upload>
+                    </ImgCrop>
+                  </div>
 
-                      <Divider>O pague con paypal </Divider>
-                      <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                        <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
-                      </div>
-                    </div>
-                  )}
+                  <Button style={{ marginTop: '10px', width: '400px' }}
+                    disabled={fileList.length === 0 || modoPedido === null}
+                    onClick={PagarPorEfectivo}
+                  >
+                    Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                  </Button>
 
+                  <Divider>O pague con paypal </Divider>
+                  <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
+                    <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
+                  </div>
                 </div>
-              </Col>
+              )}
+
+            </div>
+          </Col>
         </Row>
 
 
