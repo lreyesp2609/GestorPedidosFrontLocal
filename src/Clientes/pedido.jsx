@@ -340,6 +340,9 @@ const Pedidos = ({ regresar }) => {
     return () => clearInterval(intervalId);
   }, []);
   const PagarPorEfectivo = () => {
+
+
+   
     if (id_cuenta) {
       const detalles_pedido = cart.map(item => ({
         id_producto: item.id,
@@ -360,6 +363,8 @@ const Pedidos = ({ regresar }) => {
       formData.append('imagen', fileList[0]?.originFileObj || null);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       formData.append('id_sucursal', sucursal);
+      formData.append('cpuntos', totalPoints);
+
       if (HoraEntrega) {
         formData.append('fecha_hora', HoraEntrega.hour());
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
@@ -387,6 +392,7 @@ const Pedidos = ({ regresar }) => {
               message: 'Fallo en el pedido',
               description: '¡Algo salió mal!',
             });
+            console.log('Valor de totalPoints:', totalPoints);
             console.error('Error al realizar el pedido:', responseData.message);
             setPermitido(true);
           }
@@ -427,6 +433,9 @@ const Pedidos = ({ regresar }) => {
       formData.append('estado_pago', 'En revisión');
       formData.append('id_sucursal', sucursal);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      console.log('Valor de totalPoints antes de FormData:', totalPoints);
+
+      formData.append('cpuntos', totalPoints);
       if (HoraEntrega) {
         formData.append('fecha_hora', HoraEntrega.hour());
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades

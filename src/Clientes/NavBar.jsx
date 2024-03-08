@@ -150,9 +150,43 @@ const NavBar = () => {
       console.error("Error al obtener la información de la empresa:", error);
     }
   };
+  const [userData, setUserData] = useState(null);
+  const id_cuenta = localStorage.getItem("id_cuenta");
+  const ObtenerUsuario = async () => {
+    try {
+      if (id_cuenta) {
+        const response = await fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`);
+        const data = await response.json();
+  
+        if (response.ok) {
+          setUserData(data.usuario.cpuntos);
+  
+          setLocationData({
+            latitud1: data.usuario?.ubicacion1?.latitud || 0,
+            longitud1: data.usuario?.ubicacion1?.longitud || 0,
+            latitud2: data.usuario?.ubicacion2?.latitud || 0,
+            longitud2: data.usuario?.ubicacion2?.longitud || 0,
+            latitud3: data.usuario?.ubicacion3?.latitud || 0,
+            longitud3: data.usuario?.ubicacion3?.longitud || 0,
+          });
+        } else {
+          // Manejo de errores si la respuesta no está OK
+          console.error("Error al obtener datos del usuario:", data.message || "Error desconocido");
+        }
+      } else {
+        console.error("Nombre de usuario no encontrado en localStorage");
+      }
+    } catch (error) {
+      // Manejo de errores generales
+      console.error("Error al obtener datos del usuario:", error);
+    }
+  };
+  
+
 
   useEffect(() => {
     obtenerInformacionEmpresa();
+    ObtenerUsuario();
   }, []);
 
   return (
@@ -248,7 +282,7 @@ const NavBar = () => {
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
                   >
-                    Puntos
+                    Puntos: {userData}
                   </Nav.Link>
                 )}
                 {Logeado && (
