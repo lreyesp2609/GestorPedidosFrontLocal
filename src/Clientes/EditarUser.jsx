@@ -504,74 +504,16 @@ const EditarUser = () => {
                     </Form.Group>
                   </Form.Group>
                   <Form.Group>
-                  <div style={{
-                        border: "1px solid ",
-                        backgroundColor: 'white', // Ajusta el color de fondo según tu preferencia
-                        borderRadius: '10px', // Ajusta el radio de borde según tu preferencia
-                        overflow: 'hidden',
-                        // Para asegurarte de que las esquinas redondeadas se apliquen correctamente
-                      }}>
-                        <Row>
-                          <Col md={3} style={{ borderRight: "1px solid " }}>
-                            <img src={imgubicacion} style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}></img>
-                          </Col>
-                          <Col md={8}>
-                            {locationData.latitud3 && (
-                              <Row>
-                                <Col md={6}>
-                                  <Button
-                                    variant="primary"
-                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
-                                    onClick={() => vermapa(locationData.latitud3,locationData.longitud3)}
-                                  >
-                                    Ver Ubicación
-                                  </Button>
-                                </Col>
-                                <Col md={6}>
-                                  <Button
-                                    variant="primary"
-                                    style={{ height: 'auto', marginTop: '20px', marginBottom: '20px', width: "100%" }}
-                                    onClick={() => HacerClick(3)}
-                                  >
-                                    Cambiar Ubicación
-                                  </Button>
-                                </Col>
-                              </Row>
-                            ) ||
-                              !locationData.latitud3 && (
-                                <>
-                                  <Button
-                                    variant="primary"
-                                    style={{ height: 'auto', width: '75%', marginTop: '20px', marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}
-                                    onClick={() => HacerClick(3)}
-                                  >
-                                    Escoger ubicación
-                                  </Button>
-                                </>
-                              )}
-                          </Col>
-                        </Row>
-                      </div>
                     
                   </Form.Group>
                 </Form>
               </Col>
               <Col style={{ marginTop: "30px", padding: "20px" }}>
-                <h5
-                  style={{
-                    textAlign: "center",
-                    border: "1px solid #fcaf6f",
-                    borderRadius: "10px",
-                    backgroundColor: "#fcaf6f",
-                    padding: "10px",
-                  }}
-                >
-                  Datos generales
-                </h5>
+                
                 <Form>
                   <Form.Group>
                     <Row>
-                      <Form.Label>Nombre</Form.Label>
+                      <Form.Label></Form.Label>
                       <Col lg={11}>
                         <Form.Control />
                       </Col>

@@ -48,8 +48,7 @@ const PayPal2 = ({ onSuccess, amount }) => {
     onSuccess(); 
 
     notification.success({
-      message: 'Pago Exitoso',
-      description: '¡El pago se ha completado con éxito!',
+      message: '¡El pago se ha completado con éxito!',
     });
 
   };

@@ -13,18 +13,39 @@ const MenuComandas = () => {
     const [tiemposTranscurridos, setTiemposTranscurridos] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
     const [movimientos, setMovimientos] = useState([]);
+    const [usuario, setUsuario] = useState(null);
 
     useEffect(() => {
+        const id_cuenta = localStorage.getItem("id_cuenta");
+        fetch(`http://127.0.0.1:8000/Login/obtener_cocinero/${id_cuenta}/`)
+            .then((response) => response.json())
+            .then((data) => {
+                cargarBodega(data.usuario.id_sucursal);
+            })
+            .catch((error) =>
+                console.error("Error al obtener datos del usuario:", error)
+            );
+        
+    }, []);
+
+    const cargarBodega = (sucursal) =>{
+        console.log("No se pq no vale" +sucursal);
         fetch('http://127.0.0.1:8000/bodega/listar/')
             .then(response => response.json())
             .then(data => {
-                setBodegas(data.bodegas);
-                if (data.bodegas.length > 0) {
-                    setBodega(data.bodegas[0].id_bodega);
+                console.log("Bodegas");
+                console.log(data.bodegas);
+                console.log("Sucursal "+sucursal);
+                const bodegasf = data.bodegas.filter(bodega => bodega.id_sucursal === sucursal);
+                console.log(bodegasf);
+                setBodegas(bodegasf);
+                if (bodegasf.length > 0) {
+                    setBodega(bodegasf[0].id_bodega);
                 }
+                obtenerPedidos();
             })
             .catch(error => console.error('Error fetching bodegas:', error));
-    }, []);
+    }
 
     const handleClearLocalStorage = () => {
         window.location.href = '/';
@@ -34,19 +55,38 @@ const MenuComandas = () => {
 
     const obtenerPedidos = async () => {
         try {
+
+            const id_cuenta = localStorage.getItem("id_cuenta");
+            let sucursal = null;
+            fetch(`http://127.0.0.1:8000/Login/obtener_cocinero/${id_cuenta}/`)
+                .then((response) => response.json())
+                .then((data) => {
+                    setUsuario(data.usuario);
+                    console.log(data.usuario);
+                    console.log("Sucursal");
+                    sucursal = data.usuario.id_sucursal;
+                    console.log(data.usuario.id_sucursal);
+                    setSucursal(data.usuario.id_sucursal);
+                })
+                .catch((error) =>
+                    console.error("Error al obtener datos del usuario:", error)
+                );
             const response = await fetch('http://127.0.0.1:8000/Mesero/pedidos/');
             const data = await response.json();
-    
+
             // Obtén la hora actual
             const horaActual = new Date();
-    
+            console.log(data.pedidos);
+            const pedidosFiltrados = data.pedidos.filter(pedido => pedido.id_sucursal === sucursal);
+            console.log(pedidosFiltrados);
             // Filtra los pedidos cuya fecha es menor que la hora actual
-            const pedidosFiltrados = data.pedidos.filter(pedido => new Date(pedido.fecha_pedido) < horaActual);
-    
+            const pedidosFiltrados2 = pedidosFiltrados.filter(pedido => new Date(pedido.fecha_pedido) < horaActual);
+            console.log(pedidosFiltrados2);
             // Ordena los pedidos de más reciente a más antiguo
-            const pedidosOrdenados = pedidosFiltrados.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
-    
+            const pedidosOrdenados = pedidosFiltrados2.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
+
             setPedidos(pedidosOrdenados);
+
         } catch (error) {
             console.error('Error al obtener la lista de pedidos', error);
         }
@@ -177,20 +217,20 @@ const MenuComandas = () => {
 
     const fetchMovimientosInventario = () => {
         fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Error al obtener los movimientos de inventario');
-            }
-            return response.json();
-          })
-          .then(data => {
-            const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P'  && movimiento.sestado === '1');
-            setMovimientos(movimientosSalida);
-            console.log(movimientosSalida);
-          })
-          .catch(error => {
-            console.error('Error al obtener los movimientos de inventario:', error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los movimientos de inventario');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const movimientosSalida = data.movimientos_inventario.filter(movimiento => movimiento.tipo_movimiento === 'P' && movimiento.sestado === '1');
+                setMovimientos(movimientosSalida);
+                console.log(movimientosSalida);
+            })
+            .catch(error => {
+                console.error('Error al obtener los movimientos de inventario:', error);
+            });
     };
 
     return (
@@ -326,7 +366,7 @@ const MenuComandas = () => {
                 footer={null}
                 width={'75%'}
             >
-                <MovimientosInventario movimientosinv={movimientos}/>
+                <MovimientosInventario movimientosinv={movimientos} />
             </Modal>
         </div>
     );

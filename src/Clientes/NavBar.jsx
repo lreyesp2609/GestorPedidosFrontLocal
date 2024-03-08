@@ -253,7 +253,7 @@ const NavBar = () => {
                 )}
                 {Logeado && (
                   <Link
-                  onClick={() => MostrarComponente("Carrito")}
+                  onClick={() => showDrawer()}
                     style={{
                       textDecoration: "none",
                       color: "inherit",
