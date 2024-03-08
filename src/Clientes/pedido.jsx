@@ -328,6 +328,10 @@ const Pedidos = ({ regresar }) => {
     (acc, curr) => acc + curr.quantity * curr.price,
     0
   );
+  const totalPoints = cart.reduce(
+    (acc, curr) => acc + curr.quantity * curr.puntos,
+    0
+  );
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentHour(dayjs().hour());
@@ -1017,6 +1021,7 @@ const Pedidos = ({ regresar }) => {
             >
               Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
             </Button>
+            <p>puntos totales: {totalPoints}</p>
           </div>
         )}
 

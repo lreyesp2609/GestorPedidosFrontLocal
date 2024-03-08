@@ -220,7 +220,7 @@ const ShoppingCart = () => {
                           <Col md={8}>
                             <strong>{item.Name}</strong>
                             <br />
-                            <span>{`Cantidad: ${item.quantity} - Precio: $${item.price}`}</span>
+                            <span>{`Cantidad: ${item.quantity} - Precio: $${item.price} - Puntos: ${item.puntos}`}</span>
                           </Col>
                         </Row>
                       </div>

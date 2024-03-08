@@ -53,6 +53,7 @@ const ListProductos = () => {
             quantity: 1,
             Name: selectedProduct.nombreproducto,
             image: selectedProduct.imagenp,
+            puntos:selectedProduct.puntosp,
             price: parseFloat(selectedProduct.preciounitario),
             iva: selectedProduct.iva,
           },
