@@ -10,7 +10,7 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
-import { notification, Alert, Tooltip, Pagination } from 'antd';
+import { notification, Alert, Tooltip, Pagination, Tag } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -307,6 +307,11 @@ const Pedidos = ({ regresar }) => {
   const HacerClick = () => {
     regresar();
   };
+
+  const obtenerNombreSucursal=(idSucursal)=>{
+    const sucursalDeseada = sucursalesData.find((sucursalsele) => sucursalsele.id_sucursal === idSucursal);
+    return sucursalDeseada.snombre;
+  }
 
   const ivaPrecio = () => {
     let iva = 0;
@@ -671,55 +676,22 @@ const Pedidos = ({ regresar }) => {
         />
       </Col>
       <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
-      <Row>
-   <Col>
-      <Container>
-  {/* Primera sección */}
-  <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px'  }}>
-    <Col md={5} className="d-flex justify-content-center align-items-center">
-      <Segmented
-        onChange={handleModoPedidoChange}
-        options={[
-          {
-            label: (
-              <div
-                style={{
-                  padding: 4,
-                }}
-              >
-                <img src={imgentrega} style={{ width: "50%" }} />
-                <div>Domicilio</div>
-              </div>
-            ),
-            value: 'D',
-          },
-          {
-            label: (
-              <div
-                style={{
-                  padding: 4,
-                }}
-              >
-                <img src={imglocal} style={{ width: "50%" }} />
-                <div>Retirar</div>
-              </div>
-            ),
-            value: 'R',
-          }
-        ]}
-      />
-    </Col>
-  </Row>
-
-  {/* Segunda sección (solo se muestra si modoPedido es 'D') */}
-  {modoPedido === 'D' && (
-    <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px'  }}>
-      <Col md={5} className="d-flex justify-content-center align-items-center">
+      <Col md={12} className="d-flex justify-content-center align-items-center">
         <Segmented
-          onChange={handleLocationChange}
+          onChange={handleModoPedidoChange}
           options={[
             {
-              value: 'any',
+              label: (
+                <div
+                  style={{
+                    padding: 4,
+                  }}
+                >
+                  <img src={imgentrega} style={{ width: "50%" }} />
+                  <div>Domicilio</div>
+                </div>
+              ),
+              value: 'D',
             },
             {
               label: (
@@ -728,61 +700,82 @@ const Pedidos = ({ regresar }) => {
                     padding: 4,
                   }}
                 >
-                  <img src={imghogar} style={{ width: "50%" }} />
-                  <div>Casa</div>
+                  <img src={imglocal} style={{ width: "50%" }} />
+                  <div>Retirar</div>
                 </div>
               ),
-              value: 'Casa',
-            },
-            {
-              label: (
-                <div
-                  style={{
-                    padding: 4,
-                  }}
-                >
-                  <img src={imgtrabajao} style={{ width: "50%" }} />
-                  <div>Trabajo</div>
-                </div>
-              ),
-              value: 'Trabajo',
-            },
-            {
-              label: (
-                <div
-                  style={{
-                    padding: 4,
-                  }}
-                >
-                  <img src={imgotro} style={{ width: "50%" }} />
-                  <div>Otro</div>
-                </div>
-              ),
-              value: 'Otro',
+              value: 'R',
             }
           ]}
         />
       </Col>
-    </Row>
-  )}
+      <Col>
+        {modoPedido === 'D' && (
+          <>
+            <Col md={12} className="d-flex justify-content-center align-items-center" style={{ marginTop: '5px' }}>
+              <Segmented
+                onChange={handleLocationChange}
+                options={[
+                  {
 
-  {/* Tercera sección */}
-  {modoPedido === 'D' && (
-  <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' ,marginTop: '10px'  }}>
-    <Col md={5} className="d-flex justify-content-center align-items-center">
-      {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
-        <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
-      ) : (
-        'No tienes una ubicación agregada'
-      )}
-    </Col>
-  </Row>
-   )}
+                    value: 'any',
+                  },
+                  {
+                    label: (
+                      <div
+                        style={{
+                          padding: 4,
+                        }}
+                      >
+                        <img src={imghogar} style={{ width: "50%" }} />
+                        <div>Casa</div>
+                      </div>
+                    ),
+                    value: 'Casa',
+                  },
+                  {
+                    label: (
+                      <div
+                        style={{
+                          padding: 4,
+                        }}
+                      >
+                        <img src={imgtrabajao} style={{ width: "50%" }} />
+                        <div>Trabajo</div>
+                      </div>
+                    ),
+                    value: 'Trabajo',
+                  },
+                  {
+                    label: (
+                      <div
+                        style={{
+                          padding: 4,
+                        }}
+                      >
+                        <img src={imgotro} style={{ width: "50%" }} />
+                        <div>Otro</div>
+                      </div>
+                    ),
+                    value: 'Otro',
+                  }
+                ]}
+              />
+            </Col>
 
-</Container>
 
-      
- 
+            {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
+              <>
+                <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
+              </>
+            ) : (
+              'No tienes una ubicación agregada'
+            )}
+          </>
+        )}
+        {modoPedido==='R'&&(
+          <>Selecciona donde retirar tu pedido: </>
+        )}
         {modoPedido === 'R' && (
           sucursalesData.map((sucursal) => {
             if (sucursal.estadoApertura === 'Abierto ahora') {
@@ -815,12 +808,14 @@ const Pedidos = ({ regresar }) => {
               );
             }
             return (null)
-          })
-
+          }))
+        }
+        
+        
+        {sucursal && modoPedido === 'R' && (
+          <Tag color="blue">Se debe retirar en {obtenerNombreSucursal(sucursal)}</Tag>
         )}
-         {modoPedido === 'R' && (
         <div>No hay más sucursales disponibles ahora mismo</div>
-        )}
 </Col>
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
@@ -831,45 +826,56 @@ const Pedidos = ({ regresar }) => {
             />
           </Modal.Body>
         </Modal>
-       <Col>
-         <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
-        <Col md={5} className="mx-auto text-center mb-3" style={{ maxWidth: "100%" }}>
+        <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
+        <Col md={12} className="d-flex justify-content-center align-items-center" style={{ marginTop: '5px' }}>
           <Segmented
-          onChange={handleModoPagoChange}
-          options={[
-            {
-              label: (
-                <Tooltip placement="top" title="Pagar en efectivo">
-                  <div style={{ padding: 4 }}>
-                    <img src={imgefectivo} style={{ width: "100%" }} alt="Efectivo" />
-                  </div>
-                </Tooltip>
-              ),
-              value: 'E',
-            },
-            {
-              label: (
-                <Tooltip placement="top" title="Pagar por transferencia">
-                  <div style={{ padding: 4 }}>
-                    <img src={imgtransfer} style={{ width: "100%" }} alt="Transferencia" />
-                  </div>
-                </Tooltip>
-              ),
-              value: 'T',
-            },
-            {
-              label: (
-                <Tooltip placement="top" title="Dividir los pagos">
-                  <div style={{ padding: 4 }}>
-                    <img src={imgdividir} style={{ width: "100%" }} alt="Dividir pagos" />
-                  </div>
-                </Tooltip>
-              ),
-              value: 'F',
-            }
-          ]}
-        />
-      </Col>
+            onChange={handleModoPagoChange}
+            options={[
+              {
+                label: (
+                  <Tooltip placement="top" title="Pagar en efectivo" >
+                    <div
+                      style={{
+                        padding: 4,
+                      }}
+                    >
+                      <img src={imgefectivo} style={{ width: "100%" }} />
+                    </div>
+                  </Tooltip>
+                ),
+                value: 'E',
+              },
+              {
+                label: (
+                  <Tooltip placement="top" title="Pagar por transferencia">
+                    <div
+                      style={{
+                        padding: 4,
+                      }}
+                    >
+                      <img src={imgtransfer} style={{ width: "100%" }} />
+                    </div>
+                  </Tooltip>
+                ),
+                value: 'T',
+              },
+              {
+                label: (
+                  <Tooltip placement="top" title="Dividir los pagos" >
+                    <div
+                      style={{
+                        padding: 4,
+                      }}
+                    >
+                      <img src={imgdividir} style={{ width: "100%" }} />
+                    </div>
+                  </Tooltip>
+                ),
+                value: 'F',
+              }
+            ]}
+          />
+        </Col>
         <br />
         ¿No hay prisa? Selecciona la hora que deseas que se realice tu pedido:
         <TimePicker
@@ -886,20 +892,11 @@ const Pedidos = ({ regresar }) => {
           }
         />
         {modoPago === 'T' && (
-          <Row gutter={[16, 16]}>
-          <Col >
-          <div>
-             <style>
-                {`
-                  @media only screen and (max-width: 600px) {
-                    .ant-divider-inner-text {
-                      font-size: 10px;
-                    }
-                  }
-                `}
-              </style>
-            </div>
-            <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center'
+            , justifyContent: 'center'
+          }}>
+
             <Row
               justify="center"
             >
@@ -933,50 +930,56 @@ const Pedidos = ({ regresar }) => {
                   </Card>
                 </Col>
               ))}
-            
+              <Pagination
+                current={currentPage}
+                total={data.length}
+                pageSize={pageSize}
+                onChange={handlePageChange}
+                style={{ marginTop: '16px', textAlign: 'center' }}
+              />
             </Row>
-            <Pagination
-                  current={currentPage}
-                  total={data.length}
-                  pageSize={pageSize}
-                  onChange={handlePageChange}
-                  style={{ marginTop: '16px', textAlign: 'center' }}
-                />
-            </Col>
-            <Col  style={{ textAlign: 'center' }}>
-            <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-            <div rotationSlider style={{
-              display: 'flex', alignItems: 'center'
-              , justifyContent: 'center'
-            }}>
-              <ImgCrop >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-card"
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={beforeUpload}
-
-                >
-                  {fileList.length < 1 && '+ Subir comprobante'}
-                </Upload>
-              </ImgCrop>
-            </div>
-            <div className="d-grid gap-2">
-            <Button
-              disabled={fileList.length === 0 || modoPedido === null}
-              onClick={PagarPorEfectivo}
-            >
-              Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-            </Button>
-            </div>
-            <Divider>O pague con paypal </Divider>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
-              <PayPal onSuccess={CerrarModalDespuesDePago} />
-            </div>
+            <Row>
+              <Col md={12}>
+                <p>Comprobante de pago (foto, escaneo ó captura de pantalla)</p>
               </Col>
-         </Row>
+              <Col md={12} justifyContent='center'>
+                <div rotationSlider>
+                  <ImgCrop style={{ display: 'flex', justifyContent: 'center', marginTop: "10px" }}>
+                    <Upload
+                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      beforeUpload={beforeUpload}
+
+                    >
+                      {fileList.length < 1 && '+ Subir comprobante'}
+                    </Upload>
+                  </ImgCrop>
+                </div>
+              </Col>
+              <Col md={12}>
+                <Button style={{ marginTop: '10px', width: '100%' }}
+                  disabled={fileList.length === 0 || modoPedido === null || Permitido}
+                  onClick={PagarPorEfectivo}
+                >
+                  Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                </Button>
+              </Col>
+              <Col md={12}>
+                <Divider>O pague con paypal </Divider>
+              </Col>
+              <Col md={12}>
+                <div style={{ width: '100%' }} >
+                  {!Permitido && (
+                    <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                  ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
+                </div>
+              </Col>
+
+            </Row>
+          </div>
         )}
         <Row>
           <Col md={12}>
@@ -1050,9 +1053,11 @@ const Pedidos = ({ regresar }) => {
             </div>
           </Col>
         </Row>
-      </Col>
-      </Row>
-    </Row>
+        
+        </Row>
+      
+
+   
   )
 }
 export default Pedidos;
