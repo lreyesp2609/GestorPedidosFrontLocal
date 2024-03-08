@@ -10,7 +10,7 @@ import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
-import { notification, Alert, Tooltip, Pagination } from 'antd';
+import { notification, Alert, Tooltip, Pagination, Tag } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -307,6 +307,11 @@ const Pedidos = ({ regresar }) => {
   const HacerClick = () => {
     regresar();
   };
+
+  const obtenerNombreSucursal=(idSucursal)=>{
+    const sucursalDeseada = sucursalesData.find((sucursalsele) => sucursalsele.id_sucursal === idSucursal);
+    return sucursalDeseada.snombre;
+  }
 
   const ivaPrecio = () => {
     let iva = 0;
@@ -768,6 +773,9 @@ const Pedidos = ({ regresar }) => {
             )}
           </>
         )}
+        {modoPedido==='R'&&(
+          <>Selecciona donde retirar tu pedido: </>
+        )}
         {modoPedido === 'R' && (
           sucursalesData.map((sucursal) => {
             if (sucursal.estadoApertura === 'Abierto ahora') {
@@ -800,11 +808,13 @@ const Pedidos = ({ regresar }) => {
               );
             }
             return (null)
-          })
-
+          }))
+        }
+        
+        
+        {sucursal && modoPedido === 'R' && (
+          <Tag color="blue">Se debe retirar en {obtenerNombreSucursal(sucursal)}</Tag>
         )}
-        <div>No hay más sucursales disponibles ahora mismo</div>
-
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
           <Modal.Body>
