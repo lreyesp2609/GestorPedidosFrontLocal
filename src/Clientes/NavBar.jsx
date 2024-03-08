@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Drawer } from 'antd';
+import { Badge, Avatar  } from 'antd';
 import {
   Container,
   Nav,
@@ -10,7 +10,8 @@ import {
   Col,
   Button,
 } from "react-bootstrap";
-import logo from "../assets/images/descargar.jpg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import LoginForm from "../components/login";
 import { Link } from "react-router-dom";
 import RegistroForm from "../components/registro";
@@ -121,6 +122,9 @@ const NavBar = () => {
   const Regresar = () => {
     setComponenteSeleccionado("Carrusel");
   };
+
+
+
 
   const obtenerInformacionEmpresa = async () => {
     try {
@@ -247,7 +251,6 @@ const NavBar = () => {
                     Puntos
                   </Nav.Link>
                 )}
-
                 {Logeado && (
                   <Link
                   onClick={() => showDrawer()}
@@ -265,7 +268,8 @@ const NavBar = () => {
                       onMouseOut={manejarMouseOut}
                       to="/Carrito"
                     >
-                      Carrito:{quantity}
+                    
+                       CARRITO: {quantity}
                     </Nav.Link>
                   </Link>
                 )}
@@ -330,16 +334,7 @@ const NavBar = () => {
           </Modal.Body>
         </Modal>
       </div>
-      <Drawer
-        closable={true}
-        maskClosable={true} 
-        onClose={onClose} 
-        open={open} >
-        <div>
-          <ShoppingCart />
-        </div>
-
-      </Drawer>
+  
     </>
   );
 };
