@@ -24,6 +24,7 @@ import imgotro from "./res/ubicacion.png";
 import imgtransfer from "./res/pagmovil.png";
 import imgefectivo from "./res/pagefectivo.png";
 import imgdividir from "./res/dividirpagos.png";
+import imgpaypal from "./res/paypal.png";
 const Pedidos = ({ regresar }) => {
   const [cart, setCart] = useContext(CartContext);
   const [mostrarPedido, setMostrarPedido] = useState(false);
@@ -36,7 +37,6 @@ const Pedidos = ({ regresar }) => {
   const [modoPago, setModoPago] = useState('E');
   const [fraccionadoValue, setFraccionadoValue] = useState(1);
   const [mostrarComponente, setMostrarComponente] = useState(false);
-
   const [modoPedido, setModoPedido] = useState("D");
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
@@ -45,6 +45,7 @@ const Pedidos = ({ regresar }) => {
   const [currentLocation, setCurrentLocation] = useState(1);
   const [currentHour, setCurrentHour] = useState(dayjs().hour());
   const [HoraEntrega, setHoraEntrega] = useState(null);
+  const [Permitido, setPermitido] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 2;
   const [data, setData] = useState([]);
@@ -64,6 +65,56 @@ const Pedidos = ({ regresar }) => {
   }, []);
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
+  };
+
+  const cambiarhora = (hora) => {
+    setHoraEntrega(hora);
+    console.log('La hora llega:');
+    console.log(hora);
+    console.log(sucursalesData);
+
+    const now = new Date();
+    const dayOfWeek = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][now.getDay()];
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+
+    const sucursalDeseada = sucursalesData.find((sucursalsele) => sucursalsele.id_sucursal === sucursal);
+    console.log(sucursalDeseada);
+    if (sucursalDeseada) {
+      const horarioAbierto = sucursalDeseada.horario && sucursalDeseada.horario.detalles
+        ? sucursalDeseada.horario.detalles.find((detalle) => {
+          const fechaInicio = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horainicio}`);
+          const fechaFin = new Date(`${now.getFullYear()}-${month}-${day} ${detalle.horafin}`);
+          const horaSeleccionada = new Date(hora.$y, hora.$M, hora.$D, hora.$H, hora.$m, hora.$s);
+          console.log("fechaInicio: " + fechaInicio);
+          console.log("fecha enviada: " + horaSeleccionada);
+          console.log("Fecha fin " + fechaFin);
+          return detalle.dia === dayOfWeek &&
+            fechaInicio <= horaSeleccionada &&
+            fechaFin >= horaSeleccionada;
+        })
+        : null;
+
+      if (horarioAbierto) {
+        console.log('La sucursal estaría abierta en la hora seleccionada.');
+        notification.success({
+          message: 'La sucursal está disponible en la hora seleccionada'
+        });
+        setPermitido(false);
+      } else {
+        console.log('La sucursal estaría cerrada en la hora seleccionada.');
+        notification.error({
+          message: 'La sucursal estaría cerrada en la hora seleccionada.'
+        });
+        setPermitido(true);
+      }
+    } else {
+      console.log('No se encontró la sucursal con el ID proporcionado.');
+      notification.error({
+        message: 'No se encuentra ninguna sucursal.'
+      });
+      setPermitido(true);
+    }
   };
 
   const getPaginatedData = () => {
@@ -105,6 +156,7 @@ const Pedidos = ({ regresar }) => {
                 message: 'Sucursal disponible'
               });
               setSucursal(sucursalesConEstado[0].id_sucursal);
+              setPermitido(false);
             }
             else {
               console.log("Ubicacion:");
@@ -113,12 +165,14 @@ const Pedidos = ({ regresar }) => {
                 message: 'No hay sucursales abiertas actualmente',
                 description: 'Prueba más tarde o revisa otras sucursales',
               });
+              setPermitido(true);
             }
           } else {
             notification.error({
               message: '¡Algo salió mal!',
               description: 'No hay sucursales disponibles actualmente',
             });
+            setPermitido(true);
           }
         })
         .catch(error => {
@@ -126,14 +180,18 @@ const Pedidos = ({ regresar }) => {
             message: '¡Algo salió mal!',
             description: '¡No se pudo buscar la sucursal!',
           });
+          setPermitido(true);
           console.error('Error en la solicitud:', error);
         })
     } else {
       console.error('ID de cuenta no encontrado en localStorage');
+      setPermitido(true);
     }
 
 
   };
+
+
 
   const obtenerhorarios = (listSucursales) => {
 
@@ -209,16 +267,18 @@ const Pedidos = ({ regresar }) => {
     setFraccionadoValue(value);
   };
   const handleModoPedidoChange = (value) => {
+    setPermitido(true);
     setModoPedido(value);
 
   };
   const handleLocationChange = (value) => {
+    setHoraEntrega(null);
     setSelectedLocation(value);
     setShowElegirUbicacion(value === 'Otro');
     let newLocationData = {};
     console.log(`Cambiando a la ubicación: ${location}`);
-
-
+    const tpicker = document.getElementById('time-envy');
+    tpicker.value = '';
     switch (value) {
       case 'Casa':
         newLocationData = {
@@ -317,12 +377,14 @@ const Pedidos = ({ regresar }) => {
             });
             setCart([]);
             regresar();
+            setPermitido(true);
           } else {
             notification.error({
               message: 'Fallo en el pedido',
               description: '¡Algo salió mal!',
             });
             console.error('Error al realizar el pedido:', responseData.message);
+            setPermitido(true);
           }
         })
         .catch(error => {
@@ -331,9 +393,11 @@ const Pedidos = ({ regresar }) => {
             description: '¡Algo salió mal!',
           });
           console.error('Error en la solicitud:', error);
+          setPermitido(true);
         })
     } else {
       console.error('ID de cuenta no encontrado en localStorage');
+      setPermitido(true);
     }
 
 
@@ -442,14 +506,18 @@ const Pedidos = ({ regresar }) => {
             });
             setCart([]);
             regresar();
+            setPermitido(true);
           } else {
             console.error('Error al realizar el pedido:', responseData.message);
+            setPermitido(true);
           }
         })
         .catch(error => {
           console.error('Error en la solicitud:', error);
+          setPermitido(true);
         })
         .finally(() => {
+          setPermitido(true);
           setCart([]);
           regresar();
         });
@@ -493,12 +561,15 @@ const Pedidos = ({ regresar }) => {
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
             });
+            setPermitido(true);
           } else {
             console.error('Error al realizar el pedido:', responseData.message);
+            setPermitido(true);
           }
         })
         .catch(error => {
           console.error('Error en la solicitud:', error);
+          setPermitido(true);
         })
         .finally(() => {
           setCart([]);
@@ -506,6 +577,7 @@ const Pedidos = ({ regresar }) => {
         });
     } else {
       console.error('ID de cuenta no encontrado en localStorage');
+      setPermitido(true);
     }
   }
   const PagarPorFraccionado = () => {
@@ -534,6 +606,7 @@ const Pedidos = ({ regresar }) => {
   };
   const handleSucursalSelect = (selectedSucursal) => {
     setSucursal(selectedSucursal);
+    setPermitido(false);
   };
   const isImage = file => {
     const imageTypes = ['image/jpeg', 'image/png'];
@@ -795,8 +868,10 @@ const Pedidos = ({ regresar }) => {
         ¿No hay prisa? Selecciona la hora que deseas que se realice tu pedido:
         <TimePicker
           defaultValue={dayjs('00:00', format)}
+          value={HoraEntrega}
           format={format}
-          onChange={(hora) => setHoraEntrega(hora)}
+          id="time-envy"
+          onChange={(hora) => cambiarhora(hora)}
           disabledHours={() => Array.from({ length: currentHour }, (_, i) => i)}
           disabledMinutes={(selectedHour) =>
             selectedHour === currentHour
@@ -874,7 +949,7 @@ const Pedidos = ({ regresar }) => {
               </Col>
               <Col md={12}>
                 <Button style={{ marginTop: '10px', width: '100%' }}
-                  disabled={fileList.length === 0 || modoPedido === null}
+                  disabled={fileList.length === 0 || modoPedido === null || Permitido}
                   onClick={PagarPorEfectivo}
                 >
                   Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
@@ -885,7 +960,9 @@ const Pedidos = ({ regresar }) => {
               </Col>
               <Col md={12}>
                 <div style={{ width: '100%' }} >
-                  <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
+                  {!Permitido && (
+                    <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                  ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
                 </div>
               </Col>
 
@@ -897,7 +974,7 @@ const Pedidos = ({ regresar }) => {
             {modoPago === 'E' && (
               <div className="d-grid gap-2">
                 <Button style={{ marginTop: '50px', marginBottom: '240px' }}
-                  disabled={modoPago !== 'E'}
+                  disabled={Permitido}
                   onClick={PagarPorEfectivo2}
                 >
                   Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
@@ -917,7 +994,7 @@ const Pedidos = ({ regresar }) => {
                     onChange={handleFraccionadoInputChange}
                     style={{ marginLeft: '10px' }}
                   />
-                  <Button onClick={PagarPorFraccionado}>
+                  <Button onClick={PagarPorFraccionado} disabled={Permitido}>
                     Pagar: ${fraccionadoValue.toFixed(2)}
                   </Button>
                 </Space>
@@ -945,7 +1022,7 @@ const Pedidos = ({ regresar }) => {
                   </div>
 
                   <Button style={{ marginTop: '10px', width: '400px' }}
-                    disabled={fileList.length === 0 || modoPedido === null}
+                    disabled={fileList.length === 0 || modoPedido === null && Permitido}
                     onClick={PagarPorEfectivo}
                   >
                     Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
@@ -953,7 +1030,10 @@ const Pedidos = ({ regresar }) => {
 
                   <Divider>O pague con paypal </Divider>
                   <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                    <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} />
+                    {!Permitido && (
+                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={Permitido} />
+                    )
+                      (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
                   </div>
                 </div>
               )}
@@ -961,11 +1041,6 @@ const Pedidos = ({ regresar }) => {
             </div>
           </Col>
         </Row>
-
-
-
-
-
       </Col>
       <Col>
         <div>
@@ -989,8 +1064,4 @@ const Pedidos = ({ regresar }) => {
     </Row>
   )
 }
-
-
-
-
 export default Pedidos;
