@@ -662,6 +662,7 @@ const Pedidos = ({ regresar }) => {
       >
         Cancelar
       </Button>
+    
       <Col md={12}>
         <Alert
           message="Hola ✌🏻"
@@ -670,13 +671,18 @@ const Pedidos = ({ regresar }) => {
           showIcon
         />
       </Col>
-      <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
+      
+      
       <Row>
-   <Col>
-      <Container>
+        
+   <Col >
+      <Container style={{ backgroundColor: '#ffffff' }}>
+      <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
   {/* Primera sección */}
   <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px'  }}>
+    
     <Col md={5} className="d-flex justify-content-center align-items-center">
+      
       <Segmented
         onChange={handleModoPedidoChange}
         options={[
@@ -779,7 +785,7 @@ const Pedidos = ({ regresar }) => {
   </Row>
    )}
 
-</Container>
+
 
       
  
@@ -821,6 +827,7 @@ const Pedidos = ({ regresar }) => {
          {modoPedido === 'R' && (
         <div>No hay más sucursales disponibles ahora mismo</div>
         )}
+        </Container>
 </Col>
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
@@ -832,6 +839,7 @@ const Pedidos = ({ regresar }) => {
           </Modal.Body>
         </Modal>
        <Col>
+       <Container style={{ backgroundColor: '#ffffff' }}> 
          <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
         <Col md={5} className="mx-auto text-center mb-3" style={{ maxWidth: "100%" }}>
           <Segmented
@@ -903,14 +911,17 @@ const Pedidos = ({ regresar }) => {
             <Row
         gutter={[16, 16]}
         justify="center"
-        style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}
+        style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start',gap: '100px'
+      }}
       >
               {getPaginatedData().map((cuenta, index) => (
                 <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
                   <Card
+                  className="responsive-card"
                     style={{
                       width: 300,
                       overflow: 'hidden',
+                      
                     }}
                   >
                     <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
@@ -932,6 +943,16 @@ const Pedidos = ({ regresar }) => {
                 Email: {cuenta.correoelectronico}
               </p>
                   </Card>
+                  <style>
+                    {`
+                      @media only screen and (max-width: 600px) {
+                        .responsive-card {
+                          width: 100%;  // Puedes ajustar según sea necesario
+                          /* Otros estilos específicos */
+                        }
+                      }
+                    `}
+                  </style>
                 </Col>
               ))}
             
@@ -945,6 +966,15 @@ const Pedidos = ({ regresar }) => {
                 />
             </Col>
             <Col  style={{ textAlign: 'center' }}>
+            <style>
+                {`
+                  @media only screen and (max-width: 600px) {
+                    .ant-divider-inner-text {
+                      font-size: 10px;
+                    }
+                  }
+                `}
+              </style>
             <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
             <div rotationSlider style={{
               display: 'flex', alignItems: 'center'
@@ -979,81 +1009,74 @@ const Pedidos = ({ regresar }) => {
               </Col>
          </Row>
         )}
-        <Row>
-          <Col md={12}>
-            {modoPago === 'E' && (
-              <div className="d-grid gap-2">
-                <Button style={{ marginTop: '50px', marginBottom: '240px' }}
-                  disabled={Permitido}
-                  onClick={PagarPorEfectivo2}
-                >
-                  Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-                </Button>
-              </div>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
-            <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-              {modoPago === 'F' && (
-                <Space align="center">
-                  <InputNumber
-                    min={0}
-                    value={fraccionadoValue}
-                    onChange={handleFraccionadoInputChange}
-                    style={{ marginLeft: '10px' }}
-                  />
-                  <Button onClick={PagarPorFraccionado} disabled={Permitido}>
-                    Pagar: ${fraccionadoValue.toFixed(2)}
-                  </Button>
-                </Space>
-              )}
-              {mostrarComponente && modoPago === 'F' && (
-                <div>
-                  <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-                  <div rotationSlider style={{
-                    display: 'flex', alignItems: 'center'
-                    , justifyContent: 'center'
-                  }}>
-                    <ImgCrop >
-                      <Upload
-                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                        listType="picture-card"
-                        fileList={fileList}
-                        onChange={onChange}
-                        onPreview={onPreview}
-                        beforeUpload={beforeUpload}
+       {modoPago === 'E' && (
+          <div className="d-grid gap-2">
+            <Button style={{ marginTop: '50px', marginBottom: '10px' }}
+              disabled={modoPago !== 'E'}
+              onClick={PagarPorEfectivo2}
+            >
+              Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+            </Button>
+          </div>
+        )}
 
-                      >
-                        {fileList.length < 1 && '+ Subir comprobante'}
-                      </Upload>
-                    </ImgCrop>
-                  </div>
+    
 
-                  <Button style={{ marginTop: '10px', width: '400px' }}
-                    disabled={fileList.length === 0 || modoPedido === null && Permitido}
-                    onClick={PagarPorEfectivo}
+        <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
+          {modoPago === 'F' && (
+            <Space align="center">
+              <InputNumber
+                min={0}
+                value={fraccionadoValue}
+                onChange={handleFraccionadoInputChange}
+                style={{ marginLeft: '10px' }}
+              />
+              <Button onClick={PagarPorFraccionado}>
+                Pagar: ${fraccionadoValue.toFixed(2)}
+              </Button>
+            </Space>
+          )}
+          {mostrarComponente && modoPago === 'F' && (
+            <div>
+              <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+              <div rotationSlider style={{
+                display: 'flex', alignItems: 'center'
+                , justifyContent: 'center'
+              }}>
+                <ImgCrop >
+                  <Upload
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    listType="picture-card"
+                    fileList={fileList}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    beforeUpload={beforeUpload}
+
                   >
-                    Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-                  </Button>
+                    {fileList.length < 1 && '+ Subir comprobante'}
+                  </Upload>
+                </ImgCrop>
+              </div>
 
-                  <Divider>O pague con paypal </Divider>
-                  <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                    {!Permitido && (
-                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={Permitido} />
-                    )
-                      (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
-                  </div>
-                </div>
-              )}
+              <Button style={{ marginTop: '10px', width: '400px' }}
+                disabled={fileList.length === 0 || modoPedido === null}
+                onClick={PagarPorEfectivo}
+              >
+                Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+              </Button>
 
+              <Divider>O pague con paypal </Divider>
+              <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
+                <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue} />
+              </div>
             </div>
+          )}
+
+        </div>
+        </Container>
           </Col>
         </Row>
-      </Col>
-      </Row>
-    </Row>
+     </Row>
   )
 }
 export default Pedidos;
