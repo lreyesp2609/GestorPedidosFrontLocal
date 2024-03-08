@@ -818,7 +818,9 @@ const Pedidos = ({ regresar }) => {
           })
 
         )}
+         {modoPedido === 'R' && (
         <div>No hay más sucursales disponibles ahora mismo</div>
+        )}
 </Col>
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
