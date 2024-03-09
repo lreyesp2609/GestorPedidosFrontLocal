@@ -269,6 +269,7 @@ const Pedidos = ({ regresar }) => {
   const handleModoPedidoChange = (value) => {
     setPermitido(true);
     setModoPedido(value);
+    setLocationData(null);
 
   };
   const handleLocationChange = (value) => {
@@ -364,6 +365,11 @@ const Pedidos = ({ regresar }) => {
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       formData.append('id_sucursal', sucursal);
       formData.append('cpuntos', totalPoints);
+      if (locationData) {
+        console.log('Latitud'+locationData.latitud);
+        formData.append('latitud', locationData.latitud);
+        formData.append('longitud', locationData.longitud);
+      }
 
       if (HoraEntrega) {
         formData.append('fecha_hora', HoraEntrega.hour());
@@ -380,7 +386,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
-            console.log('se pide a la sucursal:'+sucursal);
+            console.log('se pide a la sucursal:' + sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -434,6 +440,11 @@ const Pedidos = ({ regresar }) => {
       formData.append('estado_pago', 'En revisión');
       formData.append('id_sucursal', sucursal);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      if (locationData) {
+        console.log('Latitud'+locationData.latitud);
+        formData.append('latitud', locationData.latitud);
+        formData.append('longitud', locationData.longitud);
+      }
       console.log('Valor de totalPoints antes de FormData:', totalPoints);
 
       formData.append('cpuntos', totalPoints);
@@ -452,7 +463,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
-            console.log('se pide a la sucursal:'+sucursal);
+            console.log('se pide a la sucursal:' + sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -504,6 +515,11 @@ const Pedidos = ({ regresar }) => {
       formData.append('estado_del_pedido', 'O'); // Ajusta según sea necesario
       formData.append('impuesto', 0);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      if (locationData) {
+        console.log('Latitud'+locationData.latitud);
+        formData.append('latitud', locationData.latitud);
+        formData.append('longitud', locationData.longitud);
+      }
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -515,7 +531,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
-            console.log('se pide a la sucursal:'+sucursal);
+            console.log('se pide a la sucursal:' + sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -562,6 +578,10 @@ const Pedidos = ({ regresar }) => {
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       formData.append('estado_pago', 'Pagado');
       formData.append('id_sucursal', sucursal);
+      if (locationData) {
+        formData.append('latitud', locationData.latitud);
+        formData.append('longitud', locationData.longitud);
+      }
       // Realiza la solicitud POST al backend
       fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
@@ -573,7 +593,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
-            console.log('se pide a la sucursal:'+sucursal);
+            console.log('se pide a la sucursal:' + sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -1022,11 +1042,11 @@ const Pedidos = ({ regresar }) => {
                   </div>
                   <Divider>O pague con paypal </Divider>
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
-                      {!Permitido && (
-                        <PayPal onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
-                      ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
-                    </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
+                    {!Permitido && (
+                      <PayPal onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                    ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
+                  </div>
                 </Col>
               </Row>
             )}
@@ -1089,10 +1109,10 @@ const Pedidos = ({ regresar }) => {
 
                   <Divider>O pague con paypal </Divider>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
-                      {!Permitido && (
-                        <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
-                      ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
-                    </div>
+                    {!Permitido && (
+                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                    ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
+                  </div>
                 </div>
               )}
 
