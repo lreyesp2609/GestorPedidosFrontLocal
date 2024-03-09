@@ -342,7 +342,7 @@ const Pedidos = ({ regresar }) => {
   const PagarPorEfectivo = () => {
 
 
-   
+
     if (id_cuenta) {
       const detalles_pedido = cart.map(item => ({
         id_producto: item.id,
@@ -675,7 +675,7 @@ const Pedidos = ({ regresar }) => {
       >
         Cancelar
       </Button>
-    
+
       <Col md={12}>
         <Alert
           message="Hola ✌🏻"
@@ -684,164 +684,164 @@ const Pedidos = ({ regresar }) => {
           showIcon
         />
       </Col>
-      
-      
+
+
       <Row>
-        
-   <Col >
-      <Container style={{ backgroundColor: '#ffffff' }}>
-      <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
-  {/* Primera sección */}
-  <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px'  }}>
-    
-    <Col md={5} className="d-flex justify-content-center align-items-center">
-      
-      <Segmented
-        onChange={handleModoPedidoChange}
-        options={[
-          {
-            label: (
-              <div
-                style={{
-                  padding: 4,
-                }}
-              >
-                <img src={imgentrega} style={{ width: "50%" }} />
-                <div>Domicilio</div>
-              </div>
-            ),
-            value: 'D',
-          },
-          {
-            label: (
-              <div
-                style={{
-                  padding: 4,
-                }}
-              >
-                <img src={imglocal} style={{ width: "50%" }} />
-                <div>Retirar</div>
-              </div>
-            ),
-            value: 'R',
-          }
-        ]}
-      />
-    </Col>
-  </Row>
 
-  {/* Segunda sección (solo se muestra si modoPedido es 'D') */}
-  {modoPedido === 'D' && (
-    <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px'  }}>
-      <Col md={5} className="d-flex justify-content-center align-items-center">
-        <Segmented
-          onChange={handleLocationChange}
-          options={[
-            {
-              value: 'any',
-            },
-            {
-              label: (
-                <div
-                  style={{
-                    padding: 4,
-                  }}
-                >
-                  <img src={imghogar} style={{ width: "50%" }} />
-                  <div>Casa</div>
-                </div>
-              ),
-              value: 'Casa',
-            },
-            {
-              label: (
-                <div
-                  style={{
-                    padding: 4,
-                  }}
-                >
-                  <img src={imgtrabajao} style={{ width: "50%" }} />
-                  <div>Trabajo</div>
-                </div>
-              ),
-              value: 'Trabajo',
-            },
-            {
-              label: (
-                <div
-                  style={{
-                    padding: 4,
-                  }}
-                >
-                  <img src={imgotro} style={{ width: "50%" }} />
-                  <div>Otro</div>
-                </div>
-              ),
-              value: 'Otro',
-            }
-          ]}
-        />
-      </Col>
-    </Row>
-  )}
+        <Col >
+          <Container style={{ backgroundColor: '#ffffff' }}>
+            <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
+            {/* Primera sección */}
+            <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
 
-  {/* Tercera sección */}
-  {modoPedido === 'D' && (
-  <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' ,marginTop: '10px'  }}>
-    <Col md={5} className="d-flex justify-content-center align-items-center">
-      {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
-        <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
-      ) : (
-        'No tienes una ubicación agregada'
-      )}
-    </Col>
-  </Row>
-   )}
+              <Col md={5} className="d-flex justify-content-center align-items-center">
+
+                <Segmented
+                  onChange={handleModoPedidoChange}
+                  options={[
+                    {
+                      label: (
+                        <div
+                          style={{
+                            padding: 4,
+                          }}
+                        >
+                          <img src={imgentrega} style={{ width: "50%" }} />
+                          <div>Domicilio</div>
+                        </div>
+                      ),
+                      value: 'D',
+                    },
+                    {
+                      label: (
+                        <div
+                          style={{
+                            padding: 4,
+                          }}
+                        >
+                          <img src={imglocal} style={{ width: "50%" }} />
+                          <div>Retirar</div>
+                        </div>
+                      ),
+                      value: 'R',
+                    }
+                  ]}
+                />
+              </Col>
+            </Row>
+
+            {/* Segunda sección (solo se muestra si modoPedido es 'D') */}
+            {modoPedido === 'D' && (
+              <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
+                <Col md={5} className="d-flex justify-content-center align-items-center">
+                  <Segmented
+                    onChange={handleLocationChange}
+                    options={[
+                      {
+                        value: 'any',
+                      },
+                      {
+                        label: (
+                          <div
+                            style={{
+                              padding: 4,
+                            }}
+                          >
+                            <img src={imghogar} style={{ width: "50%" }} />
+                            <div>Casa</div>
+                          </div>
+                        ),
+                        value: 'Casa',
+                      },
+                      {
+                        label: (
+                          <div
+                            style={{
+                              padding: 4,
+                            }}
+                          >
+                            <img src={imgtrabajao} style={{ width: "50%" }} />
+                            <div>Trabajo</div>
+                          </div>
+                        ),
+                        value: 'Trabajo',
+                      },
+                      {
+                        label: (
+                          <div
+                            style={{
+                              padding: 4,
+                            }}
+                          >
+                            <img src={imgotro} style={{ width: "50%" }} />
+                            <div>Otro</div>
+                          </div>
+                        ),
+                        value: 'Otro',
+                      }
+                    ]}
+                  />
+                </Col>
+              </Row>
+            )}
+
+            {/* Tercera sección */}
+            {modoPedido === 'D' && (
+              <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
+                <Col md={5} className="d-flex justify-content-center align-items-center">
+                  {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
+                    <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
+                  ) : (
+                    'No tienes una ubicación agregada'
+                  )}
+                </Col>
+              </Row>
+            )}
 
 
 
-      
- 
-        {modoPedido === 'R' && (
-          sucursalesData.map((sucursal) => {
-            if (sucursal.estadoApertura === 'Abierto ahora') {
 
-              return (
-                <Card
-                  key={sucursal.id_sucursal}
-                  hoverable
-                  title={sucursal.snombre}
-                  style={{
-                    width: "auto",
-                    margin: "10px",
-                    border: sucursal.id_sucursal === sucursal ? "2px solid green" : "1px solid #A4A4A4",
-                  }}
-                  cover={
-                    <img
-                      alt="Descarga la aplicación móvil"
-                      src={`data:image/png;base64,${sucursal.imagensucursal}`}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  }
-                  className="text-center"
-                  onClick={() => handleSucursalSelect(sucursal.id_sucursal)}  // Agrega este evento onClick
-                >
-                  <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
-                  <span style={{ color: 'green' }}>
-                    {sucursal.estadoApertura}
-                  </span>
-                </Card>
-              );
-            }
-            return (null)
-          })
 
-        )}
-         {modoPedido === 'R' && (
-        <div>No hay más sucursales disponibles ahora mismo</div>
-        )}
-        </Container>
-</Col>
+            {modoPedido === 'R' && (
+              sucursalesData.map((sucursal) => {
+                if (sucursal.estadoApertura === 'Abierto ahora') {
+
+                  return (
+                    <Card
+                      key={sucursal.id_sucursal}
+                      hoverable
+                      title={sucursal.snombre}
+                      style={{
+                        width: "auto",
+                        margin: "10px",
+                        border: sucursal.id_sucursal === sucursal ? "2px solid green" : "1px solid #A4A4A4",
+                      }}
+                      cover={
+                        <img
+                          alt="Descarga la aplicación móvil"
+                          src={`data:image/png;base64,${sucursal.imagensucursal}`}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      }
+                      className="text-center"
+                      onClick={() => handleSucursalSelect(sucursal.id_sucursal)}  // Agrega este evento onClick
+                    >
+                      <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
+                      <span style={{ color: 'green' }}>
+                        {sucursal.estadoApertura}
+                      </span>
+                    </Card>
+                  );
+                }
+                return (null)
+              })
+
+            )}
+            {modoPedido === 'R' && (
+              <div>No hay más sucursales disponibles ahora mismo</div>
+            )}
+          </Container>
+        </Col>
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
           <Modal.Body>
@@ -851,113 +851,114 @@ const Pedidos = ({ regresar }) => {
             />
           </Modal.Body>
         </Modal>
-       <Col>
-       <Container style={{ backgroundColor: '#ffffff' }}> 
-         <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
-        <Col md={5} className="mx-auto text-center mb-3" style={{ maxWidth: "100%" }}>
-          <Segmented
-          onChange={handleModoPagoChange}
-          options={[
-            {
-              label: (
-                <Tooltip placement="top" title="Pagar en efectivo">
-                  <div style={{ padding: 4 }}>
-                    <img src={imgefectivo} style={{ width: "100%" }} alt="Efectivo" />
-                  </div>
-                </Tooltip>
-              ),
-              value: 'E',
-            },
-            {
-              label: (
-                <Tooltip placement="top" title="Pagar por transferencia">
-                  <div style={{ padding: 4 }}>
-                    <img src={imgtransfer} style={{ width: "100%" }} alt="Transferencia" />
-                  </div>
-                </Tooltip>
-              ),
-              value: 'T',
-            },
-            {
-              label: (
-                <Tooltip placement="top" title="Dividir los pagos">
-                  <div style={{ padding: 4 }}>
-                    <img src={imgdividir} style={{ width: "100%" }} alt="Dividir pagos" />
-                  </div>
-                </Tooltip>
-              ),
-              value: 'F',
-            }
-          ]}
-        />
-      </Col>
-        <br />
-        ¿No hay prisa? Selecciona la hora que deseas que se realice tu pedido:
-        <TimePicker
-          defaultValue={dayjs('00:00', format)}
-          value={HoraEntrega}
-          format={format}
-          id="time-envy"
-          onChange={(hora) => cambiarhora(hora)}
-          disabledHours={() => Array.from({ length: currentHour }, (_, i) => i)}
-          disabledMinutes={(selectedHour) =>
-            selectedHour === currentHour
-              ? Array.from({ length: dayjs().minute() }, (_, i) => i)
-              : []
-          }
-        />
-       {modoPago === 'T' && (
-          <Row gutter={[16, 16]}>
-          <Col >
-          <div>
-             <style>
-                {`
+        <Col>
+          <Container style={{ backgroundColor: '#ffffff' }}>
+            <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
+            <Col md={5} className="mx-auto text-center mb-3" style={{ maxWidth: "100%" }}>
+              <Segmented
+                onChange={handleModoPagoChange}
+                options={[
+                  {
+                    label: (
+                      <Tooltip placement="top" title="Pagar en efectivo">
+                        <div style={{ padding: 4 }}>
+                          <img src={imgefectivo} style={{ width: "100%" }} alt="Efectivo" />
+                        </div>
+                      </Tooltip>
+                    ),
+                    value: 'E',
+                  },
+                  {
+                    label: (
+                      <Tooltip placement="top" title="Pagar por transferencia">
+                        <div style={{ padding: 4 }}>
+                          <img src={imgtransfer} style={{ width: "100%" }} alt="Transferencia" />
+                        </div>
+                      </Tooltip>
+                    ),
+                    value: 'T',
+                  },
+                  {
+                    label: (
+                      <Tooltip placement="top" title="Dividir los pagos">
+                        <div style={{ padding: 4 }}>
+                          <img src={imgdividir} style={{ width: "100%" }} alt="Dividir pagos" />
+                        </div>
+                      </Tooltip>
+                    ),
+                    value: 'F',
+                  }
+                ]}
+              />
+            </Col>
+            <br />
+            ¿No hay prisa? Selecciona la hora que deseas que se realice tu pedido:
+            <TimePicker
+              defaultValue={dayjs('00:00', format)}
+              value={HoraEntrega}
+              format={format}
+              id="time-envy"
+              onChange={(hora) => cambiarhora(hora)}
+              disabledHours={() => Array.from({ length: currentHour }, (_, i) => i)}
+              disabledMinutes={(selectedHour) =>
+                selectedHour === currentHour
+                  ? Array.from({ length: dayjs().minute() }, (_, i) => i)
+                  : []
+              }
+            />
+            {modoPago === 'T' && (
+              <Row gutter={[16, 16]}>
+                <Col >
+                  <div>
+                    <style>
+                      {`
                   @media only screen and (max-width: 600px) {
                     .ant-divider-inner-text {
                       font-size: 10px;
                     }
                   }
                 `}
-              </style>
-            </div>
-            <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
-            <Row
-        gutter={[16, 16]}
-        justify="center"
-        style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start',gap: '100px'
-      }}
-      >
-              {getPaginatedData().map((cuenta, index) => (
-                <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
-                  <Card
-                  className="responsive-card"
+                    </style>
+                  </div>
+                  <Divider>Realize la transfrencia a la siguiente cuenta:</Divider>
+                  <Row
+                    gutter={[16, 16]}
+                    justify="center"
                     style={{
-                      width: 300,
-                      overflow: 'hidden',
-                      
+                      display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', gap: '100px'
                     }}
                   >
-                    <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Banco: {cuenta.nombre_banco}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Tipo de cuenta: {cuenta.tipo_cuenta}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Número de cuenta: {cuenta.num_cuenta}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Nombre: {cuenta.nombreapellidos}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Cedula: {cuenta.identificacion}
-              </p>
-              <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                Email: {cuenta.correoelectronico}
-              </p>
-                  </Card>
-                  <style>
-                    {`
+                    {getPaginatedData().map((cuenta, index) => (
+                      <Col key={index} xs={24} sm={12} md={8} lg={6} xl={4}>
+                        <Card
+                          className="responsive-card"
+                          style={{
+                            width: 300,
+                            overflow: 'hidden',
+
+                          }}
+                        >
+                          <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            Banco: {cuenta.nombre_banco}
+                          </p>
+                          <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            Tipo de cuenta: {cuenta.tipo_cuenta}
+                          </p>
+                          <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            Número de cuenta: {cuenta.num_cuenta}
+                          </p>
+                          <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            Nombre: {cuenta.nombreapellidos}
+                          </p>
+                          <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            Cedula: {cuenta.identificacion}
+                          </p>
+                          <p style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            Email: {cuenta.correoelectronico}
+                          </p>
+                        </Card>
+                        <style>
+                          {`
                       @media only screen and (max-width: 600px) {
                         .responsive-card {
                           width: 100%;  // Puedes ajustar según sea necesario
@@ -965,132 +966,137 @@ const Pedidos = ({ regresar }) => {
                         }
                       }
                     `}
-                  </style>
+                        </style>
+                      </Col>
+                    ))}
+
+                  </Row>
+                  <Pagination
+                    current={currentPage}
+                    total={data.length}
+                    pageSize={pageSize}
+                    onChange={handlePageChange}
+                    style={{ marginTop: '16px', textAlign: 'center' }}
+                  />
                 </Col>
-              ))}
-            
-            </Row>
-            <Pagination
-                  current={currentPage}
-                  total={data.length}
-                  pageSize={pageSize}
-                  onChange={handlePageChange}
-                  style={{ marginTop: '16px', textAlign: 'center' }}
-                />
-            </Col>
-            <Col  style={{ textAlign: 'center' }}>
-            <style>
-                {`
+                <Col style={{ textAlign: 'center' }}>
+                  <style>
+                    {`
                   @media only screen and (max-width: 600px) {
                     .ant-divider-inner-text {
                       font-size: 10px;
                     }
                   }
                 `}
-              </style>
-            <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-            <div rotationSlider style={{
-              display: 'flex', alignItems: 'center'
-              , justifyContent: 'center'
-            }}>
-              <ImgCrop >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-card"
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={beforeUpload}
+                  </style>
+                  <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                  <div rotationSlider style={{
+                    display: 'flex', alignItems: 'center'
+                    , justifyContent: 'center'
+                  }}>
+                    <ImgCrop >
+                      <Upload
+                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={beforeUpload}
 
+                      >
+                        {fileList.length < 1 && '+ Subir comprobante'}
+                      </Upload>
+                    </ImgCrop>
+                  </div>
+                  <div className="d-grid gap-2">
+                    <Button
+                      disabled={fileList.length === 0 || modoPedido === null || Permitido}
+                      onClick={PagarPorEfectivo}
+                    >
+                      Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                    </Button>
+                  </div>
+                  <Divider>O pague con paypal </Divider>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
+                      {!Permitido && (
+                        <PayPal onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                      ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
+                    </div>
+                </Col>
+              </Row>
+            )}
+            {modoPago === 'E' && (
+              <div className="d-grid gap-2">
+                <Button style={{ marginTop: '50px', marginBottom: '10px' }}
+                  disabled={modoPago !== 'E' || Permitido}
+                  onClick={PagarPorEfectivo2}
                 >
-                  {fileList.length < 1 && '+ Subir comprobante'}
-                </Upload>
-              </ImgCrop>
-            </div>
-            <div className="d-grid gap-2">
-            <Button
-              disabled={fileList.length === 0 || modoPedido === null}
-              onClick={PagarPorEfectivo}
-            >
-              Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-            </Button>
-            </div>
-            <Divider>O pague con paypal </Divider>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
-              <PayPal onSuccess={CerrarModalDespuesDePago} />
-            </div>
-              </Col>
-         </Row>
-        )}
-       {modoPago === 'E' && (
-          <div className="d-grid gap-2">
-            <Button style={{ marginTop: '50px', marginBottom: '10px' }}
-              disabled={modoPago !== 'E'}
-              onClick={PagarPorEfectivo2}
-            >
-              Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-            </Button>
-            <p>puntos totales: {totalPoints}</p>
-          </div>
-        )}
+                  Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                </Button>
+                <p>puntos totales: {totalPoints}</p>
+              </div>
+            )}
 
-    
 
-        <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          {modoPago === 'F' && (
-            <Space align="center">
-              <InputNumber
-                min={0}
-                value={fraccionadoValue}
-                onChange={handleFraccionadoInputChange}
-                style={{ marginLeft: '10px' }}
-              />
-              <Button onClick={PagarPorFraccionado}>
-                Pagar: ${fraccionadoValue.toFixed(2)}
-              </Button>
-            </Space>
-          )}
-          {mostrarComponente && modoPago === 'F' && (
-            <div>
-              <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
-              <div rotationSlider style={{
-                display: 'flex', alignItems: 'center'
-                , justifyContent: 'center'
-              }}>
-                <ImgCrop >
-                  <Upload
-                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={onChange}
-                    onPreview={onPreview}
-                    beforeUpload={beforeUpload}
 
+            <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
+              {modoPago === 'F' && (
+                <Space align="center">
+                  <InputNumber
+                    min={0}
+                    value={fraccionadoValue}
+                    onChange={handleFraccionadoInputChange}
+                    style={{ marginLeft: '10px' }}
+                  />
+                  <Button onClick={PagarPorFraccionado} disabled={Permitido}>
+                    Pagar: ${fraccionadoValue.toFixed(2)}
+                  </Button>
+                </Space>
+              )}
+              {mostrarComponente && modoPago === 'F' && (
+                <div>
+                  <Divider orientation="left">Comprobante de pago (foto, escaneo ó captura de pantalla)</Divider>
+                  <div rotationSlider style={{
+                    display: 'flex', alignItems: 'center'
+                    , justifyContent: 'center'
+                  }}>
+                    <ImgCrop >
+                      <Upload
+                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={beforeUpload}
+
+                      >
+                        {fileList.length < 1 && '+ Subir comprobante'}
+                      </Upload>
+                    </ImgCrop>
+                  </div>
+
+                  <Button style={{ marginTop: '10px', width: '400px' }}
+                    disabled={fileList.length === 0 || modoPedido === null || Permitido}
+                    onClick={PagarPorEfectivo}
                   >
-                    {fileList.length < 1 && '+ Subir comprobante'}
-                  </Upload>
-                </ImgCrop>
-              </div>
+                    Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                  </Button>
 
-              <Button style={{ marginTop: '10px', width: '400px' }}
-                disabled={fileList.length === 0 || modoPedido === null}
-                onClick={PagarPorEfectivo}
-              >
-                Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
-              </Button>
+                  <Divider>O pague con paypal </Divider>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
+                      {!Permitido && (
+                        <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                      ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
+                    </div>
+                </div>
+              )}
 
-              <Divider>O pague con paypal </Divider>
-              <div style={{ marginBottom: '122px', width: '400px', margin: '0 auto' }}>
-                <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={fraccionadoValue} />
-              </div>
             </div>
-          )}
-
-        </div>
-        </Container>
-          </Col>
-        </Row>
-     </Row>
+          </Container>
+        </Col>
+      </Row>
+    </Row>
   )
 }
 export default Pedidos;
