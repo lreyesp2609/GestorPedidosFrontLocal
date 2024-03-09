@@ -380,6 +380,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
+            console.log('se pide a la sucursal:'+sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -451,6 +452,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
+            console.log('se pide a la sucursal:'+sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -513,6 +515,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
+            console.log('se pide a la sucursal:'+sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
@@ -570,6 +573,7 @@ const Pedidos = ({ regresar }) => {
           if (responseData.success) {
             console.log('Respuesta del servidor:', responseData);
             console.log('Pedido realizado con éxito.');
+            console.log('se pide a la sucursal:'+sucursal);
             notification.success({
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
