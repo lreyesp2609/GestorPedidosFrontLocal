@@ -10,34 +10,48 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
   const generarReportePDF = () => {
     const doc = new jsPDF();
 
-    const topRectY = 0;
-    const bottomRectY = doc.internal.pageSize.getHeight() - 20;
-    const rectWidth = doc.internal.pageSize.getWidth();
-    const rectHeight = 30;
-    const rectHeighty = 20;
+    function drawPageDesign() {
+      const topRectY = 0;
+      const bottomRectY = doc.internal.pageSize.getHeight() - 20;
+      const rectWidth = doc.internal.pageSize.getWidth();
+      const rectHeight = 30;
+      const rectHeighty = 20;
 
-    doc.setFillColor(194, 18, 18);
+      doc.setFillColor(194, 18, 18);
 
-    doc.rect(0, topRectY, rectWidth, rectHeight, 'F');
-    doc.rect(0, bottomRectY, rectWidth, rectHeighty, 'F');
+      doc.rect(0, topRectY, rectWidth, rectHeight, 'F');
+      doc.rect(0, bottomRectY, rectWidth, rectHeighty, 'F');
 
-    if (logoEmpresa) {
-      const logo = new Image();
-      logo.src = logoEmpresa;
-      const logoWidth = 30;
-      const logoX = 5;
-      const logoY = 0;
-      doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoWidth);
+      if (logoEmpresa) {
+        const logo = new Image();
+        logo.src = logoEmpresa;
+        const logoWidth = 30;
+        const logoX = 5;
+        const logoY = 0;
+        doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoWidth);
+      }
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(15);
+      doc.text(`${empresaInfo.enombre}`, 35, 12);
+      doc.setFontSize(12);
+      doc.text(`${empresaInfo.direccion}`, 35, 17);
+      doc.setFontSize(11);
+      doc.text(`${empresaInfo.etelefono}`, 35, 22);
+      doc.setFontSize(12);
+
+      const fechaHoraEmision = new Date().toLocaleString();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const fontSize = 10;
+      const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
+      const xPosition = pageWidth - fechaTextWidth - 10;
+      const yPosition = doc.internal.pageSize.getHeight() - 10;
+      doc.setFontSize(fontSize);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
     }
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(15);
-    doc.text(`${empresaInfo.enombre}`, 32, 12);
-    doc.setFontSize(12);
-    doc.text(`${empresaInfo.direccion}`, 32, 17);
-    doc.setFontSize(11);
-    doc.text(`${empresaInfo.etelefono}`, 32, 22);
-    doc.setFontSize(12);
+    // Dibujar el diseño en la primera página
+    drawPageDesign();
     doc.setTextColor(0, 0, 0);
 
     if (selectedReport === 'empleados') {
@@ -283,6 +297,12 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             // Colocar el texto a mano derecha
             doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
 
+            // Agregar una nueva página
+            doc.addPage();
+
+            // Dibujar el diseño en la segunda página
+            drawPageDesign();
+
             // Crear el elemento canvas para Plotly.js
             const canvas = document.createElement('canvas');
             canvas.id = 'myChart';
@@ -291,6 +311,15 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
 
             // Agregar el elemento canvas al cuerpo del documento
             document.body.appendChild(canvas);
+
+            // Crear el elemento canvas para el gráfico de pastel
+            const canvasPieChart = document.createElement('canvas');
+            canvasPieChart.id = 'myPieChart';
+            canvasPieChart.width = 400;
+            canvasPieChart.height = 200;
+
+            // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
+            document.body.appendChild(canvasPieChart);
 
             // Calcular la venta total de cada mesero
             const ventasTotalesPorMesero = ventasmesero.reduce((acc, venta) => {
@@ -306,7 +335,16 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             const ventasTotales = Object.values(ventasTotalesPorMesero);
 
             // Colores para las barras
-            const colores = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(153, 102, 255)'];
+            const colores = [
+              'rgb(255, 99, 132)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(153, 102, 255)',
+              'rgb(255, 102, 102)',
+              'rgb(255, 99, 132)',
+              'rgb(54, 162, 235)',
+            ];
 
             // Obtener los datos para el gráfico Plotly.js
             const plotData = {
@@ -323,6 +361,21 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
                 color: 'black'
               }
             };
+
+            // Obtener los datos para el gráfico de pastel Plotly.js
+            const plotDataPastel = {
+              values: ventasTotales,
+              labels: meseros,
+              type: 'pie',
+              textinfo: 'label+percent',
+              insidetextfont: {
+                color: 'white'
+              },
+              marker: {
+                colors: colores
+              }
+            };
+
 
             // Configuración del diseño
             const layout = {
@@ -347,35 +400,35 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               bargap: 0.2
             };
 
-            // Crear el gráfico Plotly con los datos proporcionados
+            // Generar el gráfico de barras en la primera mitad de la página
             Plotly.newPlot('myChart', [plotData], layout)
               .then(function (gd) {
                 // Convertir el gráfico en una imagen y obtener la URL
                 return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
               })
-              .then(function (url) {
-                // Agregar la imagen al PDF usando la URL directamente
-                doc.addImage(url, 'PNG', 10, doc.autoTable.previous.finalY + 15, 150, 110);
+              .then(function (barChartUrl) {
+                // Agregar el gráfico de barras al PDF
+                doc.addImage(barChartUrl, 'PNG', 10, 40, 150, 110);
+              })
+              .catch(function (error) {
+                console.error('Error al generar el gráfico de barras:', error);
+              });
 
-                // Guardar el PDF después de agregar la imagen
-                let fileName = 'reporte_ventas_m.pdf';
 
-                const fechaHoraEmision = new Date().toLocaleString();
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const fontSize = 10;
-                const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
-                const xPosition = pageWidth - fechaTextWidth - 10;
-                const yPosition = doc.internal.pageSize.getHeight() - 10;
-                doc.setFontSize(fontSize);
-                doc.setTextColor(255, 255, 255);
-                doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
-
-                doc.save(fileName);
+            // Generar el gráfico de pastel en la segunda mitad de la página
+            Plotly.newPlot('myPieChart', [plotDataPastel])
+              .then(function (gd) {
+                // Convertir el gráfico en una imagen y obtener la URL
+                return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
+              })
+              .then(function (pieChartUrl) {
+                // Agregar el gráfico de pastel al PDF
+                doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
               .catch(function (error) {
-                console.error('Error al generar la imagen del gráfico:', error);
+                console.error('Error al generar el gráfico de pastel:', error);
               });
           }
         } else {
@@ -441,6 +494,12 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             // Colocar el texto a mano derecha
             doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
 
+             // Agregar una nueva página
+             doc.addPage();
+
+             // Dibujar el diseño en la segunda página
+             drawPageDesign();
+
             // Crear el elemento canvas para Plotly.js
             const canvas = document.createElement('canvas');
             canvas.id = 'myChart';
@@ -449,6 +508,15 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
 
             // Agregar el elemento canvas al cuerpo del documento
             document.body.appendChild(canvas);
+
+             // Crear el elemento canvas para el gráfico de pastel
+             const canvasPieChart = document.createElement('canvas');
+             canvasPieChart.id = 'myPieChart';
+             canvasPieChart.width = 400;
+             canvasPieChart.height = 200;
+ 
+             // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
+             document.body.appendChild(canvasPieChart); 
 
             // Calcular la venta total de cada mesero
             const ventasTotalesPorSucursal = ventasmesero.reduce((acc, venta) => {
@@ -482,6 +550,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               }
             };
 
+            // Obtener los datos para el gráfico de pastel Plotly.js
+            const plotDataPastel = {
+              values: ventasTotales,
+              labels: sucursales,
+              type: 'pie',
+              textinfo: 'label+percent',
+              insidetextfont: {
+                color: 'white'
+              },
+              marker: {
+                colors: colores
+              }
+            };
+
             // Configuración del diseño
             const layout = {
               title: 'Ventas por sucursales',
@@ -505,35 +587,35 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               bargap: 0.2
             };
 
-            // Crear el gráfico Plotly con los datos proporcionados
+            // Generar el gráfico de barras en la primera mitad de la página
             Plotly.newPlot('myChart', [plotData], layout)
               .then(function (gd) {
                 // Convertir el gráfico en una imagen y obtener la URL
                 return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
               })
-              .then(function (url) {
-                // Agregar la imagen al PDF usando la URL directamente
-                doc.addImage(url, 'PNG', 10, doc.autoTable.previous.finalY + 10, 150, 110);
+              .then(function (barChartUrl) {
+                // Agregar el gráfico de barras al PDF
+                doc.addImage(barChartUrl, 'PNG', 10, 40, 150, 110);
+              })
+              .catch(function (error) {
+                console.error('Error al generar el gráfico de barras:', error);
+              });
 
-                // Guardar el PDF después de agregar la imagen
-                let fileName = 'reporte_ventas_s.pdf';
 
-                const fechaHoraEmision = new Date().toLocaleString();
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const fontSize = 10;
-                const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
-                const xPosition = pageWidth - fechaTextWidth - 10;
-                const yPosition = doc.internal.pageSize.getHeight() - 10;
-                doc.setFontSize(fontSize);
-                doc.setTextColor(255, 255, 255);
-                doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
-
-                doc.save(fileName);
+            // Generar el gráfico de pastel en la segunda mitad de la página
+            Plotly.newPlot('myPieChart', [plotDataPastel])
+              .then(function (gd) {
+                // Convertir el gráfico en una imagen y obtener la URL
+                return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
+              })
+              .then(function (pieChartUrl) {
+                // Agregar el gráfico de pastel al PDF
+                doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
               .catch(function (error) {
-                console.error('Error al generar la imagen del gráfico:', error);
+                console.error('Error al generar el gráfico de pastel:', error);
               });
           }
         } else {
@@ -594,6 +676,141 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
 
             // Colocar el texto a mano derecha
             doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
+
+             // Agregar una nueva página
+             doc.addPage();
+
+             // Dibujar el diseño en la segunda página
+             drawPageDesign();
+
+            // Crear el elemento canvas para Plotly.js
+            const canvas = document.createElement('canvas');
+            canvas.id = 'myChart';
+            canvas.width = 400;
+            canvas.height = 200;
+
+            // Agregar el elemento canvas al cuerpo del documento
+            document.body.appendChild(canvas);
+
+            // Crear el elemento canvas para el gráfico de pastel
+            const canvasPieChart = document.createElement('canvas');
+            canvasPieChart.id = 'myPieChart';
+            canvasPieChart.width = 400;
+            canvasPieChart.height = 200;
+
+            // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
+            document.body.appendChild(canvasPieChart); 
+
+            // Calcular la venta total de cada mesero
+            const ventasTotalesProducto = ventasmesero.reduce((acc, venta) => {
+              if (!acc[venta.nombre]) {
+                acc[venta.nombre] = 0;
+              }
+              acc[venta.nombre] += parseFloat(venta.precio);
+              return acc;
+            }, {});
+
+            // Obtener los nombres de los meseros y sus ventas totales
+            const productos = Object.keys(ventasTotalesProducto);
+            const ventasTotales = Object.values(ventasTotalesProducto);
+
+            // Colores para las barras
+            const colores = [
+              'rgb(102, 204, 255)',
+              'rgb(0, 204, 102)',
+              'rgb(255, 99, 132)',
+              'rgb(255, 204, 153)',
+              'rgb(153, 102, 255)',
+              'rgb(255, 102, 102)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(255, 159, 64)',
+            ];
+
+            // Obtener los datos para el gráfico Plotly.js
+            const plotData = {
+              x: productos,
+              y: ventasTotales,
+              type: 'bar',
+              marker: {
+                color: colores,
+                width: 0.3
+              },
+              text: ventasTotales.map(total => `$${total.toFixed(2)}`),
+              textposition: 'auto',
+              textfont: {
+                color: 'black'
+              }
+            };
+
+            // Obtener los datos para el gráfico de pastel Plotly.js
+            const plotDataPastel = {
+              values: ventasTotales,
+              labels: productos,
+              type: 'pie',
+              textinfo: 'label+percent',
+              insidetextfont: {
+                color: 'white'
+              },
+              marker: {
+                colors: colores
+              }
+            };
+
+            // Configuración del diseño
+            const layout = {
+              title: 'Ventas por Productos',
+              xaxis: {
+                title: 'Productos',
+                tickfont: {
+                  color: 'black'
+                },
+                linecolor: 'black'
+              },
+              yaxis: {
+                title: 'Ventas',
+                tickfont: {
+                  color: 'black'
+                },
+              },
+              font: {
+                color: 'black'
+              },
+              barmode: 'group',
+              bargap: 0.2
+            };
+
+            // Generar el gráfico de barras en la primera mitad de la página
+            Plotly.newPlot('myChart', [plotData], layout)
+              .then(function (gd) {
+                // Convertir el gráfico en una imagen y obtener la URL
+                return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
+              })
+              .then(function (barChartUrl) {
+                // Agregar el gráfico de barras al PDF
+                doc.addImage(barChartUrl, 'PNG', 10, 40, 150, 110);
+              })
+              .catch(function (error) {
+                console.error('Error al generar el gráfico de barras:', error);
+              });
+
+
+            // Generar el gráfico de pastel en la segunda mitad de la página
+            Plotly.newPlot('myPieChart', [plotDataPastel])
+              .then(function (gd) {
+                // Convertir el gráfico en una imagen y obtener la URL
+                return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
+              })
+              .then(function (pieChartUrl) {
+                // Agregar el gráfico de pastel al PDF
+                doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
+                setPdfBlob(doc.output('blob'));
+                handleShowViewer();
+              })
+              .catch(function (error) {
+                console.error('Error al generar el gráfico de pastel:', error);
+              });
           }
         } else {
           console.error('dateRange no está definido o no tiene al menos dos elementos.');
@@ -655,6 +872,12 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             // Colocar el texto a mano derecha
             doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
 
+            // Agregar una nueva página
+            doc.addPage();
+
+            // Dibujar el diseño en la segunda página
+            drawPageDesign();
+
             // Crear el elemento canvas para Plotly.js
             const canvas = document.createElement('canvas');
             canvas.id = 'myChart';
@@ -663,6 +886,15 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
 
             // Agregar el elemento canvas al cuerpo del documento
             document.body.appendChild(canvas);
+
+            // Crear el elemento canvas para el gráfico de pastel
+            const canvasPieChart = document.createElement('canvas');
+            canvasPieChart.id = 'myPieChart';
+            canvasPieChart.width = 400;
+            canvasPieChart.height = 200;
+
+            // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
+            document.body.appendChild(canvasPieChart); 
 
             // Calcular la venta total de cada mesero
             const ventasTotalesPorTipo = ventasmesero.reduce((acc, venta) => {
@@ -707,6 +939,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               }
             };
 
+            // Obtener los datos para el gráfico de pastel Plotly.js
+            const plotDataPastel = {
+              values: ventasTotales,
+              labels: tipo,
+              type: 'pie',
+              textinfo: 'label+percent',
+              insidetextfont: {
+                color: 'white'
+              },
+              marker: {
+                colors: colores
+              }
+            };
+
             // Configuración del diseño
             const layout = {
               title: 'Ventas por Tipos de Productos',
@@ -730,35 +976,36 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               bargap: 0.2
             };
 
-            // Crear el gráfico Plotly con los datos proporcionados
+            // Generar el gráfico de barras en la primera mitad de la página
             Plotly.newPlot('myChart', [plotData], layout)
               .then(function (gd) {
                 // Convertir el gráfico en una imagen y obtener la URL
                 return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
               })
-              .then(function (url) {
-                // Agregar la imagen al PDF usando la URL directamente
-                doc.addImage(url, 'PNG', 10, doc.autoTable.previous.finalY + 10, 150, 110);
+              .then(function (barChartUrl) {
+                // Agregar el gráfico de barras al PDF
+                doc.addImage(barChartUrl, 'PNG', 10, 40, 150, 110);
+              })
+              .catch(function (error) {
+                console.error('Error al generar el gráfico de barras:', error);
+              });
 
-                // Guardar el PDF después de agregar la imagen
-                let fileName = 'reporte_ventas_tp.pdf';
 
-                const fechaHoraEmision = new Date().toLocaleString();
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const fontSize = 10;
-                const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
-                const xPosition = pageWidth - fechaTextWidth - 10;
-                const yPosition = doc.internal.pageSize.getHeight() - 10;
-                doc.setFontSize(fontSize);
-                doc.setTextColor(255, 255, 255);
-                doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
+            // Generar el gráfico de pastel en la segunda mitad de la página
+            Plotly.newPlot('myPieChart', [plotDataPastel])
+              .then(function (gd) {
+                // Convertir el gráfico en una imagen y obtener la URL
+                return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
+              })
+              .then(function (pieChartUrl) {
+                // Agregar el gráfico de pastel al PDF
+                doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
 
-                doc.save(fileName);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
               .catch(function (error) {
-                console.error('Error al generar la imagen del gráfico:', error);
+                console.error('Error al generar el gráfico de pastel:', error);
               });
           }
         } else {
@@ -807,19 +1054,19 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       doc.text('Reporte de Reverso de Facturas', 10, 40);
       doc.setFont("helvetica");
       doc.setFontSize(10);
-  
+
       const headers = ['Num', 'Código Factura', 'Detalle del pedido', 'Total', 'Fecha Emisión', 'Fecha Reverso'];
-  
+
       if (dateRange && dateRange.length >= 2) {
         const filteredData = reverso.filter(factura => {
           const fechaEmisionNotaCredito = new Date(factura.fecha_emision_nota_credito);
           const fechaDesde = new Date(dateRange[0]);
           const fechaHasta = new Date(dateRange[1]);
-      
+
           // Ajustar la comparación para incluir el límite superior del rango
           return fechaEmisionNotaCredito >= fechaDesde && fechaEmisionNotaCredito <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
         });
-      
+
         if (filteredData.length === 0) {
           doc.text('No hay reverso de facturas en el rango de fechas seleccionado.', 10, 48);
         } else {
@@ -845,7 +1092,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       } else {
         console.error('dateRange no está definido o no tiene al menos dos elementos.');
       }
-  }  
+    }
 
     let fileName = '';
     if (selectedReport === 'empleados') {
@@ -860,25 +1107,24 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       fileName = 'reporte_combos.pdf';
     } else if (selectedReport === 'sucursal') {
       fileName = 'reporte_sucursal.pdf';
-    } else if (selectedReport === 'venta') {
-      if (selectedVenta === 'productos') {
-        fileName = 'reporte_ventas_p.pdf';
-      }
     } else if (selectedReport === 'pagos') {
       fileName = 'reporte_pagos.pdf';
     } else if (selectedReport === 'reverso') {
       fileName = 'reporte_reverso.pdf';
+    }  else if (selectedReport === 'venta') {
+      if (selectedVenta === 'mesero') {
+        fileName = 'reporte_ventas_m.pdf';
+      }
+      if (selectedVenta === 'sucursal') {
+        fileName = 'reporte_ventas_s.pdf';
+      }
+      if (selectedVenta === 'productos') {
+        fileName = 'reporte_ventas_p.pdf';
+      }
+      if (selectedVenta === 'tipoproducto') {
+        fileName = 'reporte_ventas_tp.pdf';
+      }
     }
-
-    const fechaHoraEmision = new Date().toLocaleString();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const fontSize = 10;
-    const fechaTextWidth = doc.getStringUnitWidth(`Fecha y hora de emisión: ${fechaHoraEmision}`) * fontSize / doc.internal.scaleFactor;
-    const xPosition = pageWidth - fechaTextWidth - 10;
-    const yPosition = doc.internal.pageSize.getHeight() - 10;
-    doc.setFontSize(fontSize);
-    doc.setTextColor(255, 255, 255);
-    doc.text(`Fecha y hora de emisión: ${fechaHoraEmision}`, xPosition, yPosition);
 
     doc.save(fileName);
     setPdfBlob(doc.output('blob'));
