@@ -269,7 +269,6 @@ const Pedidos = ({ regresar }) => {
   const handleModoPedidoChange = (value) => {
     setPermitido(true);
     setModoPedido(value);
-    setLocationData(null);
 
   };
   const handleLocationChange = (value) => {
@@ -354,7 +353,7 @@ const Pedidos = ({ regresar }) => {
 
       const formData = new FormData();
 
-      formData.append('precio', Number(totalPrice) + Number(ivaPrecio().toFixed(2)));
+      formData.append('precio', (Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'T');
       formData.append('puntos', 0);
@@ -429,7 +428,7 @@ const Pedidos = ({ regresar }) => {
 
 
       const formData = new FormData();
-      let valor = Number(totalPrice) + Number(ivaPrecio().toFixed(2));
+      let valor = (Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2);
       console.log('Total: ' + valor);
       formData.append('precio', valor);
       formData.append('tipo_de_pedido', modoPedido);
@@ -440,11 +439,6 @@ const Pedidos = ({ regresar }) => {
       formData.append('estado_pago', 'En revisión');
       formData.append('id_sucursal', sucursal);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-      if (locationData) {
-        console.log('Latitud'+locationData.latitud);
-        formData.append('latitud', locationData.latitud);
-        formData.append('longitud', locationData.longitud);
-      }
       console.log('Valor de totalPoints antes de FormData:', totalPoints);
 
       formData.append('cpuntos', totalPoints);
@@ -508,7 +502,7 @@ const Pedidos = ({ regresar }) => {
       // Construye el cuerpo de la solicitud con los datos necesarios
       const formData = new FormData();
 
-      formData.append('precio', number(totalPrice) + Number(ivaPrecio().toFixed(2)));
+      formData.append('precio', (number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'P'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
@@ -569,7 +563,7 @@ const Pedidos = ({ regresar }) => {
       // Construye el cuerpo de la solicitud con los datos necesarios
       const formData = new FormData();
 
-      formData.append('precio', Number(totalPrice) + Number(ivaPrecio().toFixed(2)));
+      formData.append('precio', (Number(totalPrice) + Number(ivaPrecio().toFixed(2)).toFixed(2)));
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'X'); // Asumo que 'E' es el método de pago en efectivo
       formData.append('puntos', 0); // Ajusta según sea necesario
@@ -813,7 +807,7 @@ const Pedidos = ({ regresar }) => {
             {modoPedido === 'D' && (
               <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
                 <Col md={5} className="d-flex justify-content-center align-items-center">
-                  {locationData.latitud !== undefined && locationData.longitud !== undefined ? (
+                  {locationData && locationData.latitud !== undefined && locationData.longitud !== undefined ? (
                     <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
                   ) : (
                     'No tienes una ubicación agregada'
@@ -1037,7 +1031,7 @@ const Pedidos = ({ regresar }) => {
                       disabled={fileList.length === 0 || modoPedido === null || Permitido}
                       onClick={PagarPorEfectivo}
                     >
-                      Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                      Pagar: ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
                     </Button>
                   </div>
                   <Divider>O pague con paypal </Divider>
@@ -1056,7 +1050,7 @@ const Pedidos = ({ regresar }) => {
                   disabled={modoPago !== 'E' || Permitido}
                   onClick={PagarPorEfectivo2}
                 >
-                  Realizar pedido: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                  Realizar pedido: ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
                 </Button>
                 <p>puntos totales: {totalPoints}</p>
               </div>
@@ -1104,13 +1098,13 @@ const Pedidos = ({ regresar }) => {
                     disabled={fileList.length === 0 || modoPedido === null || Permitido}
                     onClick={PagarPorEfectivo}
                   >
-                    Pagar: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                    Pagar: ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
                   </Button>
 
                   <Divider>O pague con paypal </Divider>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }} >
                     {!Permitido && (
-                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={Number(totalPrice) + Number(ivaPrecio().toFixed(2))} disabled={false} />
+                      <PayPal2 onSuccess={CerrarModalDespuesDePago2} amount={(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)} disabled={false} />
                     ) || (<Button style={{ width: '100%', background: '#FFC439', borderColor: '#FFC439' }} disabled={true}><img src={imgpaypal} style={{ width: '30%' }} /></Button>)}
                   </div>
                 </div>
