@@ -27,6 +27,7 @@ import imgtransfer from "./res/pagmovil.png";
 import imgefectivo from "./res/pagefectivo.png";
 import imgdividir from "./res/dividirpagos.png";
 import imgpaypal from "./res/paypal.png";
+import API_URL from '../config';
 const Pedidos = ({ regresar }) => {
   const [cart, setCart] = useContext(CartContext);
   const [recompensa, setrecompensa] = useContext(RecompensaContext);

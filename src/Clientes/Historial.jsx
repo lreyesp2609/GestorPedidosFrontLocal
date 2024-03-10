@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import GenerarFacturaPDF from "./GenerarFacturaCliente";
 import { CheckCircleOutlined, SyncOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { Row, Col } from "react-bootstrap";
-
+import API_URL from '../config';
 
 const { Column, ColumnGroup } = Table;
 

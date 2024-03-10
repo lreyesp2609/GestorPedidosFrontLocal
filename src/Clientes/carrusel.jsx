@@ -6,6 +6,7 @@ import descar from './res/descargaapp.png'
 import imgsucur from './res/sucursales.png'
 import masvendidos from './res/maspedidos.png'
 import imgrecompensas from './res/recompensas.png'
+import API_URL from '../config';
 
 
 

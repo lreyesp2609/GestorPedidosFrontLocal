@@ -16,6 +16,7 @@ import imgubicacion from "./res/ubicacion.png"
 
 import Map3 from "./Map3";
 import Mapafijo from "../components/mapafijo";
+import API_URL from '../config';
 
 const EditarUser = () => {
   const [selectedImage, setSelectedImage] = useState(null);

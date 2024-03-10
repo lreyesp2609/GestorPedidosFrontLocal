@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Card as AntCard, message,notification, Alert } from 'antd';
 import { Row, Col, Button } from 'react-bootstrap';
 import {RecompensaContext} from "../context/RecompensaContext"
+import API_URL from '../config';
 
 const { Meta } = AntCard;
 const Reclamar = () => {

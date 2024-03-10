@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import  Item  from "./item2";
+import API_URL from '../config';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);

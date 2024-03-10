@@ -4,6 +4,7 @@ import {
   Row,
   Col
 } from 'react-bootstrap';
+import API_URL from '../config';
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
 

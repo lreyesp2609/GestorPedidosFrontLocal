@@ -26,6 +26,7 @@ import ListProductos from "./ListaProductos";
 import Reclamar from "./ReclamarRecompensas";
 import Reserva from "./Reserva";
 import "../components/comanda.css";
+import API_URL from '../config';
 
 const NavBar = () => {
   const [cart, setCart] = useContext(CartContext);

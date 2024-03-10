@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Pagination, DatePicker, Select, Space, Modal, Button, message } from 'antd';
-
+import API_URL from '../config';
 const { Option } = Select;
 
 const Reserva = () => {

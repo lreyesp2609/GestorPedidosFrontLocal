@@ -19,6 +19,7 @@ const { Meta } = Card;
 import { notification } from "antd";
 import animationData from "../assets/lottis/B.json"; // Importa el archivo JSON de tu animación
 import Pedidos from "./pedido";
+import API_URL from '../config';
 
 const ShoppingCart = () => {
   const [cart, setCart] = useContext(CartContext);

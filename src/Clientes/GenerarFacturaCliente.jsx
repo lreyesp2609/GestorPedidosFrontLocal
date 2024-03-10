@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 
+
 const GenerarFacturaPDF = ({
   empresaInfo,
   logoEmpresa,
