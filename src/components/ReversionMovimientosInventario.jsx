@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Input, Badge  } from 'antd';
-
+import API_URL from '../config.js';
 const MovimientosInventario = ({ movimientosinv }) => {
   const [detalleVisible, setDetalleVisible] = useState(false);
   const [detalleMovimiento, setDetalleMovimiento] = useState({});

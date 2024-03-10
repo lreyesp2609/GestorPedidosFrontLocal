@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, TimePicker, Tag, message, Button } from 'antd';
 import { Row, Col } from 'react-bootstrap';
 import dayjs from 'dayjs';
-
+import API_URL from '../config.js';
 const CrearHorariosSemanales = ({ onHorarioCreate, detalles }) => {
     const [lunesData, setLunesData] = useState([{ time: null }]);
     const [martesData, setMartesData] = useState([{ time: null }]);

@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { ShoppingOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-
+import API_URL from '../../config';
 const { Option } = Select;
 
 const RealizarPedidoLocal = ({ visible, onClose }) => {

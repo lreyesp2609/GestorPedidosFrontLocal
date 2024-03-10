@@ -4,6 +4,7 @@ import { Layout, Menu, Image, Avatar, Card, Badge, Watermark } from 'antd';
 import { Container, Row, Col, Button, Form, Nav, Navbar, NavDropdown, Dropdown, Offcanvas } from 'react-bootstrap';
 import EditarCliente from './editarcliente.jsx';
 import MenuG from './menu.jsx';
+import API_URL from '../config.js';
 
 
 const { Sider, Content } = Layout;

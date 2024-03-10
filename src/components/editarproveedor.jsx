@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import axios from 'axios';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const EditarProveedor = ({ initialValues, onFinish, onCancel }) => {

@@ -3,7 +3,7 @@ import { Modal, Button, notification, Select, Input, DatePicker, message, Card }
 import { Row, Col } from 'react-bootstrap';
 import ConfigPagos from "./configpagos";
 import moment from 'moment';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const PagosE = ({ }) => {

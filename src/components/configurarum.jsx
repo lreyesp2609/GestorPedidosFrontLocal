@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message, Divider, Select, Input, Form, Button } from 'antd';
-
+import API_URL from '../config.js';
 const ConfigUM = () => {
   const [conversiones, setConversiones] = useState([]);
   const [unidadesMedida, setUnidadesMedida] = useState([]);

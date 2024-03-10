@@ -3,7 +3,7 @@ import { Card, Button, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import MapUbiS from '../components/MapaUbicacion';
-
+import API_URL from '../config.js';
 const LocationCard = () => {
   const [sucursales, setSucursales] = useState([]);
   const [markerCoordinates, setMarkerCoordinates] = useState(null);

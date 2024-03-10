@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Avatar, Modal, Form, Input, Button, Select, Badge, Drawer } from 'antd';
-
+import API_URL from '../config.js';
 const EditarEmpleado = ({ idsucur, oficio }) => {
     const [sucursales, setSucursales] = useState([]);
     const [empleados, setEmpleados] = useState(null);

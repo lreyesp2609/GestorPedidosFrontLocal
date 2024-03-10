@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, List, Space, Image, Button, Form, Input, Upload, Modal, message, Row, Col, Drawer } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import CrearCategoriaCombos from './crearcategoriacombos';
+import API_URL from '../config.js';
 
 const EditarCategoriaCombo = ({ onCancel }) => {
     const [categoriasCombos, setCategoriasCombos] = useState([]);

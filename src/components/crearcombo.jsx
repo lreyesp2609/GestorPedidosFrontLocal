@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, Row, Col, Card, Upload, Image, Modal, message, Pagination, notification } from 'antd';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 import './nuevoComboForm.css';
 import TextArea from 'antd/es/input/TextArea';
 

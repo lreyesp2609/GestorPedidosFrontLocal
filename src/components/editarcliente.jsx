@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, message, Select } from 'antd';
-
+import API_URL from '../config.js';
 const EditarCliente = () => {
     const [clientes, setClientes] = useState([]);
     const [editingCliente, setEditingCliente] = useState(null);

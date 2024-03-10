@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message, Drawer } from 'antd';
 import CocinaFuncion from './cocinamodel';
-
+import API_URL from '../../config';
 const ProductosCocina = ({ idcategoria }) => {
     const [productosData, setProductos] = useState([]);
     const [componentesData, setComponentes] = useState([]);

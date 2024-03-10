@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Checkbox, Drawer, Form, Input, Button, Row, Col, Divider, Pagination } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import EditarRecompensaComboForm from './EditarRecompensaCombo';
-
+import API_URL from '../config.js';
 const EditarRecompensaProductoForm = () => {
     const [recompensasProductos, setRecompensasProductos] = useState([]);
     const [visible, setVisible] = useState(false);

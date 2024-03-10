@@ -3,7 +3,7 @@ import { Space, Button, Table, Modal, message, Switch, Form, Input } from 'antd'
 import mapa from './res/mapa.png';
 import AdminSucursal from './adminsucursal';
 import CrearSucursal from './crearsucursal';
-
+import API_URL from '../config.js';
 const ListSucursales = () => {
     const [loading, setLoading] = useState(true);
     const [modalSVisible, setModalSVisible] = useState(false);

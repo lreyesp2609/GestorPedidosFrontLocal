@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import { EditFilled, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import CrearComponenteForm from './CrearComponente';
 import TransferContainer from './selectcomponent.jsx';
-
+import API_URL from '../config.js';
 const { Item } = Form;
 const { Option } = Select;
 

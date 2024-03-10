@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import { UploadOutlined, CalendarTwoTone, EditFilled } from '@ant-design/icons';
 import imgmesas from './res/imgmesas.png';
 import CrearMesa from './crearmesa';
-
+import API_URL from '../config.js';
 const Mesas = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [mesas, setMesas] = useState([]);

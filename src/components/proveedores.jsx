@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import imgproveedor from './res/proveedor.png';
 import CrearProveedor from './crearproveedor';
 import EditarProveedor from './editarproveedor';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 
 const Proveedores = () => {

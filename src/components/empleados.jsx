@@ -9,7 +9,7 @@ import cocinero from './res/cocinero.png';
 import EditarEmpleado from './EditarEmpleado';
 import anadir from './res/anadir.png';
 import CrearEmpleadoForm from './crearempleado';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const Empleados = ({ }) => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Row, Col, Tooltip, Pagination, Modal, Button } from "antd";
 import imgmesas from "./res/imgmesas.png";
 import VerFacturaMesero from "./verfacturamesero";
-
+import API_URL from '../../config';
 const FacturasMesero = () => {
   const { Column } = Table;
   const [mesas, setMesas] = useState([]);

@@ -9,7 +9,7 @@ import {
   ShoppingOutlined,
 } from "@ant-design/icons";
 import RealizarPedidoMesa from "./pedido";
-
+import API_URL from '../../config';
 const RealizarPedidoMesero = () => {
   const [mesas, setMesas] = useState([]);
   const [selectedOpcion, setSelectedOpcion] = useState("Mesas");

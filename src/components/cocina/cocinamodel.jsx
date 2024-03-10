@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message, InputNumber, Select, Button, Tag, notification } from 'antd';
-
+import API_URL from '../../config';
 const { Option } = Select;
 
 const CocinaFuncion = ({ componente, producto }) => {

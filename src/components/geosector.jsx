@@ -6,7 +6,7 @@ import { UndoOutlined } from '@ant-design/icons';
 import 'leaflet/dist/leaflet.css';
 import pointInPolygon from 'point-in-polygon';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-
+import API_URL from '../config.js';
 const Geosector = ({ onGeoSectorSave, shadedPolygonCoordinates ,prevValores}) => {
     const [center, setCenter] = useState([-1.0241157747979186, -79.46108497663826]);
     const [currentLocation, setCurrentLocation] = useState([]);

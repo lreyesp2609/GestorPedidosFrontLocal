@@ -4,7 +4,7 @@ import { UploadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import TransferContainer from './selectcomponent.jsx';
 import { Row, Col } from 'react-bootstrap';  // Importar el nuevo componente
 import categoriasejem from './res/categoriasejem.png'
-
+import API_URL from '../config.js';
 const CrearProducto = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Checkbox, Drawer, Form, Input, Button, Col, Row, Divider } from 'antd';
 import CrearRecompensaComboForm from './CrearRecompensaCombo';
-
+import API_URL from '../config.js';
 const EditarRecompensaComboForm = () => {
   const [recompensasCombos, setRecompensasCombos] = useState([]);
   const [visible, setVisible] = useState(false);

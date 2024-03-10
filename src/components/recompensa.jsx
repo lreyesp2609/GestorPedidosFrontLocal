@@ -6,7 +6,7 @@ import recompensacombo from './res/recompensacombo.png';
 import recompensaproducto from './res/recompensaproducto.png';
 import CrearRecompensaProductoForm from './CrearRecompensaProducto'; // Ajusta la ruta según tu estructura de carpetas
 import EditarRecompensaComboForm from './EditarRecompensaCombo';
-
+import API_URL from '../config.js';
 const EditarRecompensaProductoForm = () => {
     const [recompensasProductos, setRecompensasProductos] = useState([]);
     const [visible, setVisible] = useState(false);

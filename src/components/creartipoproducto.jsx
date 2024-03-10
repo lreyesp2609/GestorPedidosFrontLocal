@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, notification } from 'antd';
-
+import API_URL from '../config.js';
 const CrearTipoProducto = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();

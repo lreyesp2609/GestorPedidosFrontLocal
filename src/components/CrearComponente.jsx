@@ -3,7 +3,7 @@ import { Form, Input, Button, Select, message, InputNumber, notification } from 
 import { PlusOutlined } from '@ant-design/icons';
 import TransferContainer from './selectcomponent.jsx';  // Importar el nuevo componente
 import { Row, Col } from 'react-bootstrap';
-
+import API_URL from '../config.js';
 const { Item } = Form;
 const { Option } = Select;
 

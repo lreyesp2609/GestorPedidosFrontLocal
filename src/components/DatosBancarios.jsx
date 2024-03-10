@@ -2,6 +2,7 @@
 import React ,  { useState, useEffect,  } from 'react';
 import {  Row, Col,Button, } from "react-bootstrap";
 import {  Form, Input, message, notification,  Space, Table, Tag } from 'antd';
+import API_URL from '../config.js';
 const DatosB = () => {
     const [form] = Form.useForm();
     const [formData, setFormData] = useState({}); 

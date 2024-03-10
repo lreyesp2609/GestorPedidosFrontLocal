@@ -13,7 +13,7 @@ import {
   FacebookOutlined, 
   TwitterOutlined,
 } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 
 import logo from '../assets/images/descargar.jpg'
 

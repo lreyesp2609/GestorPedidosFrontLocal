@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-
+import API_URL from '../config.js';
 
 const MapComponent = () => {
   const mapRef = useRef(null);

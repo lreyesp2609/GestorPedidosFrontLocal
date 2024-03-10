@@ -4,7 +4,7 @@ import { UploadOutlined, EditTwoTone, DeleteFilled, SettingOutlined } from '@ant
 import { Row, Col } from 'react-bootstrap';
 import CrearUnidadMedida from './CrearUM';
 import ConfigUM from './configurarum';
-
+import API_URL from '../config.js';
 const EditarUnidadesMedida = () => {
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [selectedUnidad, setSelectedUnidad] = useState(null);

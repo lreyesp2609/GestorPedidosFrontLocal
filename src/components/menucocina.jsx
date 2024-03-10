@@ -4,7 +4,7 @@ import { Layout, Input, Segmented, Avatar, Card, Divider, Watermark } from 'antd
 import { Container, Row, Col, Button, Form, Nav, Navbar, NavDropdown, Dropdown, Offcanvas } from 'react-bootstrap';
 import TipoProducto from './cocina/tipoproducto';
 import CategoriaCocina from './cocina/categoria';
-
+import API_URL from '../config.js';
 const MenuCocina = () => {
     const [empresaInfo, setEmpresaInfo] = useState(null);
     const [optionSucursales, setOptions] = useState([]);

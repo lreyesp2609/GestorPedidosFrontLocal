@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
-
+import API_URL from '../../config';
 import GenerarFacturaPDF from "./GenerarFacturaPDF";
 const VerFacturaMesero = ({ facturaData }) => {
   const [productos, setProductos] = useState([]);

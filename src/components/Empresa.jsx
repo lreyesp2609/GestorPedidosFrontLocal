@@ -4,7 +4,7 @@ import { EditTwoTone, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { Row, Col, Table } from 'react-bootstrap';
 import Sucursales from './sucursales';
 import EditarRecompensaProductoForm from './recompensa';
-
+import API_URL from '../config.js';
 
 const { Title } = Typography;
 

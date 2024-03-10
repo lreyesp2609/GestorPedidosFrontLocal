@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Select, message, InputNumber } from "antd";
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearMesa = () => {

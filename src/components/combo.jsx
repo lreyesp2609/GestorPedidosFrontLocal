@@ -6,7 +6,7 @@ import imgcombos from './res/imgcombos.png';
 import NuevoComboForm from './crearcombo';
 import categoriaproducto from './res/categoriaproducto.png';
 import EditarCategoriaCombo from './editarcategoriacombo';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 const { Option } = Select;
 

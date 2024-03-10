@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "antd";
 import { jsPDF } from "jspdf";
-
+import API_URL from '../../config';
 const GenerarFacturaPDF = ({
   empresaInfo,
   logoEmpresa,

@@ -3,7 +3,7 @@ import { Table, Button, Modal, Form, Input, Segmented, message } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
 import SRIAutorizacion from "./SRIAutorizacion";
-
+import API_URL from '../config.js';
 const SRI = () => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();

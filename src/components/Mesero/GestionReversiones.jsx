@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal } from "antd";
-
+import API_URL from '../../config';
 const ReversionesFacturas = () => {
   const [facturas, setFacturas] = useState([]);
   const [meseros, setMeseros] = useState({});

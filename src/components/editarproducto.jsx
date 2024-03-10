@@ -14,7 +14,7 @@ import CrearHorariosSemanales from './crearhorarioS';
 import articulo from './res/articulos.png'
 import EditarComponenteForm from './EditarComponente'
 import ListProductos from '../Clientes/ListaProductos';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 const { Option } = Select;
 

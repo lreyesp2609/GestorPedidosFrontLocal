@@ -56,6 +56,7 @@ import maquina from "./res/maquina.png";
 import datosB from "./res/datosB.png";
 import PuntosFacturacion from "./puntosFacturacion.jsx";
 import DatosB from "./DatosBancarios.jsx";
+
 const MenuG = ({menuSelect}) => {
   const { Meta } = Card;
   const tooltipTitle = "Configura tu empresa";

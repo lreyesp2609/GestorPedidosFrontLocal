@@ -3,7 +3,7 @@ import { notification, Segmented, Table, Tag, Tooltip, Avatar, Button, Row, Col,
 import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import imginventario from './res/imginventario.png';
 import CrearInventario from './crearinventario';
-
+import API_URL from '../config.js';
 const Inventario = () => {
     const [selectedOpcion, setSelectedOpcion] = useState('Inventario');
     const [currentPage, setCurrentPage] = useState(1);

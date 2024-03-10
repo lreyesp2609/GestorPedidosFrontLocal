@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button, Input, Row, Col } from 'antd';
-
+import API_URL from '../config.js';
 const LocationPicker = ({ onLocationSelect }) => {
   const initialCoordenadas = [-1.0242723581631499, -79.46778345025588];
   const [coordenadas, setCoordenadas] = useState(initialCoordenadas);

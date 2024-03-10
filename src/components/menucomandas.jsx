@@ -4,7 +4,7 @@ import { Container, Row, Col, Button, Form, Nav, Navbar, Dropdown } from 'react-
 import { notification, Avatar, Card, Popconfirm, Statistic, Select, Modal } from 'antd';
 import MovimientosInventario from "./ReversionMovimientosInventario.jsx"; // Asegúrate de que la ruta del archivo sea correcta
 import "./comanda.css";
-
+import API_URL from '../config.js';
 const MenuComandas = () => {
     const [empresaInfo, setEmpresaInfo] = useState(null);
     const [pedidos, setPedidos] = useState([]);

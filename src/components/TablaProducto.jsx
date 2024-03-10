@@ -7,7 +7,7 @@ import {
     FileExcelOutlined,
 } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
-
+import API_URL from '../config.js';
 const TablaPro = () => {
     const [data, setData] = useState([]);
     const [searchText, setSearchText] = useState('');

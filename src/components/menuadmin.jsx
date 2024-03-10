@@ -35,7 +35,7 @@ import EditarUnidadesMedida from './editarunidadmedida';
 import EditarMesa from './editarmesa';
 import HorariosSemanales from './horariossemanal';
 import CrearHorariosSemanales from './crearhorarioS'
-
+import API_URL from '../config.js';
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 

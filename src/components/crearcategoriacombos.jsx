@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 const CrearCategoriaCombos = () => {
   const [form] = Form.useForm();
   const [mensaje, setMensaje] = useState(null);

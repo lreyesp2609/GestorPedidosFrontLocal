@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Avatar, Modal } from 'antd';
-
+import API_URL from '../config.js';
 const EditarCombo = () => {
   const [combos, setCombos] = useState(null);
   const [selectedCombo, setSelectedCombo] = useState(null);

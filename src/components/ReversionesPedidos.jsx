@@ -7,7 +7,7 @@ import reversionpedido from './res/reversionpedido.png';
 import reversionproveedor from './res/reversionproveedor.png';
 import reversionpago from './res/reversionpago.png';
 import reversionfactura from './res/reversionfactura.png';
-
+import API_URL from '../config.js';
 const VerReversionesPedidos = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [detalleVisible, setDetalleVisible] = useState(false);

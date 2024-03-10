@@ -25,6 +25,7 @@ import { Row, Col } from "react-bootstrap";
 import CrearBodegaForm from "./crearbodega";
 import imgmesas from "./res/imgmesas.png";
 import RealizarPedido from "./pedidos";
+import API_URL from '../config.js';
 
 const EditarBodegaForm = () => {
   const [modalEditarVisible, setModalEditarVisible] = useState(false);

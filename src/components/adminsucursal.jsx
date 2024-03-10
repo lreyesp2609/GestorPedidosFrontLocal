@@ -14,7 +14,7 @@ import anadir from './res/anadir.png'
 import EditarEmpleado from './EditarEmpleado';
 import CrearEmpleadoForm from './crearempleado';
 import Geosector from './geosector';
-
+import API_URL from '../config.js';
 
 const { Option } = Select;
 

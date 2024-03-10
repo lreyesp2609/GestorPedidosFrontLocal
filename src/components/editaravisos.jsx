@@ -20,6 +20,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import imgaviso from "./res/imgaviso.png";
 import { Row, Col } from 'react-bootstrap';
 import CrearAvisos from "./crearavisosprincipales";
+import API_URL from '../config.js';
 const { TextArea } = Input;
 
 // Función para convertir Base64 a URL de datos

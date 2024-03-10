@@ -3,7 +3,7 @@ import { Table, Button, Modal, Form, Input, message, Drawer, Tooltip, Popconfirm
 import { Row, Col } from 'react-bootstrap';
 import { EditTwoTone, DeleteFilled } from '@ant-design/icons';
 import CrearTipoProducto from './creartipoproducto';
-
+import API_URL from '../config.js';
 const EditarTipoProducto = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);

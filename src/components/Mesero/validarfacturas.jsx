@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, notification, Modal, Input } from "antd";
-
+import API_URL from '../../config';
 const ValidarFacturas = () => {
   const [facturas, setFacturas] = useState([]);
   const [meseros, setMeseros] = useState({});

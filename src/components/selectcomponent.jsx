@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Transfer, message, Table, Input, Form, InputNumber, Button, Select, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 const TransferContainer = ({ onValor, previouslySelectedItems }) => {
     const [loading, setLoading] = useState(false);
     const [componenteslist, setComponentes] = useState([]);

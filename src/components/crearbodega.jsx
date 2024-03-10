@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, notification } from 'antd';
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearBodegaForm = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Select, Checkbox } from 'antd';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearRecompensaProductoForm = () => {

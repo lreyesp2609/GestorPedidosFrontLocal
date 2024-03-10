@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { notification, Form, Input, Select, Button, Upload, message, Modal } from 'antd';
 import { CheckOutlined, UploadOutlined } from '@ant-design/icons';
 import CrearTipoProducto from '../components/creartipoproducto';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearCategoria = () => {

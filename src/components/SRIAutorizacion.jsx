@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, Input, message, Table } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
-
+import API_URL from '../config.js';
 const SRIAutorizacion = () => {
   const [visible, setVisible] = useState(false);
   const [codigoAutorizacion, setCodigoAutorizacion] = useState("");

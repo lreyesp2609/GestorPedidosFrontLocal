@@ -4,7 +4,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import GenerarReportePDF from "./generarReporte";
 import moment from 'moment';
 import { notification } from 'antd';
-
+import API_URL from '../config.js';
 const { Column } = Table;
 const { Option } = Select;
 

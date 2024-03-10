@@ -14,7 +14,7 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import MenuM from "./menu";
-
+import API_URL from '../../config';
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { Meta } = Card;

@@ -3,6 +3,7 @@ import { Tag, Table, Space, Image, Button, Form, Input, Select, Modal, Upload, D
 import { UploadOutlined, EditTwoTone, DeleteFilled } from '@ant-design/icons';
 import { Row, Col } from 'react-bootstrap';
 import CrearCategoria from './crearcategoria';
+import API_URL from '../config.js';
 
 const EditarCategoria = ({ onCancel }) => {
   const [categorias, setCategorias] = useState([]);

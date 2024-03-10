@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Alert, message } from "antd";
 import { useNavigate } from "react-router-dom";
-
+import API_URL from '../config.js';
 const LoginForm = ({ onLogin }) => {
   useEffect(() => {
     const fetchData = async () => {

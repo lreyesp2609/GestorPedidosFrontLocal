@@ -9,7 +9,7 @@ import {
   message,
   notification,
 } from "antd";
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const RealizarPedido = ({ visible, onClose, bodega }) => {

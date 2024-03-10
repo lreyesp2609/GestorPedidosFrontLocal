@@ -7,7 +7,7 @@ import mapa from './res/mapa.png';
 import MapaActual from './mapaactual';
 import Mapafijo from './mapafijo';
 import AdminSucursal from './adminsucursal'
-
+import API_URL from '../config.js';
 const Sucursales = () => {
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);

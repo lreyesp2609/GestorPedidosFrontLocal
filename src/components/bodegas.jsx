@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import imgcombos from './res/imgcombos.png';
 import CrearBodegaForm from './crearbodega';
 import EditarBodegaForm from './editarbodega';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 
 const Bodegas = () => {

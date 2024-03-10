@@ -27,7 +27,7 @@ import CrearBodegaForm from "./crearbodega";
 import RealizarPedido from "./pedidos";
 import CrearReservacionForm from './CrearReservacion';
 import imgreservado from "./res/imgreservado.png";
-
+import API_URL from '../config.js';
 const EditarReservacionesForm = () => {
   const [reservaciones, setReservaciones] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);

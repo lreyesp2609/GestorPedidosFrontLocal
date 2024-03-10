@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message, Divider } from 'antd';
 import ProductosCocina from './productosarticulos';
 import './style.css'
+import API_URL from '../../config';
 
 const CategoriaCocina = ({ id_tipoproducto }) => {
     const [categoriasData, setCategorias] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Select, InputNumber, message } from "antd";
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 

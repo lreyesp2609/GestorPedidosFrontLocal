@@ -6,7 +6,7 @@ import { notification } from 'antd';
 import { Link } from 'react-router-dom';
 import Map2 from '../Clientes/Map2';
 import { useNavigate } from "react-router-dom";
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const RegistroForm = () => {
