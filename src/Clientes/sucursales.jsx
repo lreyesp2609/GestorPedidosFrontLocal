@@ -21,6 +21,7 @@ import EditarUser from "./EditarUser";
 import ListProductos from "./ListaProductos";
 import Reserva from "./Reserva";
 import "../components/comanda.css";
+import API_URL from '../config';
 
 const Sucursalescliente = () => {
     const [cart, setCart] = useContext(CartContext);
@@ -114,7 +115,7 @@ const Sucursalescliente = () => {
     const obtenerInformacionEmpresa = async () => {
         try {
             const respuesta = await fetch(
-                "http://127.0.0.1:8000/empresa/infoEmpresa/",
+                API_URL +"/empresa/infoEmpresa/",
                 {
                     method: "POST",
                     headers: {
@@ -140,7 +141,7 @@ const Sucursalescliente = () => {
         if (id_cuenta) {
             obtenerInformacionEmpresa();
             listarsucursales();
-            fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+            fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`)
         .then(response => response.json())
         .then(data => {
           setUserData(data.usuario);
@@ -161,7 +162,7 @@ const Sucursalescliente = () => {
         }
     }, []);
     const listarsucursales = () => {
-        fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+        fetch(API_URL +'/sucursal/sucusarleslist/')
             .then((response) => response.json())
             .then((data) => {
                 console.log(data.sucursales);
