@@ -795,7 +795,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             Plotly.newPlot('myChart', [plotData], layout)
               .then(function (gd) {
                 // Convertir el gráfico en una imagen y obtener la URL
-                return Plotly.toImage(gd, { format: 'png', width: 900, height: 500 });
+                return Plotly.toImage(gd, { format: 'png', width: 1200, height: 500 });
               })
               .then(function (barChartUrl) {
                 // Agregar el gráfico de barras al PDF
