@@ -49,6 +49,10 @@ const ReportManagement = () => {
   const [selectedTipoProductoName, setSelectedTipoProductoName] = useState("")
   const [showTipoProductoOptions, setShowTipoProductoOptions] = useState(false);
 
+  const [modalVisibleReverso, setModalVisibleReverso] = useState(false);
+  const [selectedReverso, setSelectedReverso] = useState(null);
+
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -219,6 +223,8 @@ const ReportManagement = () => {
     { key: 5, reportName: "Reporte de combos" },
     { key: 6, reportName: "Reporte de sucursales" },
     { key: 7, reportName: "Reporte de ventas" },
+    { key: 8, reportName: "Reporte de pagos" },
+    { key: 9, reportName: "Reporte de reverso" },
   ];
 
   const handleSucursal = () => {
@@ -275,6 +281,25 @@ const ReportManagement = () => {
     }
   };
 
+
+  const handlePagos = () => {
+    fetch("http://127.0.0.1:8000/pagos/ConsultarPagos/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Datos de pagos:", data.pagos);
+        GenerarReportePDF({
+          empresaInfo: empresaInfo,
+          logoEmpresa: logoEmpresa,
+          selectedReport: "pagos",
+          pagos: data.pagos,
+          handleShowViewer: handleShowViewer,
+          setPdfBlob: setPdfBlob
+        });
+      })
+      .catch((error) =>
+        console.error("Error al obtener las pagos", error)
+      );
+  };
 
   const handleGenerateFacturas = () => {
     fetch("http://127.0.0.1:8000/Mesero/validar_facturas/")
@@ -454,6 +479,40 @@ const ReportManagement = () => {
     }
   };
 
+  const handleReverso = () => {
+    console.log("Reverso seleccionada:", selectedReverso);
+    if (selectedReverso != null) {
+      let url;
+      if (selectedReverso === "todas") {
+        url = "http://127.0.0.1:8000/Mesero/lista_reverso_factura/";
+      } else if (selectedReverso === "validas") {
+        url = `http://127.0.0.1:8000/Mesero/factura_v_report/`;
+      } else {
+        url = `http://127.0.0.1:8000/Mesero/factura_n_report/`;
+      }
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Factura reverso obtenidos:", data.reverso);
+          GenerarReportePDF({
+            empresaInfo: empresaInfo,
+            logoEmpresa: logoEmpresa,
+            selectedReport: "reverso",
+            reverso: data.reverso,
+            dateRange: dateRange,
+            handleShowViewer: handleShowViewer,
+            setPdfBlob: setPdfBlob
+          });
+        })
+        .catch((error) =>
+          console.error("Error al obtener los reversos:", error)
+        );
+    } else {
+      console.log("No se ha seleccionado ningún reverso");
+    }
+  }
+
   const handleShowViewer = () => {
     setPdfViewerVisible(true);
   };
@@ -493,6 +552,12 @@ const ReportManagement = () => {
               } else if (record.reportName === "Reporte de ventas") {
                 setSelectedReport("venta");
                 setModalVisibleVentas(true);
+              } else if (record.reportName === "Reporte de pagos") {
+                setSelectedReport("pagos");
+                handlePagos(true);
+              } else if (record.reportName === "Reporte de reverso") {
+                setSelectedReport("reverso");
+                setModalVisibleReverso(true);
               }
             }}>
               GENERAR
@@ -794,6 +859,41 @@ const ReportManagement = () => {
               Generar Reporte
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Reporte de reverso"
+        open={modalVisibleReverso}
+        onCancel={() => setModalVisibleReverso(false)}
+        footer={null}
+      >
+        <div style={{ marginBottom: "20px" }}>
+          <p>Seleccione una opción:</p>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Seleccione una opción"
+            onChange={(value) => setSelectedReverso(value)}
+          >
+            <Option value="todas">Todos los reversos de factura</Option>
+            <Option value="validas">Facturas válidas</Option>
+            <Option value="invalidas">Facturas no válidas</Option>
+          </Select>
+        </div>
+
+        <div style={{ marginBottom: "20px" }}>
+          <p>Seleccione el rango de fechas:</p>
+          <DatePicker.RangePicker
+            style={{ width: "100%" }}
+            onChange={(dates) => setDateRange(dates)}
+            disabledDate={(current) => current && current > moment().endOf('day')}
+          />
+        </div>
+
+        <div style={{ alignSelf: "flex-end" }}>
+          <Button type="primary" onClick={handleReverso}>
+            Generar Reporte
+          </Button>
         </div>
       </Modal>
 

@@ -284,7 +284,7 @@ const ShoppingCart = () => {
                   </Row>
                   <hr style={{ marginTop: "5px", marginBottom: "5px" }} />
                   <div style={{ marginTop: "10px", fontSize: "25px" }}>
-                    Total: ${Number(totalPrice) + Number(ivaPrecio().toFixed(2))}
+                    Total: ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
                   </div>
                   <Row>
                     <Col>
