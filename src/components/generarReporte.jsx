@@ -367,7 +367,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               values: ventasTotales,
               labels: meseros,
               type: 'pie',
-              textinfo: 'label+percent',
+              textinfo: 'percent',
               insidetextfont: {
                 color: 'white'
               },
@@ -424,6 +424,11 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               .then(function (pieChartUrl) {
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
+
+                // Guardar el PDF después de agregar los gráficos
+                let fileName = 'reporte_ventas_m.pdf';
+
+                doc.save(fileName);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
@@ -494,11 +499,11 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             // Colocar el texto a mano derecha
             doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
 
-             // Agregar una nueva página
-             doc.addPage();
+            // Agregar una nueva página
+            doc.addPage();
 
-             // Dibujar el diseño en la segunda página
-             drawPageDesign();
+            // Dibujar el diseño en la segunda página
+            drawPageDesign();
 
             // Crear el elemento canvas para Plotly.js
             const canvas = document.createElement('canvas');
@@ -509,14 +514,14 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             // Agregar el elemento canvas al cuerpo del documento
             document.body.appendChild(canvas);
 
-             // Crear el elemento canvas para el gráfico de pastel
-             const canvasPieChart = document.createElement('canvas');
-             canvasPieChart.id = 'myPieChart';
-             canvasPieChart.width = 400;
-             canvasPieChart.height = 200;
- 
-             // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
-             document.body.appendChild(canvasPieChart); 
+            // Crear el elemento canvas para el gráfico de pastel
+            const canvasPieChart = document.createElement('canvas');
+            canvasPieChart.id = 'myPieChart';
+            canvasPieChart.width = 400;
+            canvasPieChart.height = 200;
+
+            // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
+            document.body.appendChild(canvasPieChart);
 
             // Calcular la venta total de cada mesero
             const ventasTotalesPorSucursal = ventasmesero.reduce((acc, venta) => {
@@ -555,7 +560,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               values: ventasTotales,
               labels: sucursales,
               type: 'pie',
-              textinfo: 'label+percent',
+              textinfo: 'percent',
               insidetextfont: {
                 color: 'white'
               },
@@ -611,6 +616,11 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               .then(function (pieChartUrl) {
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
+
+                // Guardar el PDF después de agregar los gráficos
+                let fileName = 'reporte_ventas_s.pdf';
+
+                doc.save(fileName);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
@@ -677,11 +687,11 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             // Colocar el texto a mano derecha
             doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
 
-             // Agregar una nueva página
-             doc.addPage();
+            // Agregar una nueva página
+            doc.addPage();
 
-             // Dibujar el diseño en la segunda página
-             drawPageDesign();
+            // Dibujar el diseño en la segunda página
+            drawPageDesign();
 
             // Crear el elemento canvas para Plotly.js
             const canvas = document.createElement('canvas');
@@ -699,7 +709,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             canvasPieChart.height = 200;
 
             // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
-            document.body.appendChild(canvasPieChart); 
+            document.body.appendChild(canvasPieChart);
 
             // Calcular la venta total de cada mesero
             const ventasTotalesProducto = ventasmesero.reduce((acc, venta) => {
@@ -749,7 +759,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               values: ventasTotales,
               labels: productos,
               type: 'pie',
-              textinfo: 'label+percent',
+              textinfo: 'percent',
               insidetextfont: {
                 color: 'white'
               },
@@ -785,7 +795,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             Plotly.newPlot('myChart', [plotData], layout)
               .then(function (gd) {
                 // Convertir el gráfico en una imagen y obtener la URL
-                return Plotly.toImage(gd, { format: 'png', width: 600, height: 500 });
+                return Plotly.toImage(gd, { format: 'png', width: 900, height: 500 });
               })
               .then(function (barChartUrl) {
                 // Agregar el gráfico de barras al PDF
@@ -805,6 +815,11 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               .then(function (pieChartUrl) {
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
+
+                // Guardar el PDF después de agregar los gráficos
+                let fileName = 'reporte_ventas_p.pdf';
+
+                doc.save(fileName);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
@@ -894,7 +909,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             canvasPieChart.height = 200;
 
             // Agregar el elemento canvas del gráfico de pastel al cuerpo del documento
-            document.body.appendChild(canvasPieChart); 
+            document.body.appendChild(canvasPieChart);
 
             // Calcular la venta total de cada mesero
             const ventasTotalesPorTipo = ventasmesero.reduce((acc, venta) => {
@@ -944,7 +959,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               values: ventasTotales,
               labels: tipo,
               type: 'pie',
-              textinfo: 'label+percent',
+              textinfo: 'percent',
               insidetextfont: {
                 color: 'white'
               },
@@ -1001,6 +1016,10 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
 
+                // Guardar el PDF después de agregar los gráficos
+                let fileName = 'reporte_ventas_tp.pdf';
+
+                doc.save(fileName);
                 setPdfBlob(doc.output('blob'));
                 handleShowViewer();
               })
@@ -1097,38 +1116,45 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
     let fileName = '';
     if (selectedReport === 'empleados') {
       fileName = 'reporte_empleados.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'facturas') {
       fileName = 'reporte_facturas_emitidas.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'clientes') {
       fileName = 'reporte_clientes.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'productos') {
       fileName = 'reporte_productos.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'combos') {
       fileName = 'reporte_combos.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'sucursal') {
       fileName = 'reporte_sucursal.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'pagos') {
       fileName = 'reporte_pagos.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     } else if (selectedReport === 'reverso') {
       fileName = 'reporte_reverso.pdf';
-    }  else if (selectedReport === 'venta') {
-      if (selectedVenta === 'mesero') {
-        fileName = 'reporte_ventas_m.pdf';
-      }
-      if (selectedVenta === 'sucursal') {
-        fileName = 'reporte_ventas_s.pdf';
-      }
-      if (selectedVenta === 'productos') {
-        fileName = 'reporte_ventas_p.pdf';
-      }
-      if (selectedVenta === 'tipoproducto') {
-        fileName = 'reporte_ventas_tp.pdf';
-      }
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     }
-
-    doc.save(fileName);
-    setPdfBlob(doc.output('blob'));
-    handleShowViewer();
   };
   generarReportePDF();
   return null;
