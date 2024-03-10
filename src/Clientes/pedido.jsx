@@ -166,6 +166,7 @@ const Pedidos = ({ regresar }) => {
                 description: 'Prueba más tarde o revisa otras sucursales',
               });
               setPermitido(true);
+              setSucursal(sucursalesConEstado[0].id_sucursal);
             }
           } else {
             notification.error({
@@ -173,6 +174,7 @@ const Pedidos = ({ regresar }) => {
               description: 'No hay sucursales disponibles actualmente',
             });
             setPermitido(true);
+            setSucursal(null);
           }
         })
         .catch(error => {
