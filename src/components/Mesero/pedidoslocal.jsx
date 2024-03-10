@@ -33,17 +33,17 @@ const RealizarPedidoLocal = ({ visible, onClose }) => {
   const id_cuenta = localStorage.getItem("id_cuenta");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
+    fetch(API_URL +"/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => setClientes(data.clientes))
       .catch((error) => console.error("Error fetching clientes:", error));
 
-    fetch("http://127.0.0.1:8000/producto/listar/")
+    fetch(API_URL +"/producto/listar/")
       .then((response) => response.json())
       .then((data) => setProductos(data.productos))
       .catch((error) => console.error("Error fetching productos:", error));
 
-    fetch("http://127.0.0.1:8000/combos/ver_combos/")
+    fetch(API_URL +"/combos/ver_combos/")
       .then((response) => response.json())
       .then((data) => setCombos(data.combos))
       .catch((error) => console.error("Error fetching combos:", error));
@@ -274,7 +274,7 @@ console.log(`Total pedido: ${totalPedido}`);
       formData.append("detalles_pedido", detallesPedidoString);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/Mesero/pedidoslocal/${id_cuenta}/`,
+        API_URL +`/Mesero/pedidoslocal/${id_cuenta}/`,
         {
           method: "POST",
           body: formData,

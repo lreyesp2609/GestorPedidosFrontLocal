@@ -15,7 +15,7 @@ const ValidarFacturas = () => {
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
-      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.mesero);
@@ -34,7 +34,7 @@ const ValidarFacturas = () => {
   }, []);
 
   const cargarFacturas = () => {
-    fetch("http://127.0.0.1:8000/Mesero/lista_facturas/")
+    fetch(API_URL +"/Mesero/lista_facturas/")
       .then((response) => response.json())
       .then((data) => {
         const facturasFiltradas = data.facturas.filter(
@@ -48,7 +48,7 @@ const ValidarFacturas = () => {
   useEffect(() => {
     cargarFacturas();
 
-    fetch("http://127.0.0.1:8000/Mesero/listar_meseros/")
+    fetch(API_URL +"/Mesero/listar_meseros/")
       .then((response) => response.json())
       .then((data) => {
         const meserosData = {};
@@ -59,7 +59,7 @@ const ValidarFacturas = () => {
       })
       .catch((error) => console.error("Error fetching meseros:", error));
 
-    fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
+    fetch(API_URL +"/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => {
         const clientesData = {};
@@ -86,7 +86,7 @@ const ValidarFacturas = () => {
     if (userData) {
       // Hacer una solicitud para verificar el estado del pedido
       fetch(
-        `http://127.0.0.1:8000/cliente/verificar_pedido_validado/${idFactura}/`
+        API_URL +`/cliente/verificar_pedido_validado/${idFactura}/`
       )
         .then((response) => {
           if (response.ok) {
@@ -120,7 +120,7 @@ const ValidarFacturas = () => {
 
       // Luego, realizar la validación de la factura como lo estás haciendo actualmente
       fetch(
-        `http://127.0.0.1:8000/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
+        API_URL +`/CodigoFactura/validar_factura/${id_cuenta}/${idFactura}/`,
         {
           method: "POST",
           headers: {
@@ -164,7 +164,7 @@ const ValidarFacturas = () => {
     if (motivoReverso.trim() !== "") {
       cerrarModal();
       fetch(
-        `http://127.0.0.1:8000/Mesero/crear_reverso_factura/${idFacturaSeleccionada}/`,
+        API_URL +`/Mesero/crear_reverso_factura/${idFacturaSeleccionada}/`,
         {
           method: "POST",
           headers: {

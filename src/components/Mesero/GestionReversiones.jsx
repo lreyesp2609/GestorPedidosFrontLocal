@@ -16,7 +16,7 @@ const ReversionesFacturas = () => {
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
-      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.mesero);
@@ -35,7 +35,7 @@ const ReversionesFacturas = () => {
   }, []);
 
   const cargarFacturas = () => {
-    fetch("http://127.0.0.1:8000/Mesero/lista_facturas/")
+    fetch(API_URL +"/Mesero/lista_facturas/")
       .then((response) => response.json())
       .then((data) => {
         const facturasFiltradas = data.facturas.filter(
@@ -49,7 +49,7 @@ const ReversionesFacturas = () => {
   useEffect(() => {
     cargarFacturas();
 
-    fetch("http://127.0.0.1:8000/Mesero/listar_meseros/")
+    fetch(API_URL +"/Mesero/listar_meseros/")
       .then((response) => response.json())
       .then((data) => {
         const meserosData = {};
@@ -60,7 +60,7 @@ const ReversionesFacturas = () => {
       })
       .catch((error) => console.error("Error fetching meseros:", error));
 
-    fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
+    fetch(API_URL +"/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => {
         const clientesData = {};
@@ -98,7 +98,7 @@ const ReversionesFacturas = () => {
 
   const obtenerDetalles = async (idFactura) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/Mesero/factura_detalles_nota_credito/${idFactura}/`);
+      const response = await fetch(API_URL +`/Mesero/factura_detalles_nota_credito/${idFactura}/`);
       const data = await response.json();
   
       if (data.factura) {

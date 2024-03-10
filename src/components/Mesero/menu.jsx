@@ -50,7 +50,7 @@ const MenuM = () => {
   const validarPermisos = () => {
     const idCuenta = localStorage.getItem("id_cuenta");
     fetch(
-      `http://127.0.0.1:8000/CodigoFactura/validar_permisos_factura/${idCuenta}/`
+      API_URL +`/CodigoFactura/validar_permisos_factura/${idCuenta}/`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -84,7 +84,7 @@ const MenuM = () => {
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
-      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.mesero);
@@ -164,7 +164,7 @@ const MenuM = () => {
   }, []);
 
   const listpedidos = () => {
-    fetch("http://127.0.0.1:8000/Mesero/listpedidos/")
+    fetch(API_URL +"/Mesero/listpedidos/")
       .then((response) => response.json())
       .then((data) => {
         setPedidos(data.pedidos);
@@ -222,7 +222,7 @@ const MenuM = () => {
     const formData = new FormData();
     formData.append("id_pedido", idPedido);
 
-    fetch("http://127.0.0.1:8000/Mesero/confirmarpedido/", {
+    fetch(API_URL +"/Mesero/confirmarpedido/", {
       method: "POST",
       body: formData,
     })

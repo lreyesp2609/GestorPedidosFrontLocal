@@ -36,7 +36,7 @@
 
     const ObtenerUsuario = async () => {
       if (id_cuenta) {
-        fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+        fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
           .then((response) => response.json())
           .then((data) => {
             setUserData(data.mesero);
@@ -57,17 +57,17 @@
 
 
     useEffect(() => {
-      fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
+      fetch(API_URL +"/cliente/ver_clientes/")
         .then((response) => response.json())
         .then((data) => setClientes(data.clientes))
         .catch((error) => console.error("Error fetching clientes:", error));
 
-      fetch("http://127.0.0.1:8000/producto/listar/")
+      fetch(API_URL +"/producto/listar/")
         .then((response) => response.json())
         .then((data) => setProductos(data.productos))
         .catch((error) => console.error("Error fetching productos:", error));
 
-      fetch("http://127.0.0.1:8000/combos/ver_combos/")
+      fetch(API_URL +"/combos/ver_combos/")
         .then((response) => response.json())
         .then((data) => setCombos(data.combos))
         .catch((error) => console.error("Error fetching combos:", error));
@@ -299,7 +299,7 @@
         formData.append("detalles_pedido", detallesPedidoString);
 
         const response = await fetch(
-          `http://127.0.0.1:8000/Mesero/tomar_pedido/${id_cuenta}/`,
+          API_URL +`/Mesero/tomar_pedido/${id_cuenta}/`,
           {
             method: "POST",
             body: formData,
