@@ -28,7 +28,7 @@ const SRI = () => {
       formData.append("numero_factura_hasta", values.numero_factura_hasta);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/CodigoFactura/crear_codigosri/1/`,
+        API_URL +`/CodigoFactura/crear_codigosri/1/`,
         {
           method: "POST",
           body: formData,

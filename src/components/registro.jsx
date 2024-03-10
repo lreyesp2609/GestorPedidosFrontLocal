@@ -45,7 +45,7 @@ const RegistroForm = () => {
         requestBody.longitud = locationData.longitud;
       }
 
-      const response = await fetch('http://127.0.0.1:8000/Login/crear/', {
+      const response = await fetch(API_URL +'/Login/crear/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const RegistroForm = () => {
   const iniciar = async (values) => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/Login/iniciar_sesion/",
+        API_URL +"/Login/iniciar_sesion/",
         {
           method: "POST",
           headers: {
@@ -115,7 +115,7 @@ const RegistroForm = () => {
           localStorage.removeItem("token");
           console.log("Token eliminado después de 24 horas.");
         }, 24 * 60 * 60 * 1000);
-        const rolResponse = await fetch("http://127.0.0.1:8000/Login/rol/", {
+        const rolResponse = await fetch(API_URL +"/Login/rol/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -169,7 +169,7 @@ const RegistroForm = () => {
             {
               validator: async (_, value) => {
                 try {
-                  const response = await fetch('http://127.0.0.1:8000/Login/cuentaexist/', {
+                  const response = await fetch(API_URL +'/Login/cuentaexist/', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ const RegistroForm = () => {
             {
               validator: async (_, value) => {
                 try {
-                  const response = await fetch('http://127.0.0.1:8000/Login/phoneExist/', {
+                  const response = await fetch(API_URL +'/Login/phoneExist/', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -328,7 +328,7 @@ const RegistroForm = () => {
                 {
                   validator: async (_, value) => {
                     try {
-                      const response = await fetch('http://127.0.0.1:8000/Login/DocumentExist/', {
+                      const response = await fetch(API_URL +'/Login/DocumentExist/', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',

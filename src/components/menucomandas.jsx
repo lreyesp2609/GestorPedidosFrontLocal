@@ -17,7 +17,7 @@ const MenuComandas = () => {
 
     useEffect(() => {
         const id_cuenta = localStorage.getItem("id_cuenta");
-        fetch(`http://127.0.0.1:8000/Login/obtener_cocinero/${id_cuenta}/`)
+        fetch(API_URL +`/Login/obtener_cocinero/${id_cuenta}/`)
             .then((response) => response.json())
             .then((data) => {
                 cargarBodega(data.usuario.id_sucursal);
@@ -30,7 +30,7 @@ const MenuComandas = () => {
 
     const cargarBodega = (sucursal) =>{
         console.log("No se pq no vale" +sucursal);
-        fetch('http://127.0.0.1:8000/bodega/listar/')
+        fetch(API_URL +'/bodega/listar/')
             .then(response => response.json())
             .then(data => {
                 console.log("Bodegas");
@@ -58,7 +58,7 @@ const MenuComandas = () => {
 
             const id_cuenta = localStorage.getItem("id_cuenta");
             let sucursal = null;
-            fetch(`http://127.0.0.1:8000/Login/obtener_cocinero/${id_cuenta}/`)
+            fetch(API_URL +`/Login/obtener_cocinero/${id_cuenta}/`)
                 .then((response) => response.json())
                 .then((data) => {
                     setUsuario(data.usuario);
@@ -71,7 +71,7 @@ const MenuComandas = () => {
                 .catch((error) =>
                     console.error("Error al obtener datos del usuario:", error)
                 );
-            const response = await fetch('http://127.0.0.1:8000/Mesero/pedidos/');
+            const response = await fetch(API_URL +'/Mesero/pedidos/');
             const data = await response.json();
 
             // Obtén la hora actual
@@ -100,7 +100,7 @@ const MenuComandas = () => {
 
     const obtenerInformacionEmpresa = async () => {
         try {
-            const respuesta = await fetch('http://127.0.0.1:8000/empresa/infoEmpresa/', {
+            const respuesta = await fetch(API_URL +'/empresa/infoEmpresa/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ const MenuComandas = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/Login/rol/', {
+                const response = await fetch(API_URL +'/Login/rol/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ const MenuComandas = () => {
             formData.append('id_pedido', idp);
 
             // Realizar la solicitud a tu endpoint con FormData
-            const response = await fetch('http://127.0.0.1:8000/producto/procesar_productos/', {
+            const response = await fetch(API_URL +'/producto/procesar_productos/', {
                 method: 'POST',
                 body: formData,
             });
@@ -216,7 +216,7 @@ const MenuComandas = () => {
     };
 
     const fetchMovimientosInventario = () => {
-        fetch('http://127.0.0.1:8000/Inventario/listar_movimientos_inventario/')
+        fetch(API_URL +'/Inventario/listar_movimientos_inventario/')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener los movimientos de inventario');

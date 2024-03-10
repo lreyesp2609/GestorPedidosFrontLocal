@@ -39,7 +39,7 @@ const EditarAvisos = () => {
 
   const obtenerAvisos = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/avisos/avisos/");
+      const response = await fetch(API_URL +"/avisos/avisos/");
       const data = await response.json();
       if (response.ok) {
         setAvisos(data.avisos_principales);

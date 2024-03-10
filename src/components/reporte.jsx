@@ -129,7 +129,7 @@ const ReportManagement = () => {
 
   const fetchTipoProductos = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/producto/listarproductos/")
+    fetch(API_URL +"/producto/listarproductos/")
       .then((response) => response.json())
       .then((data) => {
         setTipoProductos(data.tipos_productos);
@@ -140,7 +140,7 @@ const ReportManagement = () => {
 
   const fetchProductos = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/producto/listar/")
+    fetch(API_URL +"/producto/listar/")
       .then((response) => response.json())
       .then((data) => {
         setProductos(data.productos);
@@ -151,7 +151,7 @@ const ReportManagement = () => {
 
   const fetchCategorias = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/producto/listar_categorias/")
+    fetch(API_URL +"/producto/listar_categorias/")
       .then((response) => response.json())
       .then((data) => {
         setCategorias(data.categorias);
@@ -162,7 +162,7 @@ const ReportManagement = () => {
 
   const fetchCategoriasCombos = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/combos/listcategoria/")
+    fetch(API_URL +"/combos/listcategoria/")
       .then((response) => response.json())
       .then((data) => {
         setCategoriasCombos(data.categorias_combos);
@@ -174,7 +174,7 @@ const ReportManagement = () => {
 
   const fetchSucursales = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/sucursal/sucusarleslist/")
+    fetch(API_URL +"/sucursal/sucusarleslist/")
       .then((response) => response.json())
       .then((data) => {
         setSucursales(data.sucursales);
@@ -185,7 +185,7 @@ const ReportManagement = () => {
 
   const fetchMeseros = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/Mesero/listar_meseros/")
+    fetch(API_URL +"/Mesero/listar_meseros/")
       .then((response) => response.json())
       .then((data) => {
         setMeseros(data.meseros);
@@ -196,7 +196,7 @@ const ReportManagement = () => {
 
   const fetchEmpresaInfo = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/empresa/infoEmpresa/", {
+    fetch(API_URL +"/empresa/infoEmpresa/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -244,13 +244,13 @@ const ReportManagement = () => {
     let url;
 
     if (selectedTipoEmpleado === "todas" && selectedSucursal === "todas") {
-      url = "http://127.0.0.1:8000/empleado/listar-empleados-tipo/";
+      url = API_URL +"/empleado/listar-empleados-tipo/";
     } else if (selectedTipoEmpleado === "todas") {
-      url = `http://127.0.0.1:8000/empleado/listar-empleados-tipo/${selectedSucursal}/`;
+      url = API_URL +`/empleado/listar-empleados-tipo/${selectedSucursal}/`;
     } else if (selectedSucursal === "todas") {
-      url = `http://127.0.0.1:8000/empleado/listar-empleados-tipo/todas/${selectedTipoEmpleado}/`;
+      url = API_URL +`/empleado/listar-empleados-tipo/todas/${selectedTipoEmpleado}/`;
     } else {
-      url = `http://127.0.0.1:8000/empleado/listar-empleados-tipo/${selectedSucursal}/${selectedTipoEmpleado}/`;
+      url = API_URL +`/empleado/listar-empleados-tipo/${selectedSucursal}/${selectedTipoEmpleado}/`;
     }
     // Verificar si selectedTipoEmpleado es null antes de hacer la solicitud GET
     if (selectedTipoEmpleado !== null) {
@@ -283,7 +283,7 @@ const ReportManagement = () => {
 
 
   const handlePagos = () => {
-    fetch("http://127.0.0.1:8000/pagos/ConsultarPagos/")
+    fetch(API_URL +"/pagos/ConsultarPagos/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos de pagos:", data.pagos);
@@ -302,7 +302,7 @@ const ReportManagement = () => {
   };
 
   const handleGenerateFacturas = () => {
-    fetch("http://127.0.0.1:8000/Mesero/validar_facturas/")
+    fetch(API_URL +"/Mesero/validar_facturas/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos de facturas emitidas:", data);
@@ -324,7 +324,7 @@ const ReportManagement = () => {
 
   const generateClientesReport = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
+    fetch(API_URL +"/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => {
         setLoading(false);
@@ -359,9 +359,9 @@ const ReportManagement = () => {
       let url;
 
       if (selectedOption === "todas") {
-        url = "http://127.0.0.1:8000/producto/listar-productos/";
+        url = API_URL +"/producto/listar-productos/";
       } else {
-        url = `http://127.0.0.1:8000/producto/listar-productos/categoria/${selectedOption}/`;
+        url = API_URL +`/producto/listar-productos/categoria/${selectedOption}/`;
       }
 
       fetch(url)
@@ -392,9 +392,9 @@ const ReportManagement = () => {
       let url;
 
       if (selectedCombos === "todas") {
-        url = "http://127.0.0.1:8000/combos/ver_combost/";
+        url = API_URL +"/combos/ver_combost/";
       } else {
-        url = `http://127.0.0.1:8000/combos/ver_combosc/${selectedCombos}/`;
+        url = API_URL +`/combos/ver_combosc/${selectedCombos}/`;
       }
 
       fetch(url)
@@ -428,27 +428,27 @@ const ReportManagement = () => {
       let url;
       if (selectedVenta === "mesero") {
         if (selectedMesero === "todas") {
-          url = "http://127.0.0.1:8000/Mesero/listapedidospagados/";
+          url = API_URL +"/Mesero/listapedidospagados/";
         } else {
-          url = `http://127.0.0.1:8000/Mesero/listapedidospagado/${selectedMesero}/`;
+          url = API_URL +`/Mesero/listapedidospagado/${selectedMesero}/`;
         }
       } else if (selectedVenta === "sucursal") {
         if (selectedSucursal === "todas") {
-          url = "http://127.0.0.1:8000/Mesero/listapedidossucursal/";
+          url = API_URL +"/Mesero/listapedidossucursal/";
         } else {
-          url = `http://127.0.0.1:8000/Mesero/listapedidossucursalid/${selectedSucursal}/`;
+          url = API_URL +`/Mesero/listapedidossucursalid/${selectedSucursal}/`;
         }
       } else if (selectedVenta === "productos") {
         if (selectedProducto === "todas") {
-          url = "http://127.0.0.1:8000/Mesero/listapedidosproducto/";
+          url = API_URL +"/Mesero/listapedidosproducto/";
         } else {
-          url = `http://127.0.0.1:8000/Mesero/listapedidosproductos/${selectedProducto}/`;
+          url = API_URL +`/Mesero/listapedidosproductos/${selectedProducto}/`;
         }
       } else if (selectedVenta === "tipoproducto") {
         if (selectedTipoProducto === "todas") {
-          url = "http://127.0.0.1:8000/Mesero/listapedidostipoproducto/";
+          url = API_URL +"/Mesero/listapedidostipoproducto/";
         } else {
-          url = `http://127.0.0.1:8000/Mesero/listapedidostipoproductos/${selectedTipoProducto}/`;
+          url = API_URL +`/Mesero/listapedidostipoproductos/${selectedTipoProducto}/`;
         }
       }
 
@@ -484,11 +484,11 @@ const ReportManagement = () => {
     if (selectedReverso != null) {
       let url;
       if (selectedReverso === "todas") {
-        url = "http://127.0.0.1:8000/Mesero/lista_reverso_factura/";
+        url = API_URL +"/Mesero/lista_reverso_factura/";
       } else if (selectedReverso === "validas") {
-        url = `http://127.0.0.1:8000/Mesero/factura_v_report/`;
+        url = API_URL +`/Mesero/factura_v_report/`;
       } else {
-        url = `http://127.0.0.1:8000/Mesero/factura_n_report/`;
+        url = API_URL +`/Mesero/factura_n_report/`;
       }
 
       fetch(url)

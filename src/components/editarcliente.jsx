@@ -27,7 +27,7 @@ const EditarCliente = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/cliente/ver_clientes/');
+                const response = await fetch(API_URL +'/cliente/ver_clientes/');
                 const data = await response.json();
 
                 setClientes(data.clientes);
@@ -197,7 +197,7 @@ const EditarCliente = () => {
             }
     
     
-            const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_cliente/${editingCliente.id_cliente}/`, {
+            const response = await fetch(API_URL +`/cliente/actualizar_cliente/${editingCliente.id_cliente}/`, {
                 method: 'POST',
                 body: formData,
             });

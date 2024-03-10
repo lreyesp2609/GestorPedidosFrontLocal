@@ -10,7 +10,7 @@ const CrearBodegaForm = () => {
     // Obtener la lista de sucursales al cargar el componente
     const fetchSucursales = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/');
+        const response = await fetch(API_URL +'/sucursal/sucusarleslist/');
         const data = await response.json();
         setSucursales(data.sucursales);
       } catch (error) {
@@ -30,7 +30,7 @@ const CrearBodegaForm = () => {
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/bodega/crear/', {
+      const response = await fetch(API_URL +'/bodega/crear/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

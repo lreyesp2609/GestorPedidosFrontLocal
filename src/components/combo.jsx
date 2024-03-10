@@ -66,8 +66,7 @@ const Combos = () => {
 
     const fetchData = async (page) => {
         try {
-            console.log('xxxxxxxxxxxxxxxxxxA');
-            const response = await fetch(`http://127.0.0.1:8000/combos/ver_combos/?page=${page}`);
+            const response = await fetch(API_URL +`/combos/ver_combos/?page=${page}`);
             const data = await response.json();
             setCombos(data.combos);
             console.log(data.combos);

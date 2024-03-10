@@ -11,7 +11,7 @@ const CrearEmpleadoForm = () => {
     // Obtener la lista de sucursales al cargar el componente
     const fetchSucursales = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/');
+        const response = await fetch(API_URL +'/sucursal/sucusarleslist/');
         const data = await response.json();
         setSucursales(data.sucursales);
       } catch (error) {
@@ -24,7 +24,7 @@ const CrearEmpleadoForm = () => {
 
   const onFinish = async (values) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/empleado/crear/', {
+      const response = await fetch(API_URL +'/empleado/crear/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const CrearEmpleadoForm = () => {
           {
             validator: async (_, value) => {
               try {
-                const response = await fetch('http://127.0.0.1:8000/Login/cuentaexist/', {
+                const response = await fetch(API_URL +'/Login/cuentaexist/', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const CrearEmpleadoForm = () => {
           {
             validator: async (_, value) => {
               try {
-                const response = await fetch('http://127.0.0.1:8000/Login/phoneExist/', {
+                const response = await fetch(API_URL +'/Login/phoneExist/', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
