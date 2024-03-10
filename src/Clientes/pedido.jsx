@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
+import {RecompensaContext} from "../context/RecompensaContext"
+
 import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
 import { notification, Alert, Tooltip, Pagination } from 'antd';
 import ImgCrop from 'antd-img-crop';
@@ -27,6 +29,8 @@ import imgdividir from "./res/dividirpagos.png";
 import imgpaypal from "./res/paypal.png";
 const Pedidos = ({ regresar }) => {
   const [cart, setCart] = useContext(CartContext);
+  const [recompensa, setrecompensa] = useContext(RecompensaContext);
+
   const [mostrarPedido, setMostrarPedido] = useState(false);
   const [MostrarModal, setMostrarModal] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -456,6 +460,7 @@ const Pedidos = ({ regresar }) => {
               description: '¡El pedido se ha completado con éxito!',
             });
             setCart([]);
+            setrecompensa([]);
             regresar();
           } else {
             notification.error({

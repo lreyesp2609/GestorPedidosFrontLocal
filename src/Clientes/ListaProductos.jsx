@@ -50,6 +50,7 @@ const ListProductos = () => {
           ...currItems,
           {
             id: productId,
+            type: 'producto',
             quantity: 1,
             Name: selectedProduct.nombreproducto,
             image: selectedProduct.imagenp,

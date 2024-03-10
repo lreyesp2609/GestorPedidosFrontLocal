@@ -27,6 +27,7 @@ import React, { useState } from 'react';
 import MenuMesero from "./components/Mesero/meseromenu";
 import ValidarPedido from "./Clientes/Validarpedido";
 import { ShoppingCartProvider } from './context/CarritoContext';
+import { RecompensasProvider } from './context/RecompensaContext';
 import MostrarMesas from "./Clientes/Reserva";
 import MenuComandas from "./components/menucomandas";
 import MapaUbicacion from "./components/MapaUbicacion";
@@ -58,6 +59,7 @@ function App() {
         <Content>
           <div>
           <ShoppingCartProvider>
+            <RecompensasProvider>
             <Routes>
               {/* Ruta principal para mostrar Carrusel */}
               <Route path="/" element={<NavBar/>} />
@@ -75,6 +77,7 @@ function App() {
               <Route path="/Sucursales" element={<Sucursalescliente/>} />
            
             </Routes>
+              </RecompensasProvider>
             </ShoppingCartProvider>
           </div>
         </Content>

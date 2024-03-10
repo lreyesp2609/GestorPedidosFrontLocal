@@ -20,13 +20,16 @@ import Historial from "./Historial";
 import ValidarPedido from "./Validarpedido";
 import Carrusel from "./carrusel";
 import { CartContext } from "../context/CarritoContext";
+import {RecompensaContext} from "../context/RecompensaContext"
 import EditarUser from "./EditarUser";
 import ListProductos from "./ListaProductos";
+import Reclamar from "./ReclamarRecompensas";
 import Reserva from "./Reserva";
 import "../components/comanda.css";
 
 const NavBar = () => {
   const [cart, setCart] = useContext(CartContext);
+  const [recompensa, setrecompensa] = useContext(RecompensaContext);
   const [ComponenteSeleccionado, setComponenteSeleccionado] = useState(() => {
     // Obtener el componente seleccionado de localStorage al cargar la página
     const storedComponente = localStorage.getItem("ComponenteSeleccionado");
@@ -45,9 +48,8 @@ const NavBar = () => {
     setOpen(false);
   };
 
-  const quantity = cart.reduce((acc, curr) => {
-    return acc + curr.quantity;
-  }, 0);
+  const totalQuantity = cart.reduce((acc, curr) => acc + curr.quantity, 0) + recompensa.reduce((acc, curr) => acc + curr.quantity, 0);
+
 
   const navbarStyle = {
     backgroundColor: "#A80000",
@@ -278,6 +280,7 @@ const NavBar = () => {
                 )}
                 {Logeado && (
                   <Nav.Link
+                    onClick={() => MostrarComponente("ReclamarR")}
                     style={estiloNavLink}
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
@@ -303,7 +306,7 @@ const NavBar = () => {
                       to="/Carrito"
                     >
                     
-                       CARRITO: {quantity}
+                       CARRITO: {totalQuantity}
                     </Nav.Link>
                   </Link>
                 )}
@@ -327,6 +330,7 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Perfil" && <EditarUser />}
           {ComponenteSeleccionado === "Historial" && <Historial />}
           {ComponenteSeleccionado === "Carrito" && <ShoppingCart/>}
+          {ComponenteSeleccionado === "ReclamarR" && <Reclamar/>}
           {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
           {ComponenteSeleccionado != "Carrusel" && (
             <Row>
