@@ -78,7 +78,7 @@ const EditarUser = () => {
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
-      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.usuario);
@@ -137,7 +137,7 @@ const EditarUser = () => {
       }
  
       const response = await fetch(
-        `http://127.0.0.1:8000/Login/editar_usuario/${id_cuenta}/`,
+        API_URL +`/Login/editar_usuario/${id_cuenta}/`,
         {
           method: "POST",
           body: formData,

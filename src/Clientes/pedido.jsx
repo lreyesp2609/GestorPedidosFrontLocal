@@ -55,7 +55,7 @@ const Pedidos = ({ regresar }) => {
   const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/empleado/obtener_datosB/');
+      const response = await fetch(API_URL +'/empleado/obtener_datosB/');
       const result = await response.json();
 
       setData(result.Cuentas);
@@ -127,7 +127,7 @@ const Pedidos = ({ regresar }) => {
     return data.slice(startIndex, endIndex);
   };
   const listarsucursales = () => {
-    fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+    fetch(API_URL +'/sucursal/sucusarleslist/')
       .then((response) => response.json())
       .then((data) => {
         console.log(data.sucursales);
@@ -147,7 +147,7 @@ const Pedidos = ({ regresar }) => {
       formData.append('longitud', newLocationData.longitud);
 
       // Realiza la solicitud POST al backend
-      fetch('http://127.0.0.1:8000/sucursal/secSucursal/', {
+      fetch(API_URL +'/sucursal/secSucursal/', {
         method: 'POST',
         body: formData,
       })
@@ -245,7 +245,7 @@ const Pedidos = ({ regresar }) => {
   useEffect(() => {
     if (id_cuenta) {
       listarsucursales();
-      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`)
         .then(response => response.json())
         .then(data => {
           setUserData(data.usuario);
@@ -381,7 +381,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
       }
       // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -453,7 +453,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
       }
       // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -522,7 +522,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('longitud', locationData.longitud);
       }
       // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -584,7 +584,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('longitud', locationData.longitud);
       }
       // Realiza la solicitud POST al backend
-      fetch(`http://127.0.0.1:8000/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })

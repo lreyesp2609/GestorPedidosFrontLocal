@@ -29,7 +29,7 @@ const Historial = () => {
 
   const fetchProductos = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/producto/listar/");
+      const response = await fetch(API_URL +"/producto/listar/");
       if (!response.ok) {
         throw new Error("No se pudo obtener la lista de productos.");
       }
@@ -42,7 +42,7 @@ const Historial = () => {
 
   const fetchCombos = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/combos/ver_combos/");
+      const response = await fetch(API_URL +"/combos/ver_combos/");
       if (!response.ok) {
         throw new Error("No se pudo obtener la lista de combos.");
       }
@@ -56,7 +56,7 @@ const Historial = () => {
   const fetchEmpresaInfo = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/empresa/infoEmpresa/",
+        API_URL +"/empresa/infoEmpresa/",
         {
           method: "POST",
           headers: {
@@ -83,7 +83,7 @@ const Historial = () => {
   const fetchClienteData = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`
+        API_URL +`/Login/obtener_usuario/${id_cuenta}/`
       );
       if (!response.ok) {
         throw new Error("No se pudo obtener la información del cliente.");
@@ -134,7 +134,7 @@ const Historial = () => {
     const obtenerPedidos = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/cliente/obtener_pedido/${id_cuenta}/`
+          API_URL +`/cliente/obtener_pedido/${id_cuenta}/`
         );
 
         if (!response.ok) {
@@ -159,7 +159,7 @@ const Historial = () => {
   const generarFactura = async (record) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/cliente/cliente/${id_cuenta}/pedidos/${record.id_pedido}/`
+        API_URL +`/cliente/cliente/${id_cuenta}/pedidos/${record.id_pedido}/`
       );
 
       if (!response.ok) {

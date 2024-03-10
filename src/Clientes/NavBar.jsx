@@ -131,7 +131,7 @@ const NavBar = () => {
   const obtenerInformacionEmpresa = async () => {
     try {
       const respuesta = await fetch(
-        "http://127.0.0.1:8000/empresa/infoEmpresa/",
+        API_URL +"/empresa/infoEmpresa/",
         {
           method: "POST",
           headers: {
@@ -157,7 +157,7 @@ const NavBar = () => {
   const ObtenerUsuario = async () => {
     try {
       if (id_cuenta) {
-        const response = await fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`);
+        const response = await fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`);
         const data = await response.json();
   
         if (response.ok) {

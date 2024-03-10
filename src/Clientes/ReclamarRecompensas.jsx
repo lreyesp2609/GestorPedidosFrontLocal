@@ -51,7 +51,7 @@ const Reclamar = () => {
   const ObtenerUsuario = async () => {
     try {
       if (id_cuenta) {
-        const response = await fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`);
+        const response = await fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`);
         const data = await response.json();
   
         if (response.ok) {
@@ -80,7 +80,7 @@ const Reclamar = () => {
     
     const obtenerProductos = async () => {
         try {
-          const respuesta = await fetch('http://127.0.0.1:8000/producto/listar/');
+          const respuesta = await fetch(API_URL +'/producto/listar/');
     
           if (!respuesta.ok) {
             throw new Error(`Error al obtener los productos. Código de estado: ${respuesta.status}`);
@@ -94,7 +94,7 @@ const Reclamar = () => {
       };
       const obtenerDatosDeAPI = async () => {
         try {
-          const respuesta = await fetch('http://127.0.0.1:8000/Recompensas/lista_recompensas_producto/');
+          const respuesta = await fetch(API_URL +'/Recompensas/lista_recompensas_producto/');
           
           if (!respuesta.ok) {
             throw new Error(`Error al obtener los datos. Código de estado: ${respuesta.status}`);
@@ -114,7 +114,7 @@ const Reclamar = () => {
           formData.append('puntos_recompensa_producto', recompensa.puntos_recompensa_producto);
           formData.append('id_recompensa_producto', recompensa.id_recompensa_producto);
           // Realiza la solicitud POST a la API
-          const response = await fetch(`http://127.0.0.1:8000/Recompensas/Restar_puntos/${id_cuenta}/`, {
+          const response = await fetch(API_URL +`/Recompensas/Restar_puntos/${id_cuenta}/`, {
             method: 'POST',
             body: formData,
           });
