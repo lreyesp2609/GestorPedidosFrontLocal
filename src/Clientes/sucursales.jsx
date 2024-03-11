@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Card } from 'antd';
+import React, { useState, useContext, useEffect, useMediaQuery } from "react";
+import { Card, Tooltip, Popover } from 'antd';
 import {
     Container,
     Nav,
@@ -22,6 +22,7 @@ import ListProductos from "./ListaProductos";
 import Reserva from "./Reserva";
 import "../components/comanda.css";
 import API_URL from '../config';
+import MapS from "./MapasSucursales";
 
 const Sucursalescliente = () => {
     const [cart, setCart] = useContext(CartContext);
@@ -34,20 +35,29 @@ const Sucursalescliente = () => {
     const [Correo, setCorreo] = useState(null);
     const [sucursalesData, setSucursalesData] = useState([]);
     const [estadoApertura, setEstadoApertura] = useState(null);
+    const [selectedSucursal, setSelectedSucursal] = useState(null);
 
 
     const quantity = cart.reduce((acc, curr) => {
         return acc + curr.quantity;
     }, 0);
-
     const diasEnEspanol = {
-        L: 'Monday',
-        M: 'Tuesday',
-        X: 'Wednesday',
-        J: 'Thursday',
-        V: 'Friday',
-        S: 'Saturday',
-        D: 'Sunday',
+        L: 'Lunes',
+        M: 'Martes',
+        X: 'Miercoles',
+        J: 'Jueves',
+        V: 'Viernes',
+        S: 'Sabado',
+        D: 'Domingo',
+    };
+
+    const formatHorario = (detalles) => {
+        return detalles.map((detalle) => {
+            const dia = diasEnEspanol[detalle.dia];
+            const horaInicio = detalle.horainicio.slice(0, 5);
+            const horaFin = detalle.horafin.slice(0, 5);
+            return `${dia}: ${horaInicio} - ${horaFin}`;
+        });
     };
 
     const navbarStyle = {
@@ -115,7 +125,7 @@ const Sucursalescliente = () => {
     const obtenerInformacionEmpresa = async () => {
         try {
             const respuesta = await fetch(
-                API_URL +"/empresa/infoEmpresa/",
+                API_URL + "/empresa/infoEmpresa/",
                 {
                     method: "POST",
                     headers: {
@@ -136,33 +146,38 @@ const Sucursalescliente = () => {
             console.error("Error al obtener la información de la empresa:", error);
         }
     };
+
+    const handleSucursalClick = (sucursal) => {
+        setSelectedSucursal(sucursal);
+    }
+
     const id_cuenta = localStorage.getItem('id_cuenta');
     useEffect(() => {
         if (id_cuenta) {
             obtenerInformacionEmpresa();
             listarsucursales();
-            fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`)
-        .then(response => response.json())
-        .then(data => {
-          setUserData(data.usuario);
+            fetch(API_URL + `/Login/obtener_usuario/${id_cuenta}/`)
+                .then(response => response.json())
+                .then(data => {
+                    setUserData(data.usuario);
 
-          setLocationData({
-            latitud1: data.usuario?.ubicacion1?.latitud || undefined,
-            longitud1: data.usuario?.ubicacion1?.longitud || undefined,
-            latitud2: data.usuario?.ubicacion2?.latitud || undefined,
-            longitud2: data.usuario?.ubicacion2?.longitud || undefined,
-            latitud3: data.usuario?.ubicacion3?.latitud || undefined,
-            longitud3: data.usuario?.ubicacion3?.longitud || undefined,
-          });
+                    setLocationData({
+                        latitud1: data.usuario?.ubicacion1?.latitud || undefined,
+                        longitud1: data.usuario?.ubicacion1?.longitud || undefined,
+                        latitud2: data.usuario?.ubicacion2?.latitud || undefined,
+                        longitud2: data.usuario?.ubicacion2?.longitud || undefined,
+                        latitud3: data.usuario?.ubicacion3?.latitud || undefined,
+                        longitud3: data.usuario?.ubicacion3?.longitud || undefined,
+                    });
 
-        })
-        .catch(error => console.error('Error al obtener datos del usuario:', error));
+                })
+                .catch(error => console.error('Error al obtener datos del usuario:', error));
         } else {
             console.error('Nombre de usuario no encontrado en localStorage');
         }
     }, []);
     const listarsucursales = () => {
-        fetch(API_URL +'/sucursal/sucusarleslist/')
+        fetch(API_URL + '/sucursal/sucusarleslist/')
             .then((response) => response.json())
             .then((data) => {
                 console.log(data.sucursales);
@@ -241,104 +256,6 @@ const Sucursalescliente = () => {
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     </Container>
-                    <Container>
-                        <Navbar.Collapse className="justify-content-end">
-                            <Nav className="ml-auto">
-                                <Nav.Link
-                                    onClick={() => MostrarComponente("Menu")}
-                                    style={estiloNavLink}
-                                    onMouseOver={manejarMouseOver}
-                                    onMouseOut={manejarMouseOut}
-                                >
-                                    MENU
-                                </Nav.Link>
-                                {Logeado && (
-                                    <NavDropdown
-                                        style={estiloNavLink}
-                                        onMouseOver={manejarMouseOver}
-                                        onMouseOut={manejarMouseOut}
-                                        title="Perfil"
-                                    >
-                                        <NavDropdown.Item
-                                            onClick={() => MostrarComponente("Perfil")}
-                                            style={{ marginLeft: "auto", fontSize: "18px" }}
-                                        >
-                                            Ver perfil
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Item
-                                            onClick={() => MostrarComponente("Historial")}
-                                            style={{ marginLeft: "auto", fontSize: "18px" }}
-                                        >
-                                            Ver Historial
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Item
-                                            onClick={() => MostrarComponente("Pedido")}
-                                            style={{ marginLeft: "auto", fontSize: "18px" }}
-                                        >
-                                            Validar pedido
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Divider />
-                                        <NavDropdown.Item
-                                            onClick={CerrarSesion}
-                                            style={{ fontSize: "18px" }}
-                                        >
-                                            Cerrar sesion
-                                        </NavDropdown.Item>
-                                    </NavDropdown>
-                                )}
-                                {Logeado && (
-                                    <Nav.Link
-                                        onClick={() => MostrarComponente("Reserva")}
-                                        style={estiloNavLink}
-                                        onMouseOver={manejarMouseOver}
-                                        onMouseOut={manejarMouseOut}
-                                    >
-                                        Reserva
-                                    </Nav.Link>
-                                )}
-                                {Logeado && (
-                                    <Nav.Link
-                                        style={estiloNavLink}
-                                        onMouseOver={manejarMouseOver}
-                                        onMouseOut={manejarMouseOut}
-                                    >
-                                        Puntos
-                                    </Nav.Link>
-                                )}
-
-                                {Logeado && (
-                                    <Link
-                                        style={{
-                                            textDecoration: "none",
-                                            color: "inherit",
-                                            fontSize: "18px",
-                                        }}
-                                        onClick={() => MostrarComponente("Carrito")}
-                                    >
-                                        {" "}
-                                        <Nav.Link
-                                            style={estiloNavLink}
-                                            onMouseOver={manejarMouseOver}
-                                            onMouseOut={manejarMouseOut}
-                                            to="/Carrito"
-                                        >
-                                            Carrito:{quantity}
-                                        </Nav.Link>
-                                    </Link>
-                                )}
-                                {!Logeado && (
-                                    <Nav.Link
-                                        onClick={HacerClick}
-                                        style={estiloNavLink}
-                                        onMouseOver={manejarMouseOver}
-                                        onMouseOut={manejarMouseOut}
-                                    >
-                                        INGRESAR
-                                    </Nav.Link>
-                                )}
-                            </Nav>
-                        </Navbar.Collapse>
-                    </Container>
                 </Navbar>
                 <div>
                     {ComponenteSeleccionado === "Sucursales" && (
@@ -358,77 +275,92 @@ const Sucursalescliente = () => {
                                     {sucursalesData.map((sucursal) => (
                                         <Card
                                             hoverable
-                                            title={sucursal.snombre}
+                                            title={
+                                                <Tooltip title={sucursal.snombre}>
+                                                    {sucursal.snombre}
+                                                </Tooltip>
+                                            }
                                             style={{
                                                 width: "auto",
                                                 border: "1px solid #A4A4A4",
                                                 margin: "10px",
                                             }}
                                             cover={
+
                                                 <img
                                                     alt="Descarga la aplicación movil"
                                                     src={`data:image/png;base64,${sucursal.imagensucursal}`}
                                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                                 />
+
+
                                             }
+                                            onClick={() => handleSucursalClick(sucursal)} // Manejador de clics para cada tarjeta de sucursal
                                             className="text-center"
                                         >
-                                            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</spam>
-                                            <span style={{ color: sucursal.estadoApertura === 'Abierto ahora' ? 'green' : 'red' }}>
-                                                {sucursal.estadoApertura}
-                                            </span>
+                                            <Popover
+                                                key={sucursal.id_sucursal}
+                                                title={"Horario:"}
+                                                content={
+                                                    <div style={{ width: "100%" }}>
+                                                        <ul>
+                                                            {
+                                                                formatHorario(sucursal.horario.detalles).map((horar, index) => (
+                                                                    <li key={index}>{horar}</li>
+                                                                ))}
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                placement="bottom"
+                                                responsive
+
+                                            >
+                                                <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</spam>
+                                                <span style={{ color: sucursal.estadoApertura === 'Abierto ahora' ? 'green' : 'red' }}>
+                                                    {sucursal.estadoApertura}
+                                                </span>
+                                            </Popover>
                                         </Card>
                                     ))}
+                                </Col>
+                                <Col md={10} >
+                                    <Card
+                                        hoverable
+                                        title={"Encuentra tu sucursal"}
+                                        style={{
+                                            width: "auto",
+                                            border: "1px solid #A4A4A4",
+                                            margin: "10px",
+
+                                        }}
+                                        cover={
+                                            <MapS sucursales={sucursalesData} logo={logoEmpresa} selectedSucursal={selectedSucursal} onSucursalClick={handleSucursalClick}
+                                            ></MapS>
+                                        }
+                                        className="text-center"
+                                    >
+                                    </Card>
                                 </Col>
                             </Row>
                         </>
                     )}
-                    {ComponenteSeleccionado === "Menu" && <ListProductos />}
-                    {ComponenteSeleccionado === "Menu" && <ListProductos />}
-                    {ComponenteSeleccionado === "Perfil" && <EditarUser />}
-                    {ComponenteSeleccionado === "Carrito" && <ShoppingCart />}
-                    {ComponenteSeleccionado === "Pedido" && <ValidarPedido />}
-                    {ComponenteSeleccionado === "Historial" && <Historial />}
-                    {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
-                    {ComponenteSeleccionado != "Sucursales" && (
-                        <Row>
-                            <Col md={12}>
-                                <Button
-                                    variant="success"
-                                    style={{
-                                        position: "fixed",
-                                        right: "16px",
-                                        bottom: "16px",
-                                        zIndex: 1000,
-                                    }}
-                                    onClick={() => Regresar()}
-                                >
-                                    Atrás
-                                </Button>
-                            </Col>
-                        </Row>
-                    )}
+                    <Row>
+                        <Col md={12}>
+                            <Button
+                                variant="success"
+                                style={{
+                                    position: "fixed",
+                                    right: "16px",
+                                    bottom: "16px",
+                                    zIndex: 1000,
+                                }}
+                                href="/"
+                            >
+                                Atrás
+                            </Button>
+                        </Col>
+                    </Row>
                 </div>
-                {/* Modal */}
-                <Modal show={MostrarModal} onHide={CerrarModal}>
-                    <Modal.Header
-                        closeButton
-                        style={{ borderBottom: "none" }}
-                    ></Modal.Header>
-                    <Modal.Body>
-                        <LoginForm onLogin={IniciarSesion} />
-                    </Modal.Body>
-                </Modal>
-
-                <Modal show={ModalRegistroVisible} onHide={CerrarModal}>
-                    <Modal.Header
-                        closeButton
-                        style={{ borderBottom: "none" }}
-                    ></Modal.Header>
-                    <Modal.Body>
-                        <RegistroForm onGoBackToLogin={RegresarAlLogin} />
-                    </Modal.Body>
-                </Modal>
             </div>
         </>
     );
