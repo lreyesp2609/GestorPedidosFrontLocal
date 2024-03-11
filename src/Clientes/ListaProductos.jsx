@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Modal, Button, Card as AntCard, Input } from "antd";
+import { Modal, Button, Card as AntCard, Input,notification } from "antd";
 import { CartContext } from "../context/CarritoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +37,6 @@ const ListProductos = () => {
   const addToCart = (productId) => {
     setCart((currItems) => {
       const isItemFound = currItems.find((item) => item.id === productId);
-
       if (isItemFound) {
         return currItems.map((item) => {
           if (item.id === productId) {
@@ -47,6 +46,9 @@ const ListProductos = () => {
           }
         });
       } else {
+        notification.success({
+          message: 'Se agregó el producto al carrito',
+        });
         return [
           ...currItems,
           {
@@ -201,8 +203,6 @@ const ListProductos = () => {
                   <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
                     {selectedProduct && (
                       <>
-
-
                         {getQuantityById(selectedProduct.id_producto) === 0 ? (
                           <Button style={{
                             backgroundColor: "#000000",
