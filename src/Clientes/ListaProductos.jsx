@@ -48,6 +48,7 @@ const ListProductos = () => {
       } else {
         notification.success({
           message: 'Se agregó el producto al carrito',
+          placement: 'topLeft'
         });
         return [
           ...currItems,
@@ -149,7 +150,6 @@ const ListProductos = () => {
       <Modal visible={showModal} onCancel={handleCloseModal}
         footer={null}
         width={800}  // Ajusta el ancho del modal según tus necesidades
-        bodyStyle={{ height: 500 }}
       >
         <div>
           {selectedProduct && (
