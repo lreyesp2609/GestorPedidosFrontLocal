@@ -184,8 +184,6 @@ const ShoppingCart = () => {
             {cart.length > 0 && (
               <Container>
                 <Badge count={"Productos en el carrito: " + totalQuantity} showZero color='#faad14' />
-                <h2>Productos Normales</h2>
-                
                 <ul>
                   {cart.map((item) => (
                     <div

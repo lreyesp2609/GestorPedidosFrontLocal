@@ -9,10 +9,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
-import {RecompensaContext} from "../context/RecompensaContext"
+import { RecompensaContext } from "../context/RecompensaContext"
 
-import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge } from 'antd';
-import { notification, Alert, Tooltip, Pagination } from 'antd';
+import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge, notification, Alert, Tooltip, Pagination } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
@@ -35,14 +34,14 @@ const Pedidos = ({ regresar }) => {
   const [mostrarPedido, setMostrarPedido] = useState(false);
   const [MostrarModal, setMostrarModal] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState('Casa');
+  const [selectedLocation, setSelectedLocation] = useState('');
   const [showCardForm, setShowCardForm] = useState(false);
   const format = 'HH:mm';
   const [pagoCompletado, setPagoCompletado] = useState(false);
   const [modoPago, setModoPago] = useState('E');
   const [fraccionadoValue, setFraccionadoValue] = useState(1);
   const [mostrarComponente, setMostrarComponente] = useState(false);
-  const [modoPedido, setModoPedido] = useState("D");
+  const [modoPedido, setModoPedido] = useState(null);
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [sucursalesData, setSucursalesData] = useState([]);
@@ -56,7 +55,7 @@ const Pedidos = ({ regresar }) => {
   const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
-      const response = await fetch(API_URL +'/empleado/obtener_datosB/');
+      const response = await fetch(API_URL + '/empleado/obtener_datosB/');
       const result = await response.json();
 
       setData(result.Cuentas);
@@ -128,7 +127,7 @@ const Pedidos = ({ regresar }) => {
     return data.slice(startIndex, endIndex);
   };
   const listarsucursales = () => {
-    fetch(API_URL +'/sucursal/sucusarleslist/')
+    fetch(API_URL + '/sucursal/sucusarleslist/')
       .then((response) => response.json())
       .then((data) => {
         console.log(data.sucursales);
@@ -148,7 +147,7 @@ const Pedidos = ({ regresar }) => {
       formData.append('longitud', newLocationData.longitud);
 
       // Realiza la solicitud POST al backend
-      fetch(API_URL +'/sucursal/secSucursal/', {
+      fetch(API_URL + '/sucursal/secSucursal/', {
         method: 'POST',
         body: formData,
       })
@@ -246,7 +245,7 @@ const Pedidos = ({ regresar }) => {
   useEffect(() => {
     if (id_cuenta) {
       listarsucursales();
-      fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL + `/Login/obtener_usuario/${id_cuenta}/`)
         .then(response => response.json())
         .then(data => {
           setUserData(data.usuario);
@@ -276,6 +275,7 @@ const Pedidos = ({ regresar }) => {
   const handleModoPedidoChange = (value) => {
     setPermitido(true);
     setModoPedido(value);
+    setSucursal(null);
 
   };
   const handleLocationChange = (value) => {
@@ -372,7 +372,7 @@ const Pedidos = ({ regresar }) => {
       formData.append('id_sucursal', sucursal);
       formData.append('cpuntos', totalPoints);
       if (locationData) {
-        console.log('Latitud'+locationData.latitud);
+        console.log('Latitud' + locationData.latitud);
         formData.append('latitud', locationData.latitud);
         formData.append('longitud', locationData.longitud);
       }
@@ -382,7 +382,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
       }
       // Realiza la solicitud POST al backend
-      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL + `/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -454,7 +454,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('fecha_minutos', HoraEntrega.minute());// Ajusta el formato según tus necesidades
       }
       // Realiza la solicitud POST al backend
-      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL + `/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -518,12 +518,12 @@ const Pedidos = ({ regresar }) => {
       formData.append('impuesto', 0);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
       if (locationData) {
-        console.log('Latitud'+locationData.latitud);
+        console.log('Latitud' + locationData.latitud);
         formData.append('latitud', locationData.latitud);
         formData.append('longitud', locationData.longitud);
       }
       // Realiza la solicitud POST al backend
-      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL + `/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -585,7 +585,7 @@ const Pedidos = ({ regresar }) => {
         formData.append('longitud', locationData.longitud);
       }
       // Realiza la solicitud POST al backend
-      fetch(API_URL +`/cliente/realizar_pedido/${id_cuenta}/`, {
+      fetch(API_URL + `/cliente/realizar_pedido/${id_cuenta}/`, {
         method: 'POST',
         body: formData,
       })
@@ -644,6 +644,10 @@ const Pedidos = ({ regresar }) => {
     }
   };
   const handleSucursalSelect = (selectedSucursal) => {
+    notification.success({
+      message: 'Se cambio la sucursal a retirar'
+
+    });
     setSucursal(selectedSucursal);
     setPermitido(false);
   };
@@ -701,42 +705,71 @@ const Pedidos = ({ regresar }) => {
       >
         Cancelar
       </Button>
-
-      <Col md={12}>
-        <Alert
-          message="Hola ✌🏻"
-          description="Revisa tu dirección y forma de pago antes de comprar."
-          type="success"
-          showIcon
-        />
-      </Col>
-
-
       <Row>
+        <Col md={6} style={{ backgroundColor: '#ffffff', padding: '10px', border: '1px solid #131212', borderRadius: '10px' }}>
+          <Alert
+            message="Hola ✌🏻"
+            description="Revisa tu dirección y forma de pago antes de comprar."
+            type="success"
+            showIcon
+            closable
+          />
+          <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
+          {/* Primera sección */}
+          <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
 
-        <Col >
-          <Container style={{ backgroundColor: '#ffffff' }}>
-            <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione como quiere recibir/retirar su pedido:</div>
-            {/* Primera sección */}
+            <Col md={5} className="d-flex justify-content-center align-items-center">
+
+              <Row style={{ padding: '15px' }}>
+                <Col md={12}>
+                  <Segmented
+                    value={modoPedido}
+                    onChange={handleModoPedidoChange}
+                    options={[
+                      {
+                        label: (
+                          <div
+                            style={{
+                              padding: 4,
+                            }}
+                          >
+                            <img src={imgentrega} style={{ width: "50%" }} />
+                            <div>Domicilio</div>
+                          </div>
+                        ),
+                        value: 'D',
+                      },
+                      {
+                        label: (
+                          <div
+                            style={{
+                              padding: 4,
+                            }}
+                          >
+                            <img src={imglocal} style={{ width: "50%" }} />
+                            <div>Retirar</div>
+                          </div>
+                        ),
+                        value: 'R',
+                      }
+                    ]}
+                  />
+                </Col>
+
+              </Row>
+
+            </Col>
+          </Row>
+
+          {/* Segunda sección (solo se muestra si modoPedido es 'D') */}
+          {modoPedido === 'D' && (
             <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
-
               <Col md={5} className="d-flex justify-content-center align-items-center">
-
                 <Segmented
-                  onChange={handleModoPedidoChange}
+                  onChange={handleLocationChange}
                   options={[
                     {
-                      label: (
-                        <div
-                          style={{
-                            padding: 4,
-                          }}
-                        >
-                          <img src={imgentrega} style={{ width: "50%" }} />
-                          <div>Domicilio</div>
-                        </div>
-                      ),
-                      value: 'D',
+                      value: 'any',
                     },
                     {
                       label: (
@@ -745,139 +778,99 @@ const Pedidos = ({ regresar }) => {
                             padding: 4,
                           }}
                         >
-                          <img src={imglocal} style={{ width: "50%" }} />
-                          <div>Retirar</div>
+                          <img src={imghogar} style={{ width: "50%" }} />
+                          <div>Casa</div>
                         </div>
                       ),
-                      value: 'R',
+                      value: 'Casa',
+                    },
+                    {
+                      label: (
+                        <div
+                          style={{
+                            padding: 4,
+                          }}
+                        >
+                          <img src={imgtrabajao} style={{ width: "50%" }} />
+                          <div>Trabajo</div>
+                        </div>
+                      ),
+                      value: 'Trabajo',
+                    },
+                    {
+                      label: (
+                        <div
+                          style={{
+                            padding: 4,
+                          }}
+                        >
+                          <img src={imgotro} style={{ width: "50%" }} />
+                          <div>Otro</div>
+                        </div>
+                      ),
+                      value: 'Otro',
                     }
                   ]}
                 />
               </Col>
             </Row>
+          )}
 
-            {/* Segunda sección (solo se muestra si modoPedido es 'D') */}
-            {modoPedido === 'D' && (
-              <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
-                <Col md={5} className="d-flex justify-content-center align-items-center">
-                  <Segmented
-                    onChange={handleLocationChange}
-                    options={[
-                      {
-                        value: 'any',
-                      },
-                      {
-                        label: (
-                          <div
-                            style={{
-                              padding: 4,
-                            }}
-                          >
-                            <img src={imghogar} style={{ width: "50%" }} />
-                            <div>Casa</div>
-                          </div>
-                        ),
-                        value: 'Casa',
-                      },
-                      {
-                        label: (
-                          <div
-                            style={{
-                              padding: 4,
-                            }}
-                          >
-                            <img src={imgtrabajao} style={{ width: "50%" }} />
-                            <div>Trabajo</div>
-                          </div>
-                        ),
-                        value: 'Trabajo',
-                      },
-                      {
-                        label: (
-                          <div
-                            style={{
-                              padding: 4,
-                            }}
-                          >
-                            <img src={imgotro} style={{ width: "50%" }} />
-                            <div>Otro</div>
-                          </div>
-                        ),
-                        value: 'Otro',
-                      }
-                    ]}
-                  />
-                </Col>
-              </Row>
-            )}
-
-            {/* Tercera sección */}
-            {modoPedido === 'D' && (
-              <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
-                <Col md={5} className="d-flex justify-content-center align-items-center">
-                  {locationData && locationData.latitud !== undefined && locationData.longitud !== undefined ? (
-                    <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
-                  ) : (
-                    'No tienes una ubicación agregada'
-                  )}
-                </Col>
-              </Row>
-            )}
+          {/* Tercera sección */}
+          {modoPedido === 'D' && (
+            <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
+              <Col md={5} className="d-flex justify-content-center align-items-center">
+                {locationData && locationData.latitud !== undefined && locationData.longitud !== undefined ? (
+                  <Badge count={"Se entregará el pedido en  " + selectedLocation} showZero color='#52C41A' />
+                ) : (
+                  'No tienes una ubicación agregada'
+                )}
+              </Col>
+            </Row>
+          )}
 
 
 
 
 
-            {modoPedido === 'R' && (
-              sucursalesData.map((sucursal) => {
-                if (sucursal.estadoApertura === 'Abierto ahora') {
+          {modoPedido === 'R' && (
+            sucursalesData.map((sucursal) => {
+              if (sucursal.estadoApertura === 'Abierto ahora') {
 
-                  return (
-                    <Card
-                      key={sucursal.id_sucursal}
-                      hoverable
-                      title={sucursal.snombre}
-                      style={{
-                        width: "auto",
-                        margin: "10px",
-                        border: sucursal.id_sucursal === sucursal ? "2px solid green" : "1px solid #A4A4A4",
-                      }}
-                      cover={
-                        <img
-                          alt="Descarga la aplicación móvil"
-                          src={`data:image/png;base64,${sucursal.imagensucursal}`}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                      }
-                      className="text-center"
-                      onClick={() => handleSucursalSelect(sucursal.id_sucursal)}  // Agrega este evento onClick
-                    >
-                      <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
-                      <span style={{ color: 'green' }}>
-                        {sucursal.estadoApertura}
-                      </span>
-                    </Card>
-                  );
-                }
-                return (null)
-              })
+                return (
+                  <Card
+                    key={sucursal.id_sucursal}
+                    hoverable
+                    title={sucursal.snombre}
+                    style={{
+                      width: "auto",
+                      margin: "10px",
+                      border: sucursal.id_sucursal === sucursal ? "2px solid green" : "1px solid #A4A4A4",
+                    }}
+                    cover={
+                      <img
+                        alt="Descarga la aplicación móvil"
+                        src={`data:image/png;base64,${sucursal.imagensucursal}`}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleSucursalSelect(sucursal.id_sucursal)}  // Agrega este evento onClick
+                  >
+                    <span style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</span>
+                    <span style={{ color: 'green' }}>
+                      {sucursal.estadoApertura}
+                    </span>
+                  </Card>
+                );
+              }
+              return (null)
+            })
 
-            )}
-            {modoPedido === 'R' && (
-              <div>No hay más sucursales disponibles ahora mismo</div>
-            )}
-          </Container>
-        </Col>
-        <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
-          <Modal.Header closeButton style={{ borderBottom: 'none' }} />
-          <Modal.Body>
-            <Map3
-              onLocationSelect={handleLocationSelect}
-              onSaveLocation={handleSaveLocation}
-            />
-          </Modal.Body>
-        </Modal>
-        <Col>
+          )}
+          {modoPedido === 'R' && (
+            <div>No hay más sucursales disponibles ahora mismo</div>
+          )}
           <Container style={{ backgroundColor: '#ffffff' }}>
             <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
             <Col md={5} className="mx-auto text-center mb-3" style={{ maxWidth: "100%" }}>
@@ -1120,6 +1113,114 @@ const Pedidos = ({ regresar }) => {
 
             </div>
           </Container>
+        </Col>
+        <Col md={6} >
+          <Container style={{ backgroundColor: '#ffffff', padding: '10px',border:'1px solid #131212',borderRadius:'10px' }}>
+            <strong style={{
+              fontSize: "18px",
+              marginTop: "10px",
+            }}>TU ORDEN
+            </strong>
+            <Alert
+              description={`Un pedido${modoPedido === 'D' ? ' a domicilio ' : modoPedido === 'R' ? ' a retirar ' : ','} ${modoPago === 'E' ? 'y en efectivo'
+                : modoPago === 'T' ? 'y por transferencia' : ''}.${modoPedido === 'D' && selectedLocation !== '' && sucursal != null
+                  ? ' Se entregará en ' + selectedLocation
+                  : modoPedido === 'R' && sucursal != null
+                    ? ' Se debe retirar en ' + sucursalesData.find(s => s.id_sucursal === sucursal)?.snombre
+                    : ''}`}
+              type="info"
+              showIcon
+            />
+            <Divider>Tus productos</Divider>
+            <div style={{
+              height: "300px",/* Ajusta según sea necesario */
+              overflow: "auto", /* Agrega una barra de desplazamiento vertical cuando sea necesario */
+              border: "1px solid #ddd", /* Bordes para visualización */
+              padding: "10px"
+            }}>
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    fontSize: "18px",
+                    marginTop: "10px",
+                    borderBottom: '1px solid #9b9b9b'
+                  }}
+                >
+
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td
+                          style={{
+                            width: '25%'
+                          }}
+                        >
+                          <img style={{
+                            maxHeight: "auto",
+                            border: '1px solid #9b9b9b',
+                            borderRadius: '10%',
+                            verticalAlign: 'top',
+                            width: '100%'
+                          }}
+                            src={`data:image/png;base64,${item.image}`} alt="User" />
+                        </td>
+                        <td>
+                          <div style={{ display: 'inline-block', padding: '10px', verticalAlign: 'top' }}>
+                            <strong>{item.Name}</strong>
+                            <br />
+                            <span>{`Cantidad: ${item.quantity} - Precio: $${item.price} - Puntos: ${item.puntos}`}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              ))}
+            </div>
+            <Container style={{ marginTop: '10px' }}>
+              <Col style={{
+                backgroundColor: 'rgb(255, 255, 255)', borderRadius: '5px'
+                , marginLeft: '10px', border: "1px solid #131212", padding: "20px"
+              }}>
+                <Row>
+                  <Col md={6} style={{ textAlign: "left" }}>
+                    <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                      SubTotal:
+                    </div>
+                    <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                      Impuestos:
+                    </div>
+                  </Col>
+                  <Col md={6} style={{ textAlign: "right" }}>
+                    <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                      ${totalPrice}
+                    </div>
+                    <div style={{ marginTop: "10px", fontSize: "18px" }}>
+                      ${ivaPrecio().toFixed(2)}
+                    </div>
+                  </Col>
+                </Row>
+                <hr style={{ marginTop: "5px", marginBottom: "5px" }} />
+                <div style={{ marginTop: "10px", fontSize: "25px" }}>
+                  Total: ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
+                </div>
+              </Col>
+            </Container>
+          </Container>
+        </Col>
+        <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
+          <Modal.Header closeButton style={{ borderBottom: 'none' }} />
+          <Modal.Body>
+            <Map3
+              onLocationSelect={handleLocationSelect}
+              onSaveLocation={handleSaveLocation}
+            />
+          </Modal.Body>
+        </Modal>
+        <Col>
+
         </Col>
       </Row>
     </Row>
