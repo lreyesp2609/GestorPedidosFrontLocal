@@ -166,7 +166,7 @@ const Pedidos = ({ regresar }) => {
               console.log("Ubicacion:");
               console.log(sucursalesConEstado);
               notification.error({
-                message: 'No hay sucursales abiertas actualmente',
+                message: 'No hay sucursales abiertas en su ubicación actualmente',
                 description: 'Prueba más tarde o revisa otras sucursales',
               });
               setPermitido(true);
@@ -1051,7 +1051,7 @@ const Pedidos = ({ regresar }) => {
                   disabled={modoPago !== 'E' || Permitido}
                   onClick={PagarPorEfectivo2}
                 >
-                  Realizar pedido: ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
+                  {modoPedido==='R'?'Pagar en el local: ':modoPedido==='D'?'Pagar al recibir: ':'Realizar pedido: '} ${(Number(totalPrice) + Number(ivaPrecio().toFixed(2))).toFixed(2)}
                 </Button>
                 <p>puntos totales: {totalPoints}</p>
               </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Input, Alert, Select, message } from 'antd';
+import { Form, Button, Input, Alert, Select, message,Spin } from 'antd';
 import { Modal } from 'react-bootstrap';
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import { notification } from 'antd';
@@ -13,6 +13,8 @@ const RegistroForm = () => {
   const [locationData, setLocationData] = useState(null);
   const [modalShow, setModalShow] = useState(false);
   const [showOptionalFields, setShowOptionalFields] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const handleOpenModal = () => setModalShow(true);
   const handleCloseModal = () => setModalShow(false);
@@ -28,6 +30,7 @@ const RegistroForm = () => {
 
   const onFinish = async (values) => {
     try {
+      setLoading(true);
       const requestBody = {
         nombreusuario: values.username,
         contrasenia: values.password,
@@ -68,6 +71,9 @@ const RegistroForm = () => {
     } catch (error) {
       showError('Error desconocido');
       console.error('Error en la solicitud de registro:', error);
+    }
+    finally{
+      setLoading(true);
     }
   };
 
@@ -148,7 +154,7 @@ const RegistroForm = () => {
   };
 
   return (
-    <>
+    <Spin spinning={loading} tip="Cargando...">
       <Form
         name="registroForm"
         onFinish={onFinish}
@@ -418,7 +424,7 @@ const RegistroForm = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Spin>
   );
 };
 
