@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Modal, Button, Card as AntCard, Input,notification } from "antd";
+import { Modal, Button, Card as AntCard, Input, notification, Spin } from "antd";
 import { CartContext } from "../context/CarritoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -13,14 +13,14 @@ const ListProductos = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useContext(CartContext);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Realizar la solicitud a la API al montar el componente
-    fetch(API_URL +"/producto/listar/")
+    fetch(API_URL + "/producto/listar/")
       .then((response) => response.json())
       .then((data) => setProducts(data.productos))
-      .catch((error) => console.error("Error fetching products:", error));
-    
+      .catch((error) => console.error("Error fetching products:", error))
+      .finally(()=>setLoading(false));
   }, []);
 
   const handleCardClick = (product) => {
@@ -58,7 +58,7 @@ const ListProductos = () => {
             quantity: 1,
             Name: selectedProduct.nombreproducto,
             image: selectedProduct.imagenp,
-            puntos:selectedProduct.puntosp,
+            puntos: selectedProduct.puntosp,
             price: parseFloat(selectedProduct.preciounitario),
             iva: selectedProduct.iva,
           },
@@ -87,65 +87,67 @@ const ListProductos = () => {
 
   return (
     <>
-      <div style={{ marginTop: "30px", marginLeft: "5px", display: "flex" }}>
-        <Row>
-
-          {products.map((product, index) => (
-            <Col >
-              <AntCard
-                hoverable
-                key={product.id}
-                style={{
-                  width: "100%",
-                  cursor: "pointer",
-                  marginRight: index < products.length - 1 ? "20px" : "0",
-                }}
-                onClick={() => handleCardClick(product)}
-                cover={
-                  <img
-                    alt={`Imagen de ${product.nombreproducto}`}
-                    src={`data:image/png;base64,${product.imagenp}`}
-                    style={{ width: "100%", height: "270px" }}
-                  />
-                }
-              >
-                <Meta title={product.nombreproducto} description={product.descripcionproducto} />
-                <div style={{ display: 'flex' }}>
-                  <p
-                    style={{
-                      marginTop: '10px',
-                      width: '50px',
-                      backgroundColor: "#0a2e02",
-                      marginRight: '10px',
-                      color: "#fff",
-                      borderRadius: "10px",
-                      textAlign: 'center',
-                    }}
-                  >{`$${product.preciounitario}`}</p>
-                  <p
-                    style={{
-                      marginTop: '10px',
-                      width: '50px',
-                      backgroundColor: "#5a0a03",
-                      color: "#fff",
-                      borderRadius: "10px",
-                      textAlign: 'center',
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      style={{
-                        color: "#FFD700",
-                        marginRight: '1px',
-                      }}
+      <Spin spinning={loading} tip="Cargando..." style={{height:'500px'}}>
+        <div style={{ marginTop: "30px", marginLeft: "5px", display: "flex" }}>
+          <Row>
+            {products.map((product, index) => (
+              <Col >
+                <AntCard
+                  hoverable
+                  key={product.id}
+                  style={{
+                    width: "100%",
+                    cursor: "pointer",
+                    marginRight: index < products.length - 1 ? "20px" : "0",
+                  }}
+                  onClick={() => handleCardClick(product)}
+                  cover={
+                    <img
+                      alt={`Imagen de ${product.nombreproducto}`}
+                      src={`data:image/png;base64,${product.imagenp}`}
+                      style={{ width: "100%", height: "270px" }}
                     />
-                    {`${product.puntosp}`}</p>
-                </div>
-              </AntCard>
-            </Col>
-          ))}
-        </Row>
-      </div>
+                  }
+                >
+                  <Meta title={product.nombreproducto} description={product.descripcionproducto} />
+                  <div style={{ display: 'flex' }}>
+                    <p
+                      style={{
+                        marginTop: '10px',
+                        width: '50px',
+                        backgroundColor: "#0a2e02",
+                        marginRight: '10px',
+                        color: "#fff",
+                        borderRadius: "10px",
+                        textAlign: 'center',
+                      }}
+                    >{`$${product.preciounitario}`}</p>
+                    <p
+                      style={{
+                        marginTop: '10px',
+                        width: '50px',
+                        backgroundColor: "#5a0a03",
+                        color: "#fff",
+                        borderRadius: "10px",
+                        textAlign: 'center',
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faStar}
+                        style={{
+                          color: "#FFD700",
+                          marginRight: '1px',
+                        }}
+                      />
+                      {`${product.puntosp}`}</p>
+                  </div>
+                </AntCard>
+              </Col>
+            ))}
+          </Row>
+
+        </div>
+      </Spin>
 
       <Modal visible={showModal} onCancel={handleCloseModal}
         footer={null}
@@ -270,4 +272,4 @@ const ListProductos = () => {
 };
 
 export default ListProductos;
- 
+

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useMediaQuery } from "react";
-import { Card, Tooltip, Popover } from 'antd';
+import { Card, Tooltip, Popover,Spin } from 'antd';
 import {
     Container,
     Nav,
@@ -36,6 +36,7 @@ const Sucursalescliente = () => {
     const [sucursalesData, setSucursalesData] = useState([]);
     const [estadoApertura, setEstadoApertura] = useState(null);
     const [selectedSucursal, setSelectedSucursal] = useState(null);
+    const [loading, setLoading] = useState(true);
 
 
     const quantity = cart.reduce((acc, curr) => {
@@ -215,7 +216,9 @@ const Sucursalescliente = () => {
             })
             .catch((error) => {
                 console.error('Error al obtener los datos de sucursales:', error);
-            });
+            })
+            .finally(()=>setLoading(false))
+            
     };
 
     return (
@@ -272,6 +275,7 @@ const Sucursalescliente = () => {
                             </Row>
                             <Row>
                                 <Col md={2} >
+                                <Spin spinning={loading} tip="Cargando..." style={{height:'500px'}}>
                                     {sucursalesData.map((sucursal) => (
                                         <Card
                                             hoverable
@@ -322,6 +326,7 @@ const Sucursalescliente = () => {
                                             </Popover>
                                         </Card>
                                     ))}
+                                    </Spin>
                                 </Col>
                                 <Col md={10} >
                                     <Card
