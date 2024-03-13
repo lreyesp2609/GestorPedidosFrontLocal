@@ -17,7 +17,7 @@ const MenuComandas = () => {
 
     useEffect(() => {
         const id_cuenta = localStorage.getItem("id_cuenta");
-        fetch(API_URL +`/Login/obtener_cocinero/${id_cuenta}/`)
+        fetch(API_URL + `/Login/obtener_cocinero/${id_cuenta}/`)
             .then((response) => response.json())
             .then((data) => {
                 cargarBodega(data.usuario.id_sucursal);
@@ -25,17 +25,17 @@ const MenuComandas = () => {
             .catch((error) =>
                 console.error("Error al obtener datos del usuario:", error)
             );
-        
+
     }, []);
 
-    const cargarBodega = (sucursal) =>{
-        console.log("No se pq no vale" +sucursal);
-        fetch(API_URL +'/bodega/listar/')
+    const cargarBodega = (sucursal) => {
+        console.log("No se pq no vale" + sucursal);
+        fetch(API_URL + '/bodega/listar/')
             .then(response => response.json())
             .then(data => {
                 console.log("Bodegas");
                 console.log(data.bodegas);
-                console.log("Sucursal "+sucursal);
+                console.log("Sucursal " + sucursal);
                 const bodegasf = data.bodegas.filter(bodega => bodega.id_sucursal === sucursal);
                 console.log(bodegasf);
                 setBodegas(bodegasf);
@@ -58,20 +58,21 @@ const MenuComandas = () => {
 
             const id_cuenta = localStorage.getItem("id_cuenta");
             let sucursal = null;
-            fetch(API_URL +`/Login/obtener_cocinero/${id_cuenta}/`)
+            fetch(API_URL + `/Login/obtener_cocinero/${id_cuenta}/`)
                 .then((response) => response.json())
                 .then((data) => {
                     setUsuario(data.usuario);
                     console.log(data.usuario);
                     console.log("Sucursal");
-                    sucursal = data.usuario.id_sucursal;
-                    console.log(data.usuario.id_sucursal);
-                    setSucursal(data.usuario.id_sucursal);
+                    if (data.usuario) {
+                        sucursal = data.usuario.id_sucursal;
+                    }
+
                 })
                 .catch((error) =>
                     console.error("Error al obtener datos del usuario:", error)
                 );
-            const response = await fetch(API_URL +'/Mesero/pedidos/');
+            const response = await fetch(API_URL + '/Mesero/pedidos/');
             const data = await response.json();
 
             // Obtén la hora actual
@@ -86,6 +87,8 @@ const MenuComandas = () => {
             const pedidosOrdenados = pedidosFiltrados2.sort((a, b) => new Date(b.fecha_pedido) - new Date(a.fecha_pedido));
 
             setPedidos(pedidosOrdenados);
+            console.log('PEdidos: ');
+            console.log(pedidosOrdenados);
 
         } catch (error) {
             console.error('Error al obtener la lista de pedidos', error);
@@ -100,7 +103,7 @@ const MenuComandas = () => {
 
     const obtenerInformacionEmpresa = async () => {
         try {
-            const respuesta = await fetch(API_URL +'/empresa/infoEmpresa/', {
+            const respuesta = await fetch(API_URL + '/empresa/infoEmpresa/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,7 +120,7 @@ const MenuComandas = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(API_URL +'/Login/rol/', {
+                const response = await fetch(API_URL + '/Login/rol/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -191,7 +194,7 @@ const MenuComandas = () => {
             formData.append('id_pedido', idp);
 
             // Realizar la solicitud a tu endpoint con FormData
-            const response = await fetch(API_URL +'/producto/procesar_productos/', {
+            const response = await fetch(API_URL + '/producto/procesar_productos/', {
                 method: 'POST',
                 body: formData,
             });
@@ -216,7 +219,7 @@ const MenuComandas = () => {
     };
 
     const fetchMovimientosInventario = () => {
-        fetch(API_URL +'/Inventario/listar_movimientos_inventario/')
+        fetch(API_URL + '/Inventario/listar_movimientos_inventario/')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener los movimientos de inventario');
