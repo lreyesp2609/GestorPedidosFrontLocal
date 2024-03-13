@@ -12,8 +12,8 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
 
   const handleSaveLocation = () => {
     if (marker) {
-      onLocationSelect({ latitud: marker.latitude, longitud: marker.longitude });
-      onSaveLocation({ latitud: marker.latitude, longitud: marker.longitude });
+      console.log('Hola por favor');
+      onSaveLocation(marker);
     }
   };
   const MapClickHandler = () => {

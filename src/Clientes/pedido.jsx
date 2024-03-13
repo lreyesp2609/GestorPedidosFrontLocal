@@ -198,11 +198,7 @@ const Pedidos = ({ regresar }) => {
 
 
   };
-
-
-
   const obtenerhorarios = (listSucursales) => {
-
     try {
       const now = new Date();
       const dayOfWeek = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][now.getDay()];
@@ -226,7 +222,6 @@ const Pedidos = ({ regresar }) => {
             }
           )
           : null;
-
         return {
           ...sucursal,
           estadoApertura: horarioAbierto ? 'Abierto ahora' : 'Cerrado',
@@ -283,34 +278,32 @@ const Pedidos = ({ regresar }) => {
   const handleLocationChange = (value) => {
     setHoraEntrega(null);
     setSelectedLocation(value);
-    setShowElegirUbicacion(value === 'Otro');
-    let newLocationData = {};
-    console.log(`Cambiando a la ubicación: ${location}`);
-    const tpicker = document.getElementById('time-envy');
-    tpicker.value = '';
-    switch (value) {
-      case 'Casa':
-        newLocationData = {
-          latitud: locationData.latitud1,
-          longitud: locationData.longitud1,
-        };
-        break;
-      case 'Trabajo':
-        newLocationData = {
-          latitud: locationData.latitud2,
-          longitud: locationData.longitud2,
-        };
-        break;
-      case 'Otro':
-        newLocationData = {
-          latitud: locationData.latitud3,
-          longitud: locationData.longitud3,
-        };
-        break;
+    if (value === 'Otro') {
+      setShowElegirUbicacion(true);
     }
-    console.log('Nuevos datos de ubicación:', newLocationData);
-    setLocationData((prevLocationData) => ({ ...prevLocationData, ...newLocationData }));
-    verificarUbicacion(newLocationData);
+    else {
+      let newLocationData = {};
+      console.log(`Cambiando a la ubicación: ${location}`);
+      const tpicker = document.getElementById('time-envy');
+      tpicker.value = '';
+      switch (value) {
+        case 'Casa':
+          newLocationData = {
+            latitud: locationData.latitud1,
+            longitud: locationData.longitud1,
+          };
+          break;
+        case 'Trabajo':
+          newLocationData = {
+            latitud: locationData.latitud2,
+            longitud: locationData.longitud2,
+          };
+          break;
+      }
+      console.log('Nuevos datos de ubicación:', newLocationData);
+      setLocationData((prevLocationData) => ({ ...prevLocationData, ...newLocationData }));
+      verificarUbicacion(newLocationData);
+    }
   };
 
   const HacerClick = () => {
@@ -635,15 +628,20 @@ const Pedidos = ({ regresar }) => {
   };
 
 
-  const handleSaveLocation = () => {
-    if (marker) {
-      setLocationData((prevLocationData) => ({
-        ...prevLocationData,
-        [`latitud${currentLocation}`]: marker.latitude,
-        [`longitud${currentLocation}`]: marker.longitude,
-      }));
-      setCurrentLocation((prevLocation) => (prevLocation % 3) + 1); // Cambiar a la siguiente ubicación (1, 2, 3)
-    }
+  const handleSaveLocation = (marker) => {
+    let newLocationData = {};
+    newLocationData = {
+      latitud: marker.latitude,
+      longitud: marker.longitude,
+    };
+    setLocationData(prevLocationData => ({
+      ...prevLocationData, // Mantén los datos existentes
+      latitud3: marker.latitude,
+      longitud3: marker.longitude,
+    }));
+    verificarUbicacion(newLocationData);
+    setShowElegirUbicacion(false);
+    
   };
   const handleSucursalSelect = (selectedSucursal) => {
     notification.success({
@@ -1059,9 +1057,6 @@ const Pedidos = ({ regresar }) => {
                   <p>puntos totales: {totalPoints}</p>
                 </div>
               )}
-
-
-
               <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
                 {modoPago === 'F' && (
                   <Space align="center">
@@ -1217,6 +1212,7 @@ const Pedidos = ({ regresar }) => {
         <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
           <Modal.Header closeButton style={{ borderBottom: 'none' }} />
           <Modal.Body>
+            hola
             <Map3
               onLocationSelect={handleLocationSelect}
               onSaveLocation={handleSaveLocation}
