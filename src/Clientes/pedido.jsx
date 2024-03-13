@@ -138,8 +138,7 @@ const Pedidos = ({ regresar }) => {
       })
       .catch((error) => {
         console.error('Error al obtener los datos de sucursales:', error);
-      })
-      .finally(() => setLoading(false));
+      });
   };
 
   const verificarUbicacion = (newLocationData) => {
@@ -240,13 +239,14 @@ const Pedidos = ({ regresar }) => {
 
   const id_cuenta = localStorage.getItem('id_cuenta');
   useEffect(() => {
+    console.log('aqui se llega rapido?');
     if (id_cuenta) {
-      listarsucursales();
       fetch(API_URL + `/Login/obtener_usuario/${id_cuenta}/`)
         .then(response => response.json())
         .then(data => {
+          console.log('aqui se llega rapido?2');
           setUserData(data.usuario);
-
+          
           setLocationData({
             latitud1: data.usuario?.ubicacion1?.latitud || undefined,
             longitud1: data.usuario?.ubicacion1?.longitud || undefined,
@@ -255,9 +255,10 @@ const Pedidos = ({ regresar }) => {
             latitud3: data.usuario?.ubicacion3?.latitud || undefined,
             longitud3: data.usuario?.ubicacion3?.longitud || undefined,
           });
-
+          listarsucursales();
         })
-        .catch(error => console.error('Error al obtener datos del usuario:', error));
+        .catch(error => console.error('Error al obtener datos del usuario:', error))
+        .finally(()=>setLoading(false));
     } else {
       console.error('Nombre de usuario no encontrado en localStorage');
     }
@@ -707,7 +708,7 @@ const Pedidos = ({ regresar }) => {
       </Button>
       <Row>
         <Col md={6} style={{ backgroundColor: '#ffffff', padding: '10px', border: '1px solid #131212', borderRadius: '10px' }}>
-          <Spin spinning={loading} tip="Cargando sucursales..." style={{ height: '500px' }}>
+          <Spin spinning={loading} tip="Cargando tus ubicaciones..." style={{ height: '500px' }}>
             <Alert
               message="Hola ✌🏻"
               description="Revisa tu dirección y forma de pago antes de comprar."

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useMediaQuery } from "react";
-import { Card, Tooltip, Popover,Spin } from 'antd';
+import { Card, Tooltip, Popover, Spin } from 'antd';
 import {
     Container,
     Nav,
@@ -217,8 +217,8 @@ const Sucursalescliente = () => {
             .catch((error) => {
                 console.error('Error al obtener los datos de sucursales:', error);
             })
-            .finally(()=>setLoading(false))
-            
+            .finally(() => setLoading(false))
+
     };
 
     return (
@@ -260,112 +260,113 @@ const Sucursalescliente = () => {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     </Container>
                 </Navbar>
-                <div>
-                    {ComponenteSeleccionado === "Sucursales" && (
-                        <>
-                            <Row>
-                                <Col md={24} >
-                                    <div style={{ background: 'white', border: "1px solid #A4A4A4", padding: '15px' }}>
-                                        <span style={{ fontWeight: 'bold', color: 'black', display: 'block', textAlign: 'center', fontSize: '20px' }}>
-                                            ENCUENTRANOS CERCA DE TI
-                                        </span>
-                                    </div>
-                                </Col>
+                <Spin spinning={loading} tip="Cargando..." style={{ height: '500px' }}>
+                    <div>
+                        {ComponenteSeleccionado === "Sucursales" && (
+                            <>
+                                <Row>
+                                    <Col md={24} >
+                                        <div style={{ background: 'white', border: "1px solid #A4A4A4", padding: '15px' }}>
+                                            <span style={{ fontWeight: 'bold', color: 'black', display: 'block', textAlign: 'center', fontSize: '20px' }}>
+                                                ENCUENTRANOS CERCA DE TI
+                                            </span>
+                                        </div>
+                                    </Col>
 
-                            </Row>
-                            <Row>
-                                <Col md={2} >
-                                <Spin spinning={loading} tip="Cargando..." style={{height:'500px'}}>
-                                    {sucursalesData.map((sucursal) => (
+                                </Row>
+                                <Row>
+                                    <Col md={2} >
+                                        {sucursalesData.map((sucursal) => (
+                                            <Card
+                                                hoverable
+                                                title={
+                                                    <Tooltip title={sucursal.snombre}>
+                                                        {sucursal.snombre}
+                                                    </Tooltip>
+                                                }
+                                                style={{
+                                                    width: "auto",
+                                                    border: "1px solid #A4A4A4",
+                                                    margin: "10px",
+                                                }}
+                                                cover={
+                                                    <a href={'#mapa'} className="map-link">
+                                                        <img
+                                                            alt="Descarga la aplicación movil"
+                                                            src={`data:image/png;base64,${sucursal.imagensucursal}`}
+                                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                        />
+                                                    </a>
+
+                                                }
+                                                onClick={() => handleSucursalClick(sucursal)} // Manejador de clics para cada tarjeta de sucursal
+                                                className="text-center"
+                                            >
+                                                <Popover
+                                                    key={sucursal.id_sucursal}
+                                                    title={"Horario:"}
+                                                    content={
+                                                        <div style={{ width: "100%" }}>
+                                                            <ul>
+                                                                {
+                                                                    formatHorario(sucursal.horario.detalles).map((horar, index) => (
+                                                                        <li key={index}>{horar}</li>
+                                                                    ))}
+                                                            </ul>
+                                                        </div>
+                                                    }
+                                                    placement="bottom"
+                                                    responsive
+
+                                                >
+                                                    <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</spam>
+                                                    <span style={{ color: sucursal.estadoApertura === 'Abierto ahora' ? 'green' : 'red' }}>
+                                                        {sucursal.estadoApertura}
+                                                    </span>
+                                                </Popover>
+                                            </Card>
+                                        ))}
+                                    </Col>
+                                    <Col md={10} >
                                         <Card
+                                            id={'mapa'}
                                             hoverable
-                                            title={
-                                                <Tooltip title={sucursal.snombre}>
-                                                    {sucursal.snombre}
-                                                </Tooltip>
-                                            }
+                                            title={"Encuentra tu sucursal"}
                                             style={{
                                                 width: "auto",
                                                 border: "1px solid #A4A4A4",
                                                 margin: "10px",
+
                                             }}
                                             cover={
-
-                                                <img
-                                                    alt="Descarga la aplicación movil"
-                                                    src={`data:image/png;base64,${sucursal.imagensucursal}`}
-                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                                />
-
-
+                                                <MapS sucursales={sucursalesData} logo={logoEmpresa} selectedSucursal={selectedSucursal} onSucursalClick={handleSucursalClick}
+                                                ></MapS>
                                             }
-                                            onClick={() => handleSucursalClick(sucursal)} // Manejador de clics para cada tarjeta de sucursal
                                             className="text-center"
                                         >
-                                            <Popover
-                                                key={sucursal.id_sucursal}
-                                                title={"Horario:"}
-                                                content={
-                                                    <div style={{ width: "100%" }}>
-                                                        <ul>
-                                                            {
-                                                                formatHorario(sucursal.horario.detalles).map((horar, index) => (
-                                                                    <li key={index}>{horar}</li>
-                                                                ))}
-                                                        </ul>
-                                                    </div>
-                                                }
-                                                placement="bottom"
-                                                responsive
-
-                                            >
-                                                <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>{sucursal.sdireccion}</spam>
-                                                <span style={{ color: sucursal.estadoApertura === 'Abierto ahora' ? 'green' : 'red' }}>
-                                                    {sucursal.estadoApertura}
-                                                </span>
-                                            </Popover>
                                         </Card>
-                                    ))}
-                                    </Spin>
-                                </Col>
-                                <Col md={10} >
-                                    <Card
-                                        hoverable
-                                        title={"Encuentra tu sucursal"}
-                                        style={{
-                                            width: "auto",
-                                            border: "1px solid #A4A4A4",
-                                            margin: "10px",
-
-                                        }}
-                                        cover={
-                                            <MapS sucursales={sucursalesData} logo={logoEmpresa} selectedSucursal={selectedSucursal} onSucursalClick={handleSucursalClick}
-                                            ></MapS>
-                                        }
-                                        className="text-center"
-                                    >
-                                    </Card>
-                                </Col>
-                            </Row>
-                        </>
-                    )}
-                    <Row>
-                        <Col md={12}>
-                            <Button
-                                variant="success"
-                                style={{
-                                    position: "fixed",
-                                    right: "16px",
-                                    bottom: "16px",
-                                    zIndex: 1000,
-                                }}
-                                href="/"
-                            >
-                                Atrás
-                            </Button>
-                        </Col>
-                    </Row>
-                </div>
+                                    </Col>
+                                </Row>
+                            </>
+                        )}
+                        <Row>
+                            <Col md={12}>
+                                <Button
+                                    variant="success"
+                                    style={{
+                                        position: "fixed",
+                                        right: "16px",
+                                        bottom: "16px",
+                                        zIndex: 1000,
+                                    }}
+                                    href="/"
+                                >
+                                    Atrás
+                                </Button>
+                            </Col>
+                        </Row>
+                    </div>
+                </Spin>
             </div>
         </>
     );
