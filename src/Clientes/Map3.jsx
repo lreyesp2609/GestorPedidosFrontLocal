@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent  } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -9,11 +9,12 @@ import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
   const [center, setCenter] = useState([-1.0241157747979186, -79.46108497663826]);
   const [marker, setMarker] = useState(null);
+  const mapRef = useRef(null);
 
   const handleSaveLocation = () => {
     if (marker) {
-      onLocationSelect({ latitud: marker.latitude, longitud: marker.longitude });
-      onSaveLocation({ latitud: marker.latitude, longitud: marker.longitude });
+      console.log('Hola por favor');
+      onSaveLocation(marker);
     }
   };
   const MapClickHandler = () => {
@@ -33,6 +34,7 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
         const { latitude, longitude } = position.coords;
         setCenter([latitude, longitude]);
         setMarker({ latitude, longitude });
+        mapRef.current.flyTo([latitude, longitude], 15);
       },
       (error) => {
         console.error('Error getting current location:', error);
@@ -78,6 +80,7 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
         center={center}
         zoom={13}
         style={{ height: '400px', width: '100%' }}
+        ref={mapRef}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

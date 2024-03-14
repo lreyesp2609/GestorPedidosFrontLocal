@@ -25,6 +25,7 @@ import { Row, Col } from "react-bootstrap";
 import CrearBodegaForm from "./crearbodega";
 import imgmesas from "./res/imgmesas.png";
 import RealizarPedido from "./pedidos";
+import API_URL from '../config.js';
 
 const EditarBodegaForm = () => {
   const [modalEditarVisible, setModalEditarVisible] = useState(false);
@@ -52,21 +53,21 @@ const EditarBodegaForm = () => {
       try {
         // Obtener lista de proveedores
         const responseProveedores = await fetch(
-          "http://127.0.0.1:8000/Proveedores/listar_proveedor/"
+          API_URL +"/Proveedores/listar_proveedor/"
         );
         const dataProveedores = await responseProveedores.json();
         setProveedores(dataProveedores.proveedores);
 
         // Obtener lista de componentes
         const responseComponentes = await fetch(
-          "http://127.0.0.1:8000/producto/listarcomponentes/"
+          API_URL +"/producto/listarcomponentes/"
         );
         const dataComponentes = await responseComponentes.json();
         setComponentes(dataComponentes.componentes);
 
         // Obtener lista de unidades de medida
         const responseUnidadesMedida = await fetch(
-          "http://127.0.0.1:8000/producto/listarum/"
+          API_URL +"/producto/listarum/"
         );
         const dataUnidadesMedida = await responseUnidadesMedida.json();
         setUnidadesMedida(dataUnidadesMedida.unidades_medida);
@@ -81,7 +82,7 @@ const EditarBodegaForm = () => {
     const obtenerProductos = async () => {
       try {
         const responseProductos = await fetch(
-          "http://127.0.0.1:8000/producto/listar/"
+          API_URL +"/producto/listar/"
         );
         const dataProductos = await responseProductos.json();
         setProductos(dataProductos.productos);
@@ -139,7 +140,7 @@ const EditarBodegaForm = () => {
       const valores = await form.validateFields();
       const idBodega = editingBodega.id_bodega; // Cambiado a id_bodega
 
-      await fetch(`http://127.0.0.1:8000/bodega/editar/${idBodega}/`, {
+      await fetch(API_URL +`/bodega/editar/${idBodega}/`, {
         method: "POST",
         body: new URLSearchParams({
           nombrebog: valores.nombrebog,
@@ -167,7 +168,7 @@ const EditarBodegaForm = () => {
   const cargarBodegas = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/bodega/listar/?page=${currentPage}`
+        API_URL +`/bodega/listar/?page=${currentPage}`
       );
       const data = await response.json();
       setBodegas(data.bodegas);

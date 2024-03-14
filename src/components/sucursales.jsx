@@ -7,7 +7,7 @@ import mapa from './res/mapa.png';
 import MapaActual from './mapaactual';
 import Mapafijo from './mapafijo';
 import AdminSucursal from './adminsucursal'
-
+import API_URL from '../config.js';
 const Sucursales = () => {
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
@@ -57,7 +57,7 @@ const Sucursales = () => {
         setSucursalesData([]);
 
         const { current, pageSize } = pagination;
-        const url = `http://127.0.0.1:8000/sucursal/sucusarleslist/?page=${current}&pageSize=${pageSize}`;
+        const url = API_URL +`/sucursal/sucusarleslist/?page=${current}&pageSize=${pageSize}`;
 
         fetch(url)
             .then((response) => response.json())
@@ -82,7 +82,7 @@ const Sucursales = () => {
         const formData = new FormData();
         formData.append('id_sucursal', record.id_sucursal);
         formData.append('sestado', checked ? '1' : '0');
-        fetch('http://127.0.0.1:8000/sucursal/actsucursal/', {
+        fetch(API_URL +'/sucursal/actsucursal/', {
             method: 'POST',
             body: formData,
         })
@@ -114,7 +114,7 @@ const Sucursales = () => {
                 formData.append('latitud', latitud);
                 formData.append('longitud', longitud);
 
-                fetch('http://127.0.0.1:8000/sucursal/editarubicacion/', {
+                fetch(API_URL +'/sucursal/editarubicacion/', {
                     method: 'POST',
                     body: formData,
                 })

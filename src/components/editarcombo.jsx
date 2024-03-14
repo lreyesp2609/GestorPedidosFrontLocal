@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Avatar, Modal } from 'antd';
-
+import API_URL from '../config.js';
 const EditarCombo = () => {
   const [combos, setCombos] = useState(null);
   const [selectedCombo, setSelectedCombo] = useState(null);
@@ -8,7 +8,7 @@ const EditarCombo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/combos/ver_combos/');
+        const response = await fetch(API_URL +'/combos/ver_combos/');
         if (!response.ok) {
           throw new Error('Error fetching combos');
         }

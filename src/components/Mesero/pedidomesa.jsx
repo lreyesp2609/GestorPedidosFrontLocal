@@ -9,7 +9,7 @@ import {
   ShoppingOutlined,
 } from "@ant-design/icons";
 import RealizarPedidoMesa from "./pedido";
-
+import API_URL from '../../config';
 const RealizarPedidoMesero = () => {
   const [mesas, setMesas] = useState([]);
   const [selectedOpcion, setSelectedOpcion] = useState("Mesas");
@@ -19,7 +19,7 @@ const RealizarPedidoMesero = () => {
   const [MesaEnv, setMesaEnv] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/Mesas/ver_mesas/")
+    fetch(API_URL +"/Mesas/ver_mesas/")
       .then((response) => response.json())
       .then((data) => {
         const filteredMesas = data.mesas.filter(

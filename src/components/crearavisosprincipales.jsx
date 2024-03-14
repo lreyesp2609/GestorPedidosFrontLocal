@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Upload, Table, Space, message, Image } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 // Función para convertir Base64 a URL de datos
 const base64ToUrl = (base64String, mimeType) => {
   return `data:${mimeType};base64,${base64String}`;
@@ -48,7 +48,7 @@ const CrearAvisos = () => {
     formData.append('imagen', imagen.file);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/avisos/crear/', {
+      const response = await fetch(API_URL +'/avisos/crear/', {
         method: 'POST',
         body: formData,
       });
@@ -95,7 +95,7 @@ const CrearAvisos = () => {
 
   const obtenerAvisos = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/avisos/avisos/');
+      const response = await fetch(API_URL +'/avisos/avisos/');
       const data = await response.json();
       if (response.ok) {
         setAvisos(data.avisos_principales);

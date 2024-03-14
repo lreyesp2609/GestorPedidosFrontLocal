@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, notification } from 'antd';
-
+import API_URL from '../config.js';
 const CrearTipoProducto = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -8,7 +8,7 @@ const CrearTipoProducto = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/producto/creartipop/', {
+      const response = await fetch(API_URL +'/producto/creartipop/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const CrearTipoProducto = () => {
           {
             validator: async (_, value) => {
               try {
-                const response = await fetch('http://127.0.0.1:8000/producto/tipoProductoExist/', {
+                const response = await fetch(API_URL +'/producto/tipoProductoExist/', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',

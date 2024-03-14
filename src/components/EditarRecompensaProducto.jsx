@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Checkbox, Drawer, Form, Input, Button, Row, Col, Divider, Pagination } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import EditarRecompensaComboForm from './EditarRecompensaCombo';
-
+import API_URL from '../config.js';
 const EditarRecompensaProductoForm = () => {
     const [recompensasProductos, setRecompensasProductos] = useState([]);
     const [visible, setVisible] = useState(false);
@@ -16,7 +16,7 @@ const EditarRecompensaProductoForm = () => {
 
     const fetchRecompensasProductos = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/Recompensas/lista_recompensas_producto/');
+            const response = await fetch(API_URL +'/Recompensas/lista_recompensas_producto/');
             if (!response.ok) {
                 throw new Error('Error fetching recompensas de producto');
             }
@@ -34,7 +34,7 @@ const EditarRecompensaProductoForm = () => {
     useEffect(() => {
         const fetchProductos = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/producto/listar/');
+                const response = await fetch(API_URL +'/producto/listar/');
                 if (!response.ok) {
                     throw new Error('Error fetching productos');
                 }
@@ -70,7 +70,7 @@ const EditarRecompensaProductoForm = () => {
 
             console.log('Valor del checkbox:', form.getFieldValue('sestado')); // Debugging
 
-            const response = await fetch(`http://127.0.0.1:8000/Recompensas/editar_recompensa_producto/${editedRecompensaProducto.id_recompensa_producto}/`, {
+            const response = await fetch(API_URL +`/Recompensas/editar_recompensa_producto/${editedRecompensaProducto.id_recompensa_producto}/`, {
                 method: 'POST',
                 body: formData,
             });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message, Select } from 'antd';
 import axios from 'axios';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearProveedor = () => {
@@ -21,7 +21,7 @@ const CrearProveedor = () => {
   
       console.log('Valores a enviar:', formData); 
   
-      const response = await axios.post('http://127.0.0.1:8000/Proveedores/crear_proveedor/', formData, {
+      const response = await axios.post(API_URL +'/Proveedores/crear_proveedor/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

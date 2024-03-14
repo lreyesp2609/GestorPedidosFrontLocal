@@ -6,7 +6,7 @@ import imgcombos from './res/imgcombos.png';
 import NuevoComboForm from './crearcombo';
 import categoriaproducto from './res/categoriaproducto.png';
 import EditarCategoriaCombo from './editarcategoriacombo';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 const { Option } = Select;
 
@@ -66,8 +66,7 @@ const Combos = () => {
 
     const fetchData = async (page) => {
         try {
-            console.log('xxxxxxxxxxxxxxxxxxA');
-            const response = await fetch(`http://127.0.0.1:8000/combos/ver_combos/?page=${page}`);
+            const response = await fetch(API_URL +`/combos/ver_combos/?page=${page}`);
             const data = await response.json();
             setCombos(data.combos);
             console.log(data.combos);

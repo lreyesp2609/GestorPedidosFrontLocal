@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message, Divider, Select, Input, Form, Button } from 'antd';
-
+import API_URL from '../config.js';
 const ConfigUM = () => {
   const [conversiones, setConversiones] = useState([]);
   const [unidadesMedida, setUnidadesMedida] = useState([]);
@@ -13,7 +13,7 @@ const ConfigUM = () => {
 
     const obtenerUnidadesMedida = async () => {
       try {
-        const respuestaUnidadesMedida = await fetch('http://127.0.0.1:8000/producto/listarum/');
+        const respuestaUnidadesMedida = await fetch(API_URL +'/producto/listarum/');
         if (!respuestaUnidadesMedida.ok) {
           throw new Error('Error al obtener las unidades de medida');
         }
@@ -30,7 +30,7 @@ const ConfigUM = () => {
   }, []);
   const obtenerConversiones = async () => {
     try {
-      const respuestaConversiones = await fetch('http://127.0.0.1:8000/producto/conversionesum/');
+      const respuestaConversiones = await fetch(API_URL +'/producto/conversionesum/');
       if (!respuestaConversiones.ok) {
         console.error(respuestaConversiones.error);
       }
@@ -68,7 +68,7 @@ const ConfigUM = () => {
       formData.append('idumc', selectedUnidadHijo);
       formData.append('cantidadconversion', cantidadConversion);
 
-      const respuestaConfiguracion = await fetch('http://127.0.0.1:8000/producto/configurarensamble/', {
+      const respuestaConfiguracion = await fetch(API_URL +'/producto/configurarensamble/', {
         method: 'POST',
         body: formData,
       });

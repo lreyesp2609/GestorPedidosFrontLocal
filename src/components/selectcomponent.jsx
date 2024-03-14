@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Transfer, message, Table, Input, Form, InputNumber, Button, Select, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 const TransferContainer = ({ onValor, previouslySelectedItems }) => {
     const [loading, setLoading] = useState(false);
     const [componenteslist, setComponentes] = useState([]);
@@ -34,7 +34,7 @@ const TransferContainer = ({ onValor, previouslySelectedItems }) => {
         const fetchComponentes = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://127.0.0.1:8000/producto/listarcomponentes/');
+                const response = await fetch(API_URL +'/producto/listarcomponentes/');
                 if (response.ok) {
                     const data = await response.json();
                     const componentesWithDefaultCosto = data.componentes.map((componente) => ({

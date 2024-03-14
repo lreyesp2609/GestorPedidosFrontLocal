@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Select, message, InputNumber } from "antd";
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearMesa = () => {
@@ -13,7 +13,7 @@ const CrearMesa = () => {
         formData.append(key, values[key]);
       });
 
-      const response = await fetch("http://127.0.0.1:8000/Mesas/crear/", {
+      const response = await fetch(API_URL +"/Mesas/crear/", {
         method: "POST",
         body: formData,
       });

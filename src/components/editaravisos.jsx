@@ -20,6 +20,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import imgaviso from "./res/imgaviso.png";
 import { Row, Col } from 'react-bootstrap';
 import CrearAvisos from "./crearavisosprincipales";
+import API_URL from '../config.js';
 const { TextArea } = Input;
 
 // Función para convertir Base64 a URL de datos
@@ -39,7 +40,7 @@ const EditarAvisos = () => {
 
   const obtenerAvisos = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/avisos/avisos/");
+      const response = await fetch(API_URL +"/avisos/avisos/");
       const data = await response.json();
       if (response.ok) {
         setAvisos(data.avisos_principales);

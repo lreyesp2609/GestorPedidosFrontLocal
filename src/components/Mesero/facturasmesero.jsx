@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Row, Col, Tooltip, Pagination, Modal, Button } from "antd";
 import imgmesas from "./res/imgmesas.png";
 import VerFacturaMesero from "./verfacturamesero";
-
+import API_URL from '../../config';
 const FacturasMesero = () => {
   const { Column } = Table;
   const [mesas, setMesas] = useState([]);
@@ -19,7 +19,7 @@ const FacturasMesero = () => {
 
   const fetchMesas = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/Mesas/ver_mesas/");
+      const response = await fetch(API_URL +"/Mesas/ver_mesas/");
       if (!response.ok) {
         throw new Error("No se pudo obtener la lista de mesas.");
       }
@@ -39,7 +39,7 @@ const FacturasMesero = () => {
 
     const ObtenerUsuario = async () => {
       if (id_cuenta) {
-        fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+        fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
           .then((response) => response.json())
           .then((data) => {
             setUserData(data.mesero);
@@ -60,7 +60,7 @@ const FacturasMesero = () => {
   const handleMesaClick = async (idMesa) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/Mesero/mesero/${id_cuenta}/mesa/${idMesa}/pedidos/`
+        API_URL +`/Mesero/mesero/${id_cuenta}/mesa/${idMesa}/pedidos/`
       );
       if (!response.ok) {
         throw new Error("No se pudo obtener los pedidos de la mesa.");
@@ -77,7 +77,7 @@ const FacturasMesero = () => {
   const handleVerFacturaClick = async (idPedido) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/Mesero/ver_factura/${idPedido}/`
+        API_URL +`/Mesero/ver_factura/${idPedido}/`
       );
       if (!response.ok) {
         throw new Error("No se pudo obtener la factura del pedido.");

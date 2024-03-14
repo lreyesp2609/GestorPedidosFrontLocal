@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { Form, Button, Input, Alert, Select, message } from 'antd';
+import { Form, Button, Input, Alert, Select, message,Spin } from 'antd';
 import { Modal } from 'react-bootstrap';
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import { notification } from 'antd';
 import { Link } from 'react-router-dom';
 import Map2 from '../Clientes/Map2';
 import { useNavigate } from "react-router-dom";
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const RegistroForm = () => {
   const [locationData, setLocationData] = useState(null);
   const [modalShow, setModalShow] = useState(false);
   const [showOptionalFields, setShowOptionalFields] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const handleOpenModal = () => setModalShow(true);
   const handleCloseModal = () => setModalShow(false);
@@ -28,6 +30,7 @@ const RegistroForm = () => {
 
   const onFinish = async (values) => {
     try {
+      setLoading(true);
       const requestBody = {
         nombreusuario: values.username,
         contrasenia: values.password,
@@ -45,7 +48,7 @@ const RegistroForm = () => {
         requestBody.longitud = locationData.longitud;
       }
 
-      const response = await fetch('http://127.0.0.1:8000/Login/crear/', {
+      const response = await fetch(API_URL +'/Login/crear/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,6 +72,9 @@ const RegistroForm = () => {
       showError('Error desconocido');
       console.error('Error en la solicitud de registro:', error);
     }
+    finally{
+      setLoading(true);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -85,7 +91,7 @@ const RegistroForm = () => {
   const iniciar = async (values) => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/Login/iniciar_sesion/",
+        API_URL +"/Login/iniciar_sesion/",
         {
           method: "POST",
           headers: {
@@ -115,7 +121,7 @@ const RegistroForm = () => {
           localStorage.removeItem("token");
           console.log("Token eliminado después de 24 horas.");
         }, 24 * 60 * 60 * 1000);
-        const rolResponse = await fetch("http://127.0.0.1:8000/Login/rol/", {
+        const rolResponse = await fetch(API_URL +"/Login/rol/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -148,7 +154,7 @@ const RegistroForm = () => {
   };
 
   return (
-    <>
+    <Spin spinning={loading} tip="Cargando...">
       <Form
         name="registroForm"
         onFinish={onFinish}
@@ -169,7 +175,7 @@ const RegistroForm = () => {
             {
               validator: async (_, value) => {
                 try {
-                  const response = await fetch('http://127.0.0.1:8000/Login/cuentaexist/', {
+                  const response = await fetch(API_URL +'/Login/cuentaexist/', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -207,7 +213,7 @@ const RegistroForm = () => {
             {
               validator: async (_, value) => {
                 try {
-                  const response = await fetch('http://127.0.0.1:8000/Login/phoneExist/', {
+                  const response = await fetch(API_URL +'/Login/phoneExist/', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -328,7 +334,7 @@ const RegistroForm = () => {
                 {
                   validator: async (_, value) => {
                     try {
-                      const response = await fetch('http://127.0.0.1:8000/Login/DocumentExist/', {
+                      const response = await fetch(API_URL +'/Login/DocumentExist/', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
@@ -418,7 +424,7 @@ const RegistroForm = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Spin>
   );
 };
 

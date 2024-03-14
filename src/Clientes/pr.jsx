@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import  Item  from "./item2";
+import API_URL from '../config';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/producto/listar/')
+    fetch(API_URL +'/producto/listar/')
       .then(response => response.json())
       .then(data => setProducts(data.productos))
       .catch(error => console.error('Error fetching products:', error));

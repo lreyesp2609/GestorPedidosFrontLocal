@@ -3,7 +3,7 @@ import { Form, Input, Select, Button, Upload, message, notification } from 'antd
 import { InboxOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import Map from './Map';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const Crearsucursal = () => {
@@ -22,7 +22,7 @@ const Crearsucursal = () => {
             formData.append('snombre', values.nombre);
             formData.append('imagen', values.imagen[0].originFileObj);
 
-            const respuesta = await fetch('http://127.0.0.1:8000/sucursal/crear/', {
+            const respuesta = await fetch(API_URL +'/sucursal/crear/', {
                 method: 'POST',
                 body: formData,
             });
@@ -79,7 +79,7 @@ const Crearsucursal = () => {
                         {
                             validator: async (_, value) => {
                                 try {
-                                    const response = await fetch('http://127.0.0.1:8000/sucursal/sucursalExist/', {
+                                    const response = await fetch(API_URL +'/sucursal/sucursalExist/', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const Crearsucursal = () => {
                     {
                         validator: async (_, value) => {
                             try {
-                                const response = await fetch('http://127.0.0.1:8000/sucursal/sucursalExist/', {
+                                const response = await fetch(API_URL +'/sucursal/sucursalExist/', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ const Crearsucursal = () => {
                     {
                         validator: async (_, value) => {
                             try {
-                                const response = await fetch('http://127.0.0.1:8000/sucursal/sucursalExist/', {
+                                const response = await fetch(API_URL +'/sucursal/sucursalExist/', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',

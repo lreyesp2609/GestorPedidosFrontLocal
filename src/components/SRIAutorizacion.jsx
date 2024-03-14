@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, Input, message, Table } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
-
+import API_URL from '../config.js';
 const SRIAutorizacion = () => {
   const [visible, setVisible] = useState(false);
   const [codigoAutorizacion, setCodigoAutorizacion] = useState("");
@@ -10,7 +10,7 @@ const SRIAutorizacion = () => {
   const [form] = Form.useForm(); // Agregar form aquí
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/CodigoFactura/vercodigo/")
+    fetch(API_URL +"/CodigoFactura/vercodigo/")
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -54,7 +54,7 @@ const SRIAutorizacion = () => {
       formData.append("fecha_autorizacion", fechaAutorizacion);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/CodigoFactura/crear_codigoautorizacion/1/`,
+        API_URL +`/CodigoFactura/crear_codigoautorizacion/1/`,
         {
           method: "POST",
           body: formData,

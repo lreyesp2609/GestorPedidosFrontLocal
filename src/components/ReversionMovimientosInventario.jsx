@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Input, Badge  } from 'antd';
-
+import API_URL from '../config.js';
 const MovimientosInventario = ({ movimientosinv }) => {
   const [detalleVisible, setDetalleVisible] = useState(false);
   const [detalleMovimiento, setDetalleMovimiento] = useState({});
@@ -61,7 +61,7 @@ const columns = [
   };
 
   const handleReversion = () => {
-    fetch(`http://127.0.0.1:8000/Inventario/crear_movimiento_reversion/${detalleMovimiento.id_movimiento}/`, {
+    fetch(API_URL +`/Inventario/crear_movimiento_reversion/${detalleMovimiento.id_movimiento}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

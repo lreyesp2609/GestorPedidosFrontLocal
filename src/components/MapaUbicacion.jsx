@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-
+import API_URL from '../config.js';
 
 const MapComponent = () => {
   const mapRef = useRef(null);
@@ -17,7 +17,7 @@ const MapComponent = () => {
 
   useEffect(() => {
     // Realizar la llamada a la API y actualizar el estado con las sucursales
-    fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+    fetch(API_URL +'/sucursal/sucusarleslist/')
       .then(response => response.json())
       .then(data => {
         setSucursales(data.sucursales);

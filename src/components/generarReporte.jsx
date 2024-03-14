@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import Plotly from 'plotly.js-dist';
-
+import API_URL from '../config.js';
 const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSucursal, selectedTipoEmpleado, selectedReport,
   facturasEmitidas, clientes, productos, combos, sucursal, ventasmesero, setPdfBlob, handleShowViewer, selectedVenta, dateRange,
   selectedMesero, selectedProducto, selectedTipoProducto, pagos, reverso }) => {

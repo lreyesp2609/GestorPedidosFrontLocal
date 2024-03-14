@@ -14,7 +14,7 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import MenuM from "./menu";
-
+import API_URL from '../../config';
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { Meta } = Card;
@@ -34,7 +34,7 @@ const MenuMesero = () => {
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
-      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.usuario);
@@ -50,7 +50,7 @@ const MenuMesero = () => {
   const obtenerInformacionEmpresa = async () => {
     try {
       const respuesta = await fetch(
-        "http://127.0.0.1:8000/empresa/infoEmpresa/",
+        API_URL +"/empresa/infoEmpresa/",
         {
           method: "POST",
           headers: {
@@ -64,7 +64,7 @@ const MenuMesero = () => {
       console.log(datos.empresa_info);
       setEmpresaInfo(datos.empresa_info);
       setLoading(false);
-      fetch("http://127.0.0.1:8000/sucursal/sucusarleslist/")
+      fetch(API_URL +"/sucursal/sucusarleslist/")
         .then((response) => response.json())
         .then((data) => {
           console.log(data.sucursales);
@@ -103,7 +103,7 @@ const MenuMesero = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/Login/rol/", {
+        const response = await fetch(API_URL +"/Login/rol/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Select, Checkbox } from 'antd';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearRecompensaProductoForm = () => {
@@ -12,8 +12,8 @@ const CrearRecompensaProductoForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productosResponse = await fetch('http://127.0.0.1:8000/producto/listar/');
-        const recompensasProductosResponse = await fetch('http://127.0.0.1:8000/Recompensas/listar_productos_con_recompensas/');
+        const productosResponse = await fetch(API_URL +'/producto/listar/');
+        const recompensasProductosResponse = await fetch(API_URL +'/Recompensas/listar_productos_con_recompensas/');
 
         const productosData = await productosResponse.json();
         const recompensasProductosData = await recompensasProductosResponse.json();
@@ -58,7 +58,7 @@ const CrearRecompensaProductoForm = () => {
         }
       }
 
-      const response = await fetch('http://127.0.0.1:8000/Recompensas/crear_recompensa_producto/', {
+      const response = await fetch(API_URL +'/Recompensas/crear_recompensa_producto/', {
         method: 'POST',
         body: formData,
       });
@@ -68,7 +68,7 @@ const CrearRecompensaProductoForm = () => {
         message.success(responseData.mensaje);
         form.resetFields();
         
-        const recompensasProductosResponse = await fetch('http://127.0.0.1:8000/Recompensas/listar_productos_con_recompensas/');
+        const recompensasProductosResponse = await fetch(API_URL +'/Recompensas/listar_productos_con_recompensas/');
         const recompensasProductosData = await recompensasProductosResponse.json();
         
         if (Array.isArray(recompensasProductosData.productos_con_recompensas)) {

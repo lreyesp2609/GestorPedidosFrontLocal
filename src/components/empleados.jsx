@@ -9,7 +9,7 @@ import cocinero from './res/cocinero.png';
 import EditarEmpleado from './EditarEmpleado';
 import anadir from './res/anadir.png';
 import CrearEmpleadoForm from './crearempleado';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const Empleados = ({ }) => {
@@ -38,7 +38,7 @@ const Empleados = ({ }) => {
     }, []);
 
     const Sucursallistar = () =>{
-        fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+        fetch(API_URL +'/sucursal/sucusarleslist/')
             .then((response) => response.json())
             .then((data) => {
                 setSucursales(data.sucursales);
@@ -60,7 +60,7 @@ const Empleados = ({ }) => {
         setSelectedOficio(value);
     };
     const listarEmpleados=() =>{
-        fetch(`http://127.0.0.1:8000/empleado/listar-empleados/0/`)
+        fetch(API_URL +`/empleado/listar-empleados/0/`)
         .then((response) => response.json())
         .then((data) => {
             setEmpleados(data.empleados);
@@ -75,7 +75,7 @@ const Empleados = ({ }) => {
         setSelectedSucursal(value);
 
         if (value !== 'Todas las sucursales') {
-            fetch(`http://127.0.0.1:8000/empleado/listar-empleados/${encodeURIComponent(value)}/`)
+            fetch(API_URL +`/empleado/listar-empleados/${encodeURIComponent(value)}/`)
                 .then((response) => response.json())
                 .then((data) => {
                     setEmpleados(data.empleados);

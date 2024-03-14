@@ -3,7 +3,7 @@ import { Table, Button, Modal, Form, Input, Segmented, message } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
 import SRIAutorizacion from "./SRIAutorizacion";
-
+import API_URL from '../config.js';
 const SRI = () => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -28,7 +28,7 @@ const SRI = () => {
       formData.append("numero_factura_hasta", values.numero_factura_hasta);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/CodigoFactura/crear_codigosri/1/`,
+        API_URL +`/CodigoFactura/crear_codigosri/1/`,
         {
           method: "POST",
           body: formData,

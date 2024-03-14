@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { notification, Form, Input, Select, Button, Upload, message, Modal } from 'antd';
 import { CheckOutlined, UploadOutlined } from '@ant-design/icons';
 import CrearTipoProducto from '../components/creartipoproducto';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const CrearCategoria = () => {
@@ -34,7 +34,7 @@ const CrearCategoria = () => {
 
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/producto/listatiposycategorias/')
+    fetch(API_URL +'/producto/listatiposycategorias/')
       .then(response => response.json())
       .then(data => setTiposYCategorias(data.tipos_y_categorias))
       .catch(error => console.error('Error al obtener tipos y categorías:', error));
@@ -67,7 +67,7 @@ const CrearCategoria = () => {
       }
       formData.append('imagencategoria', imagenCategoria);
 
-      const response = await fetch('http://127.0.0.1:8000/producto/crearcategoria/', {
+      const response = await fetch(API_URL +'/producto/crearcategoria/', {
         method: 'POST',
         body: formData,
       });
@@ -140,7 +140,7 @@ const CrearCategoria = () => {
             {
               validator: async (_, value) => {
                 try {
-                  const response = await fetch('http://127.0.0.1:8000/producto/categoriaExist/', {
+                  const response = await fetch(API_URL +'/producto/categoriaExist/', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',

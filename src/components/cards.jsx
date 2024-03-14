@@ -3,7 +3,7 @@ import { Card, Button, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import MapUbiS from '../components/MapaUbicacion';
-
+import API_URL from '../config.js';
 const LocationCard = () => {
   const [sucursales, setSucursales] = useState([]);
   const [markerCoordinates, setMarkerCoordinates] = useState(null);
@@ -14,7 +14,7 @@ const LocationCard = () => {
     setSelectedMarker(coordinates); // Almacenar las coordenadas seleccionadas
   };
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+    fetch(API_URL +'/sucursal/sucusarleslist/')
       .then(response => response.json())
       .then(data => {
         if (data && data.sucursales) {

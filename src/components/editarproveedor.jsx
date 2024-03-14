@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import axios from 'axios';
-
+import API_URL from '../config.js';
 const { Option } = Select;
 
 const EditarProveedor = ({ initialValues, onFinish, onCancel }) => {
@@ -20,7 +20,7 @@ const EditarProveedor = ({ initialValues, onFinish, onCancel }) => {
                 }
             }
 
-            const response = await axios.post(`http://127.0.0.1:8000/Proveedores/editar_proveedor/${initialValues.id_proveedor}/`, formData, {
+            const response = await axios.post(API_URL +`/Proveedores/editar_proveedor/${initialValues.id_proveedor}/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

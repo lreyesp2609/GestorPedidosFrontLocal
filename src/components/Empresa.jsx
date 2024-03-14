@@ -4,7 +4,7 @@ import { EditTwoTone, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { Row, Col, Table } from 'react-bootstrap';
 import Sucursales from './sucursales';
 import EditarRecompensaProductoForm from './recompensa';
-
+import API_URL from '../config.js';
 
 const { Title } = Typography;
 
@@ -37,7 +37,7 @@ const Empresa = () => {
 
   const obtenerInformacionEmpresa = async () => {
     try {
-      const respuesta = await fetch('http://127.0.0.1:8000/empresa/infoEmpresa/', {
+      const respuesta = await fetch(API_URL +'/empresa/infoEmpresa/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ const Empresa = () => {
     }
 
     try {
-      const respuesta = await fetch(`http://127.0.0.1:8000/empresa/editar/`, {
+      const respuesta = await fetch(API_URL +`/empresa/editar/`, {
         method: 'POST',
         body: formData,
       });

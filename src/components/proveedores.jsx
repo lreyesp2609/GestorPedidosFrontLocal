@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import imgproveedor from './res/proveedor.png';
 import CrearProveedor from './crearproveedor';
 import EditarProveedor from './editarproveedor';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 
 const Proveedores = () => {
@@ -41,7 +41,7 @@ const Proveedores = () => {
 
     const fetchProveedores = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/Proveedores/listar_proveedor/');
+            const response = await fetch(API_URL +'/Proveedores/listar_proveedor/');
             const data = await response.json();
             setProveedores(data.proveedores);
         } catch (error) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, List, Space, Image, Button, Form, Input, Upload, Modal, message, Row, Col, Drawer } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import CrearCategoriaCombos from './crearcategoriacombos';
+import API_URL from '../config.js';
 
 const EditarCategoriaCombo = ({ onCancel }) => {
     const [categoriasCombos, setCategoriasCombos] = useState([]);
@@ -10,7 +11,7 @@ const EditarCategoriaCombo = ({ onCancel }) => {
 
     const fetchCategoriasCombos = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/combos/listcategoria/');
+            const response = await fetch(API_URL +'/combos/listcategoria/');
             const data = await response.json();
             setCategoriasCombos(data.categorias_combos);
         } catch (error) {
@@ -54,7 +55,7 @@ const EditarCategoriaCombo = ({ onCancel }) => {
             }
 
             const response = await fetch(
-                `http://127.0.0.1:8000/combos/editarcategoriacombo/${selectedCategoriaCombo.id_catcombo}/`,
+                API_URL +`/combos/editarcategoriacombo/${selectedCategoriaCombo.id_catcombo}/`,
                 {
                     method: 'POST',
                     body: formData,

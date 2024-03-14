@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, Input, message, Select, Segmented } from "antd";
 import { Row, Col } from "react-bootstrap";
 import { Tooltip, Avatar, Divider } from "antd";
-
+import API_URL from '../config.js';
 const { Item } = Form;
 const { Option } = Select;
 
@@ -20,7 +20,7 @@ const PuntosFacturacion = () => {
   const fetchMeseros = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:8000/Mesero/listar_meseros/");
+      const response = await fetch(API_URL +"/Mesero/listar_meseros/");
       if (response.ok) {
         const data = await response.json();
         setMeseros(data.meseros);
@@ -55,7 +55,7 @@ const PuntosFacturacion = () => {
       formData.append("ruc", values.ruc);
 
       // Validar si el mesero ya está asignado a un punto de facturación
-      const validationResponse = await fetch("http://127.0.0.1:8000/CodigoFactura/validar_punto_facturacion/", {
+      const validationResponse = await fetch(API_URL +"/CodigoFactura/validar_punto_facturacion/", {
         method: "POST",
         body: JSON.stringify({ id_mesero: values.id_mesero }),
         headers: {
@@ -75,7 +75,7 @@ const PuntosFacturacion = () => {
 
       // Si la validación es exitosa, continuar con la creación del punto de facturación
       const response = await fetch(
-        `http://127.0.0.1:8000/CodigoFactura/crear_punto/1/`,
+        API_URL +`/CodigoFactura/crear_punto/1/`,
         {
           method: "POST",
           body: formData,

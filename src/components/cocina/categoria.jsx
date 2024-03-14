@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message, Divider } from 'antd';
 import ProductosCocina from './productosarticulos';
 import './style.css'
+import API_URL from '../../config';
 
 const CategoriaCocina = ({ id_tipoproducto }) => {
     const [categoriasData, setCategorias] = useState([]);
@@ -15,7 +16,7 @@ const CategoriaCocina = ({ id_tipoproducto }) => {
 
     const listarp = async () => {
         try {
-            let url = 'http://127.0.0.1:8000/producto/listar_categorias/';
+            let url = API_URL +'/producto/listar_categorias/';
 
             const responseCategorias = await fetch(url);
             const data = await responseCategorias.json();

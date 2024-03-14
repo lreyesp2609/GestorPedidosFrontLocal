@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import API_URL from '../config.js';
 const CrearCategoriaCombos = () => {
   const [form] = Form.useForm();
   const [mensaje, setMensaje] = useState(null);
@@ -36,7 +36,7 @@ const CrearCategoriaCombos = () => {
         formData.append('imagencategoria', values.imagencategoria[0].originFileObj);
       }
   
-      const response = await fetch('http://127.0.0.1:8000/combos/crearcat/', {
+      const response = await fetch(API_URL +'/combos/crearcat/', {
         method: 'POST',
         body: formData,
       });

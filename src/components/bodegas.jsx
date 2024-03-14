@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import imgcombos from './res/imgcombos.png';
 import CrearBodegaForm from './crearbodega';
 import EditarBodegaForm from './editarbodega';
-
+import API_URL from '../config.js';
 const { Meta } = Card;
 
 const Bodegas = () => {
@@ -38,7 +38,7 @@ const Bodegas = () => {
 
     const fetchBodegas = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/bodega/listar/');
+            const response = await fetch(API_URL +'/bodega/listar/');
             const data = await response.json();
             setBodegas(data.bodegas);
         } catch (error) {

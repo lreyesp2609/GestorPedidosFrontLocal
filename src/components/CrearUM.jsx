@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, notification } from 'antd';
-
+import API_URL from '../config.js';
 const CrearUnidadMedida = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -9,7 +9,7 @@ const CrearUnidadMedida = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/producto/crearum/', {
+      const response = await fetch(API_URL +'/producto/crearum/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

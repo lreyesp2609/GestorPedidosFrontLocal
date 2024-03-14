@@ -2,6 +2,7 @@
 import React ,  { useState, useEffect,  } from 'react';
 import {  Row, Col,Button, } from "react-bootstrap";
 import {  Form, Input, message, notification,  Space, Table, Tag } from 'antd';
+import API_URL from '../config.js';
 const DatosB = () => {
     const [form] = Form.useForm();
     const [formData, setFormData] = useState({}); 
@@ -42,7 +43,7 @@ const DatosB = () => {
     ];
     const onFinish = async (values) => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/empleado/agregar_datosB/', {
+        const response = await fetch(API_URL +'/empleado/agregar_datosB/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const DatosB = () => {
   
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/empleado/obtener_datosB/');
+        const response = await fetch(API_URL +'/empleado/obtener_datosB/');
         const result = await response.json();
   
         setData(result.Cuentas);

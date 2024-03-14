@@ -14,7 +14,7 @@ import anadir from './res/anadir.png'
 import EditarEmpleado from './EditarEmpleado';
 import CrearEmpleadoForm from './crearempleado';
 import Geosector from './geosector';
-
+import API_URL from '../config.js';
 
 const { Option } = Select;
 
@@ -46,7 +46,7 @@ const AdminSucursal = ({ idsucursalx }) => {
             formDataObject.append('secdescripcion','Sector de atencion' );
             formDataObject.append('id_sucursal',idsucursalx );
 
-            const response = await fetch('http://127.0.0.1:8000/sucursal/crearGeosector/', {
+            const response = await fetch(API_URL +'/sucursal/crearGeosector/', {
                 method: 'POST',
                 body: formDataObject,
             });
@@ -122,7 +122,7 @@ const AdminSucursal = ({ idsucursalx }) => {
             const formDataObject = new FormData();
             formDataObject.append('detalle', JSON.stringify(jsonHorario));
 
-            const response = await fetch('http://127.0.0.1:8000/horarios/edit/' + idhorario, {
+            const response = await fetch(API_URL +'/horarios/edit/' + idhorario, {
                 method: 'POST',
                 body: formDataObject,
             });
@@ -169,7 +169,7 @@ const AdminSucursal = ({ idsucursalx }) => {
             formDataObject.append('detalle', JSON.stringify(jsonHorario));
             formDataObject.append('idsucursal', idsucursalx);
 
-            const response = await fetch('http://127.0.0.1:8000/horarios/CrearHorarioSucursal/', {
+            const response = await fetch(API_URL +'/horarios/CrearHorarioSucursal/', {
                 method: 'POST',
                 body: formDataObject,
             });
@@ -206,7 +206,7 @@ const AdminSucursal = ({ idsucursalx }) => {
     const fetchHorarioDetails = async (idHorario) => {
         try {
             console.log(idHorario);
-            const response = await fetch('http://127.0.0.1:8000/horarios/get/' + idHorario);
+            const response = await fetch(API_URL +'/horarios/get/' + idHorario);
             const data = await response.json();
 
             if (data.detalles) {
@@ -224,7 +224,7 @@ const AdminSucursal = ({ idsucursalx }) => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/sucursal/cargarSucursal/${idsucursalx}`, {
+            const response = await fetch(API_URL +`/sucursal/cargarSucursal/${idsucursalx}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -269,7 +269,7 @@ const AdminSucursal = ({ idsucursalx }) => {
         formData.append('id_sucursal', idsucursalx);
         formData.append('sestado', checked ? '1' : '0');
 
-        fetch('http://127.0.0.1:8000/sucursal/actsucursal/', {
+        fetch(API_URL +'/sucursal/actsucursal/', {
             method: 'POST',
             body: formData,
         })
@@ -304,7 +304,7 @@ const AdminSucursal = ({ idsucursalx }) => {
                 console.error('Tipo de archivo no válido');
             }
 
-            const response = await fetch('http://127.0.0.1:8000/sucursal/EditarSucursal/' + idsucursalx, {
+            const response = await fetch(API_URL +'/sucursal/EditarSucursal/' + idsucursalx, {
                 method: 'POST',
                 body: formData,
             });
@@ -337,7 +337,7 @@ const AdminSucursal = ({ idsucursalx }) => {
                 formData.append('latitud', latitud);
                 formData.append('longitud', longitud);
 
-                fetch('http://127.0.0.1:8000/sucursal/editarubicacion/', {
+                fetch(API_URL +'/sucursal/editarubicacion/', {
                     method: 'POST',
                     body: formData,
                 })

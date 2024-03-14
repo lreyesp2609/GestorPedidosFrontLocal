@@ -6,6 +6,7 @@ import descar from './res/descargaapp.png'
 import imgsucur from './res/sucursales.png'
 import masvendidos from './res/maspedidos.png'
 import imgrecompensas from './res/recompensas.png'
+import API_URL from '../config';
 
 
 
@@ -50,7 +51,7 @@ const Carrusel = () => {
   // Función para obtener los avisos principales de la API
   const fetchAvisosPrincipales = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/avisos/avisos/');
+      const response = await fetch(API_URL +'/avisos/avisos/');
       const data = await response.json();
       setAvisos(data.avisos_principales);
     } catch (error) {

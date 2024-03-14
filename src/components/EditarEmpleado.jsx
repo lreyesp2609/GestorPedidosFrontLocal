@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Avatar, Modal, Form, Input, Button, Select, Badge, Drawer } from 'antd';
-
+import API_URL from '../config.js';
 const EditarEmpleado = ({ idsucur, oficio }) => {
     const [sucursales, setSucursales] = useState([]);
     const [empleados, setEmpleados] = useState(null);
@@ -41,7 +41,7 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
             if (!idsucur) {
                 idsucur = 0;
             }
-            const responseEmpleados = await fetch('http://127.0.0.1:8000/empleado/listar-empleados/' + idsucur + '/');
+            const responseEmpleados = await fetch(API_URL +'/empleado/listar-empleados/' + idsucur + '/');
 
             if (!responseEmpleados.ok) {
                 throw new Error('Error fetching empleados');
@@ -54,7 +54,7 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
         }
 
         try {
-            const responseSucursales = await fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/');
+            const responseSucursales = await fetch(API_URL +'/sucursal/sucusarleslist/');
             if (!responseSucursales.ok) {
                 throw new Error('Error fetching sucursales');
             }
@@ -90,7 +90,7 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
             console.log('ID del empleado:', editedEmpleado.id);
             console.log('Datos del formulario:', form.getFieldsValue());
 
-            const response = await fetch('http://127.0.0.1:8000/empleado/editar-empleado/' + editedEmpleado.tipo + '/' + editedEmpleado.id + '/', {
+            const response = await fetch(API_URL +'/empleado/editar-empleado/' + editedEmpleado.tipo + '/' + editedEmpleado.id + '/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
                     if (!idsucur) {
                         idsucur = 0;
                     }
-                    const responseEmpleados = await fetch('http://127.0.0.1:8000/empleado/listar-empleados/' + idsucur + '/');
+                    const responseEmpleados = await fetch(API_URL +'/empleado/listar-empleados/' + idsucur + '/');
 
                     if (!responseEmpleados.ok) {
                         throw new Error('Error fetching empleados');

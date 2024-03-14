@@ -3,7 +3,7 @@ import { notification, Segmented, Table, Tag, Tooltip, Avatar, Button, Row, Col,
 import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import imginventario from './res/imginventario.png';
 import CrearInventario from './crearinventario';
-
+import API_URL from '../config.js';
 const Inventario = () => {
     const [selectedOpcion, setSelectedOpcion] = useState('Inventario');
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,23 +21,23 @@ const Inventario = () => {
 
     const cargarInventario = async () => {
         try {
-            const responseInventario = await fetch('http://127.0.0.1:8000/Inventario/verinventario/');
+            const responseInventario = await fetch(API_URL +'/Inventario/verinventario/');
             const dataInventario = await responseInventario.json();
             setInventario(dataInventario.inventario);
 
-            const responseBodegas = await fetch('http://127.0.0.1:8000/bodega/listar/');
+            const responseBodegas = await fetch(API_URL +'/bodega/listar/');
             const dataBodegas = await responseBodegas.json();
             setBodegas(dataBodegas.bodegas);
 
-            const responseProductos = await fetch('http://127.0.0.1:8000/producto/listar/');
+            const responseProductos = await fetch(API_URL +'/producto/listar/');
             const dataProductos = await responseProductos.json();
             setProductos(dataProductos.productos);
 
-            const responseComponentes = await fetch('http://127.0.0.1:8000/producto/listarcomponentes/');
+            const responseComponentes = await fetch(API_URL +'/producto/listarcomponentes/');
             const dataComponentes = await responseComponentes.json();
             setComponentes(dataComponentes.componentes);
 
-            const responseUnidadesMedida = await fetch('http://127.0.0.1:8000/producto/listarum/');
+            const responseUnidadesMedida = await fetch(API_URL +'/producto/listarum/');
             const dataUnidadesMedida = await responseUnidadesMedida.json();
             setUnidadesMedida(dataUnidadesMedida.unidades_medida);
         } catch (error) {
@@ -81,7 +81,7 @@ const Inventario = () => {
             const formData = new FormData();
             formData.append('nuevo_stock_minimo', newStockMinimo);
     
-            const response = await fetch(`http://127.0.0.1:8000/Inventario/editar/${id}/`, {
+            const response = await fetch(API_URL +`/Inventario/editar/${id}/`, {
                 method: 'POST',
                 body: formData,
             });

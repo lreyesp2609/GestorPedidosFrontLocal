@@ -7,7 +7,7 @@ import reversionpedido from './res/reversionpedido.png';
 import reversionproveedor from './res/reversionproveedor.png';
 import reversionpago from './res/reversionpago.png';
 import reversionfactura from './res/reversionfactura.png';
-
+import API_URL from '../config.js';
 const VerReversionesPedidos = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [detalleVisible, setDetalleVisible] = useState(false);
@@ -23,7 +23,7 @@ const VerReversionesPedidos = () => {
     }, []);
 
     const cargarFacturas = () => {
-        fetch('http://127.0.0.1:8000/Mesero/lista_facturas/')
+        fetch(API_URL +'/Mesero/lista_facturas/')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener las facturas');

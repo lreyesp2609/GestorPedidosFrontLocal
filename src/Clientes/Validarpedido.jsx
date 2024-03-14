@@ -4,6 +4,7 @@ import {
   Row,
   Col
 } from 'react-bootstrap';
+import API_URL from '../config';
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
 
@@ -22,7 +23,7 @@ const ValidarPedido = () => {
     const obtenerPedidos = async () => {
       try {
         devolverid();
-        const response = await fetch(`http://127.0.0.1:8000/cliente/obtener_pedido2/`);
+        const response = await fetch(API_URL +`/cliente/obtener_pedido2/`);
 
         if (!response.ok) {
           throw new Error(`Error en la solicitud: ${response.statusText}`);
@@ -77,7 +78,7 @@ const ValidarPedido = () => {
 
   const devolverid = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/Login/id/', {
+      const response = await fetch(API_URL +'/Login/id/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ const ValidarPedido = () => {
       formData.append('estado_pago', 'Pagado');  // Cambia al estado deseado al validar
       formData.append('id_cuenta', idcuenta);
       // Realiza la solicitud POST a la API
-      const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
+      const response = await fetch(API_URL +`/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
         method: 'POST',
         body: formData,
       });
@@ -152,7 +153,7 @@ const ValidarPedido = () => {
       formData.append('estado_pago', 'Denegado');  // Cambia al estado deseado al denegar
       formData.append('id_cuenta', idcuenta);
       // Realiza la solicitud POST a la API
-      const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
+      const response = await fetch(API_URL +`/cliente/actualizar_pago/${recordPago.id_pedido}/`, {
         method: 'POST',
         body: formData,
       });
@@ -198,7 +199,7 @@ const ValidarPedido = () => {
       const formData = new FormData();
       formData.append('estado_pago', selectedPaymentState);
       // Realiza la solicitud POST
-      const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pago/${selectedRecord.id_pedido}/`, {
+      const response = await fetch(API_URL +`/cliente/actualizar_pago/${selectedRecord.id_pedido}/`, {
         method: 'POST',
         body: formData,
       });
@@ -266,7 +267,7 @@ const ValidarPedido = () => {
       formData.append('estado_del_pedido', selectedPedido.estado_del_pedido);
 
 
-      const response = await fetch(`http://127.0.0.1:8000/cliente/actualizar_pedido/${selectedPedido.id_pedido}/`, {
+      const response = await fetch(API_URL +`/cliente/actualizar_pedido/${selectedPedido.id_pedido}/`, {
         method: 'POST',
         body: formData,
       });

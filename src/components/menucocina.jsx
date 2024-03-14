@@ -4,7 +4,7 @@ import { Layout, Input, Segmented, Avatar, Card, Divider, Watermark } from 'antd
 import { Container, Row, Col, Button, Form, Nav, Navbar, NavDropdown, Dropdown, Offcanvas } from 'react-bootstrap';
 import TipoProducto from './cocina/tipoproducto';
 import CategoriaCocina from './cocina/categoria';
-
+import API_URL from '../config.js';
 const MenuCocina = () => {
     const [empresaInfo, setEmpresaInfo] = useState(null);
     const [optionSucursales, setOptions] = useState([]);
@@ -18,7 +18,7 @@ const MenuCocina = () => {
 
     const obtenerInformacionEmpresa = async () => {
         try {
-            const respuesta = await fetch('http://127.0.0.1:8000/empresa/infoEmpresa/', {
+            const respuesta = await fetch(API_URL +'/empresa/infoEmpresa/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const MenuCocina = () => {
             });
             const datos = await respuesta.json();
             setEmpresaInfo(datos.empresa_info);
-            fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
+            fetch(API_URL +'/sucursal/sucusarleslist/')
                 .then((response) => response.json())
                 .then((data) => {
                     setSucursalesData(data.sucursales);
@@ -49,7 +49,7 @@ const MenuCocina = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/Login/rol/', {
+                const response = await fetch(API_URL +'/Login/rol/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

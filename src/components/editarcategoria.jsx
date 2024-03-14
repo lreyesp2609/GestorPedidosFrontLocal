@@ -3,6 +3,7 @@ import { Tag, Table, Space, Image, Button, Form, Input, Select, Modal, Upload, D
 import { UploadOutlined, EditTwoTone, DeleteFilled } from '@ant-design/icons';
 import { Row, Col } from 'react-bootstrap';
 import CrearCategoria from './crearcategoria';
+import API_URL from '../config.js';
 
 const EditarCategoria = ({ onCancel }) => {
   const [categorias, setCategorias] = useState([]);
@@ -37,10 +38,10 @@ const EditarCategoria = ({ onCancel }) => {
 
   const fetchCategorias = async () => {
     try {
-      const responseCategorias = await fetch('http://127.0.0.1:8000/producto/listar_categorias/');
+      const responseCategorias = await fetch(API_URL +'/producto/listar_categorias/');
       const dataCategorias = await responseCategorias.json();
 
-      const responseTiposProductos = await fetch('http://127.0.0.1:8000/producto/listarproductos/');
+      const responseTiposProductos = await fetch(API_URL +'/producto/listarproductos/');
       const dataTiposProductos = await responseTiposProductos.json();
 
       const tiposProductosMap = {};
@@ -64,7 +65,7 @@ const EditarCategoria = ({ onCancel }) => {
       const formData = new FormData();
       console.log('El valor enviado es :' + idca)
       formData.append('sestado', 0);
-      const response = await fetch(`http://127.0.0.1:8000/producto/editar_categoria/${idca}/`, {
+      const response = await fetch(API_URL +`/producto/editar_categoria/${idca}/`, {
         method: 'POST',
         body: formData,
       });
@@ -88,7 +89,7 @@ const EditarCategoria = ({ onCancel }) => {
     const fetchTiposProductos = async () => {
       console.log('Que pasae');
       try {
-        const response = await fetch('http://127.0.0.1:8000/producto/listarproductos/');
+        const response = await fetch(API_URL +'/producto/listarproductos/');
         const data = await response.json();
         setTiposProductos(data.tipos_productos);
       } catch (error) {
@@ -125,7 +126,7 @@ const EditarCategoria = ({ onCancel }) => {
       }
 
       const response = await fetch(
-        `http://127.0.0.1:8000/producto/editar_categoria/${selectedCategoria.id_categoria}/`,
+        API_URL +`/producto/editar_categoria/${selectedCategoria.id_categoria}/`,
         {
           method: 'POST',
           body: formData,

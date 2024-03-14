@@ -19,6 +19,7 @@ const { Meta } = Card;
 import { notification } from "antd";
 import animationData from "../assets/lottis/B.json"; // Importa el archivo JSON de tu animación
 import Pedidos from "./pedido";
+import API_URL from '../config';
 
 const ShoppingCart = () => {
   const [cart, setCart] = useContext(CartContext);
@@ -56,7 +57,7 @@ const ShoppingCart = () => {
   const id_cuenta = localStorage.getItem("id_cuenta");
   useEffect(() => {
     if (id_cuenta) {
-      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${id_cuenta}/`)
+      fetch(API_URL +`/Login/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.usuario);
@@ -183,8 +184,6 @@ const ShoppingCart = () => {
             {cart.length > 0 && (
               <Container>
                 <Badge count={"Productos en el carrito: " + totalQuantity} showZero color='#faad14' />
-                <h2>Productos Normales</h2>
-                
                 <ul>
                   {cart.map((item) => (
                     <div
