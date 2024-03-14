@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
-const MapS = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucursal }) => {
+const Crearsector = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucursal }) => {
     const [center, setCenter] = useState([-1.0241157747979186, -79.46108497663826]);
     const mapRef = useRef(null);
 
@@ -45,7 +45,6 @@ const MapS = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucu
 
         return null;
     };
-
 
     // Utilizar useEffect para ajustar el zoom para que todos los marcadores sean visibles
     useEffect(() => {
@@ -97,12 +96,9 @@ const MapS = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucu
                         ))}
                     </>
                 )}
-
-
-                <SearchControlHandler />
             </MapContainer>
         </div>
     );
 };
 
-export default MapS;
+export default Crearsector;

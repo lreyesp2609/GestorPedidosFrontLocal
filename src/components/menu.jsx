@@ -21,6 +21,7 @@ import imgaviso from "./res/imgaviso.png";
 import imgmesas from "./res/imgmesas.png";
 import imgcombos from "./res/imgcombos.png";
 import imgrecompensa from "./res/imgrecompensa.png";
+import imgzonas from "./res/zonaentrega.png"
 import imcocina from "./res/cocinar.png";
 import imgbodegas from "./res/imgbodegas.png";
 import imginventario from "./res/imginventario.png";
@@ -37,6 +38,7 @@ import Mesas from "./editarmesa.jsx";
 import EditarBodegaForm from "./editarbodega.jsx";
 import Proveedores from "./proveedores.jsx";
 import Inventario from "./editarinventario.jsx";
+import ZonasCover from "./zonascobertura.jsx";
 import Pagos from "./res/pagosempleado.png";
 import CrearRecompensaProductoForm from "./CrearRecompensaProducto.jsx";
 import Recompensa from "./recompensa.jsx";
@@ -79,6 +81,7 @@ const MenuG = ({menuSelect}) => {
   const tooltipTitle18 = "Validar pagos de pedidos";
   const tooltipTitle19 = "Gestiona tus puntos de facturación";
   const tooltipTitle20 = "Agrega tus datos bancarios";
+  const tooltipTitle21="Agrega zonas de entrega"
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -612,6 +615,32 @@ const MenuG = ({menuSelect}) => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Zonas de entrega" color="#162703">
+                <Tooltip title={tooltipTitle21}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    cover={
+                      <Image
+                        alt="Datos bancarios"
+                        src={imgzonas}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                    onClick={() => handleCardClick("Zonas")}
+                  >
+                    <Meta title={tooltipTitle21}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
             {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
@@ -645,6 +674,15 @@ const MenuG = ({menuSelect}) => {
             <Row>
               <Col md={12}>
                 <Empresa />
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage === "Zonas" && (
+          <>
+            <Row>
+              <Col md={12}>
+                <ZonasCover/>
               </Col>
             </Row>
           </>
