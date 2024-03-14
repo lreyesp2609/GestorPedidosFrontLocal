@@ -8,7 +8,7 @@ import pointInPolygon from 'point-in-polygon';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import API_URL from '../config.js';
 
-const Geosector = ({ onGeoSectorSave, shadedPolygonCoordinates, prevValores }) => {
+const Geosector = ({ onGeoSectorSave, shadedPolygonCoordinates, prevValores,tipogeo }) => {
     const [center, setCenter] = useState([-1.0241157747979186, -79.46108497663826]);
     const [currentLocation, setCurrentLocation] = useState([]);
     const [polyline, setPolyline] = useState([]);
@@ -94,7 +94,7 @@ const Geosector = ({ onGeoSectorSave, shadedPolygonCoordinates, prevValores }) =
     };
 
     const handleSaveGeoSector = () => {
-        if (currentLocation && shadedPolygonCoordinates) {
+        if (currentLocation && shadedPolygonCoordinates && !tipogeo) {
             const shadedCoordinatesArray = [parseFloat(shadedPolygonCoordinates.latitude), parseFloat(shadedPolygonCoordinates.longitude)];
             if (shadedCoordinatesArray) {
                 const coordinatesArray = currentLocation.map((marker) => [marker.latitude, marker.longitude]);
