@@ -8,10 +8,24 @@ const ZonasCover = () => {
     const [MostrarModal, setMostrarModal] = useState(false);
     const [MostrarModalEdit, setMostrarModalEdit] = useState(false);
     const [nombreGeo, setNombreGeo] = useState('');
+    const [MostrarModalMoto, setMostrarModalMoto] = useState(false);
     const [rutas, setRutas] = useState([]);
     const [valorGeo, setValorGeo] = useState(false);
     const [idGeo, setidGeo] = useState(false);
-    
+    const handleMotorizados = (idGeosector) => {
+        // Aquí debes buscar el geosector correspondiente al idGeosector seleccionado
+        const geosectorSeleccionado = rutas.find(ruta => ruta.id_geosector === idGeosector);
+        console.log('Que es esto?');
+        console.log(geosectorSeleccionado.ubicaciones);
+        if (geosectorSeleccionado) {
+            setNombreGeo(geosectorSeleccionado.secnombre);
+            setidGeo(idGeosector);
+            setMostrarModalMoto(true);
+            listRutas();
+        } else {
+            console.log('No se encontró el geosector correspondiente');
+        }
+    };
 
     const handleEditar = (idGeosector) => {
         // Aquí debes buscar el geosector correspondiente al idGeosector seleccionado
@@ -34,6 +48,9 @@ const ZonasCover = () => {
     };
     const CerrarModalEdit = () => {
         setMostrarModalEdit(false);
+    };
+    const CerrarModalMoto = () => {
+        setMostrarModalMoto(false);
     };
 
     useEffect(() => {
@@ -131,9 +148,13 @@ const ZonasCover = () => {
             dataIndex: 'id_geosector',
             key: 'id_geosector',
             render: (id) => {
-                return <Button onClick={() => handleEditar(id)}>
+                return <>
+                <Button onClick={() => handleEditar(id)}>
                     Editar
-                </Button>;
+                </Button>  <Button onClick={() => handleMotorizados(id)}>
+                    Motorizados
+                </Button>
+                </>;
             },
         }]
 
@@ -220,7 +241,7 @@ const ZonasCover = () => {
             </Modal>
             <Modal show={MostrarModalEdit} onHide={CerrarModalEdit} size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>Crear zona</Modal.Title>
+                    <Modal.Title>Editar zona</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
@@ -238,6 +259,16 @@ const ZonasCover = () => {
                     {valorGeo && (
                         <Geosector style={{height:'500px'}} onGeoSectorSave={EditarRuta} prevValores={valorGeo} shadedPolygonCoordinates={{ latitude: valorGeo[0].latitud, longitude: valorGeo[0].longitud }} tipogeo={'R'}/>
                     )}
+                </Modal.Body>
+            </Modal>
+            <Modal show={MostrarModalMoto} onHide={CerrarModalMoto} size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>Motorizados</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        
+                    </Row>
                 </Modal.Body>
             </Modal>
         </div>
