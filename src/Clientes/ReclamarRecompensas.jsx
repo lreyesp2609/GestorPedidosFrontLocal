@@ -114,18 +114,25 @@ const Reclamar = () => {
           const formData = new FormData();
           formData.append('puntos_recompensa_producto', recompensa.puntos_recompensa_producto);
           formData.append('id_recompensa_producto', recompensa.id_recompensa_producto);
+      
           // Realiza la solicitud POST a la API
           const response = await fetch(API_URL +`/Recompensas/Restar_puntos/${id_cuenta}/`, {
             method: 'POST',
             body: formData,
           });
-    
+      
           // Verifica si la solicitud fue exitosa
           if (!response.ok) {
             throw new Error(`Error en la solicitud: ${response.statusText}`);
           }
+      
+          // Devuelve true si todo fue exitoso
+          return true;
         } catch (error) {
           console.error(error.message);
+          
+          // Devuelve false si hubo un error
+          return false;
         }
       };
       
@@ -133,7 +140,7 @@ const Reclamar = () => {
         obtenerProductos();
         obtenerDatosDeAPI();
         ObtenerUsuario();
-      },[userData, recompensasProductos]);
+      },[]);
 
 return(
         
