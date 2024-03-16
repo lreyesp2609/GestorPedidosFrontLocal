@@ -302,7 +302,8 @@ const Sucursalescliente = () => {
                                                 onClick={() => handleSucursalClick(sucursal)} // Manejador de clics para cada tarjeta de sucursal
                                                 className="text-center"
                                             >
-                                                <Popover
+                                                {sucursal.horario && (
+                                                    <Popover
                                                     key={sucursal.id_sucursal}
                                                     title={"Horario:"}
                                                     content={
@@ -324,6 +325,8 @@ const Sucursalescliente = () => {
                                                         {sucursal.estadoApertura}
                                                     </span>
                                                 </Popover>
+                                                )}
+                                                
                                             </Card>
                                         ))}
                                     </Col>
