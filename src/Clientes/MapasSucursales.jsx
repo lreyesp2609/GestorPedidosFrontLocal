@@ -50,13 +50,19 @@ const MapS = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucu
     // Utilizar useEffect para ajustar el zoom para que todos los marcadores sean visibles
     useEffect(() => {
         if (mapRef.current && sucursales.length > 0) {
-            const bounds = L.latLngBounds(sucursales.map((sucursal) => [sucursal.id_ubicacion.latitud, sucursal.id_ubicacion.longitud]));
-            mapRef.current.fitBounds(bounds, { padding: [100, 100] });
+            const sucursalesConUbicacion = sucursales.filter((sucursal) => sucursal.id_ubicacion && sucursal.id_ubicacion.latitud !== null && sucursal.id_ubicacion.longitud !== null);
+    
+            if (sucursalesConUbicacion.length > 0) {
+                const bounds = L.latLngBounds(sucursalesConUbicacion.map((sucursal) => [sucursal.id_ubicacion.latitud, sucursal.id_ubicacion.longitud]));
+                mapRef.current.fitBounds(bounds, { padding: [100, 100] });
+            }
         }
-        if (selectedSucursal) {
+    
+        if (selectedSucursal && selectedSucursal.id_ubicacion && selectedSucursal.id_ubicacion.latitud !== null && selectedSucursal.id_ubicacion.longitud !== null) {
             const { latitud, longitud } = selectedSucursal.id_ubicacion;
             mapRef.current.flyTo([latitud, longitud], 15);
         }
+        console.log("Aqui funciona aver?");
     }, [sucursales, selectedSucursal]);
 
 
@@ -75,7 +81,9 @@ const MapS = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucu
                 {sucursales && (
                     <>
                         {sucursales.map((sucursal) => (
-                            <Marker
+                            <>
+                            {sucursal.id_ubicacion.latitud && (
+                                <Marker
                                 key={sucursal.id_sucursal}
                                 position={[sucursal.id_ubicacion.latitud, sucursal.id_ubicacion.longitud]}
                                 icon={customIcon}
@@ -94,6 +102,9 @@ const MapS = ({ sucursales, onLocationSelect, onSaveLocation, logo, selectedSucu
                                     </>
                                 </Popup>
                             </Marker>
+                            )}
+                            </>
+                            
                         ))}
                     </>
                 )}
