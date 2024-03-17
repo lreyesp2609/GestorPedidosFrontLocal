@@ -46,7 +46,7 @@ const EditarUser = () => {
   };
 
   const handleSaveLocation = (marker) => {
-    if (marker) {
+    if (marker) { 
       setLocationData((prevLocationData) => ({
         ...prevLocationData,
         [`latitud${currentLocation}`]: marker.latitude,
