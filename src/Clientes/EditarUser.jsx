@@ -45,7 +45,7 @@ const EditarUser = () => {
     setMostrarModal(false);
   };
 
-  const handleSaveLocation = () => {
+  const handleSaveLocation = (marker) => {
     if (marker) {
       setLocationData((prevLocationData) => ({
         ...prevLocationData,

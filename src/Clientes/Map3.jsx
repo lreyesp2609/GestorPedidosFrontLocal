@@ -12,6 +12,7 @@ const Map3 = ({ onLocationSelect, onSaveLocation  }) => {
   const mapRef = useRef(null);
 
   const handleSaveLocation = () => {
+    console.log('Hola por favorw');
     if (marker) {
       console.log('Hola por favor');
       onSaveLocation(marker);
