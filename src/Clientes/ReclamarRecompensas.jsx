@@ -4,6 +4,7 @@ import { Row, Col, Button } from 'react-bootstrap';
 import {RecompensaContext} from "../context/RecompensaContext"
 import API_URL from '../config';
 
+
 const { Meta } = AntCard;
 const Reclamar = () => {
     const [products, setProducts] = useState([]);
@@ -11,40 +12,47 @@ const Reclamar = () => {
    
     const [recompensa, setrecompensa] = useContext(RecompensaContext);
     const addToCart = (productId, productName, productImage, productPoints) => {
-      if (!userData || userData.cpuntos < productPoints) {
+      console.log('userData:', userData);
+      console.log('productPoints:', productPoints);
+      const userPoints = parseInt(userData.cpuntos);
+      const pointsNeeded = parseInt(productPoints);
+      if (!isNaN(userPoints) && !isNaN(pointsNeeded) && userPoints >= pointsNeeded) {
+        setrecompensa((currItems) => {
+          const isItemFound = currItems.find((item) => item.id === productId);
+    
+          if (isItemFound) {
+            console.log('Item encontrado en el carrito. Actualizando cantidad...');
+            return currItems.map((item) => {
+              if (item.id === productId) {
+                return { ...item, quantity: item.quantity + 1 };
+              } else {
+                return item;
+              }
+            });
+          } else {
+            console.log('Añadiendo nueva recompensa al carrito...');
+            return [
+              ...currItems,
+              {
+                id: productId,
+                type: 'recompensa',
+                quantity: 1,
+                Name: productName,
+                image: productImage,
+                price: 0,
+                puntos: productPoints,
+              },
+            ];
+          }
+        });
+      } else {
         console.log('No tienes suficientes puntos para reclamar esta recompensa.');
         notification.error({
-          message: 'Puntos insuficentes',
+          message: 'Puntos insuficientes',
           description: 'No tienes suficientes puntos para reclamar esta recompensa.',
         });
-        return;
       }
-    
-      setrecompensa((currItems) => {
-        const isItemFound = currItems.find((item) => item.id === productId);
-    
-        if (isItemFound) {
-          console.log('Item encontrado en el carrito. Actualizando cantidad...');
-          return currItems.map((item) => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
-        }
-    
-        console.log('Añadiendo nueva recompensa al carrito...');
-        return [
-          ...currItems,
-          {
-            id: productId,
-            type: 'recompensa',
-            quantity: 1,
-            Name: productName,
-            image: productImage,
-            price: 0,
-            puntos: productPoints,
-          },
-        ];
-      });
     };
-    
-
     
     
     const [userData, setUserData] = useState(null);
@@ -56,16 +64,7 @@ const Reclamar = () => {
         const data = await response.json();
   
         if (response.ok) {
-          setUserData(data.usuario.cpuntos);
-  
-          setLocationData({
-            latitud1: data.usuario?.ubicacion1?.latitud || 0,
-            longitud1: data.usuario?.ubicacion1?.longitud || 0,
-            latitud2: data.usuario?.ubicacion2?.latitud || 0,
-            longitud2: data.usuario?.ubicacion2?.longitud || 0,
-            latitud3: data.usuario?.ubicacion3?.latitud || 0,
-            longitud3: data.usuario?.ubicacion3?.longitud || 0,
-          });
+          setUserData(data.usuario);
         } else {
           // Manejo de errores si la respuesta no está OK
           console.error("Error al obtener datos del usuario:", data.message || "Error desconocido");
@@ -114,7 +113,7 @@ const Reclamar = () => {
           const formData = new FormData();
           formData.append('puntos_recompensa_producto', recompensa.puntos_recompensa_producto);
           formData.append('id_recompensa_producto', recompensa.id_recompensa_producto);
-      
+          console.log('puntos restados')
           // Realiza la solicitud POST a la API
           const response = await fetch(API_URL +`/Recompensas/Restar_puntos/${id_cuenta}/`, {
             method: 'POST',
