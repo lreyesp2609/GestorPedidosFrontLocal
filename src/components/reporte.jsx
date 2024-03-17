@@ -51,7 +51,13 @@ const ReportManagement = () => {
 
   const [modalVisibleReverso, setModalVisibleReverso] = useState(false);
   const [selectedReverso, setSelectedReverso] = useState(null);
+  const [startMonthYear, setStartMonthYear] = useState(null);
+  const [endMonthYear, setEndMonthYear] = useState(null);
+  const [selectedMesName, setSelectedMesName] = useState("")
+  const [showMesOptions, setShowMesOptions] = useState(false);
 
+  const [modalVisibleTop, setModalVisibleTop] = useState(false);
+  const [selectedTop, setSelectedTop] = useState(null);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -129,7 +135,7 @@ const ReportManagement = () => {
 
   const fetchTipoProductos = () => {
     setLoading(true);
-    fetch(API_URL +"/producto/listarproductos/")
+    fetch(API_URL + "/producto/listarproductos/")
       .then((response) => response.json())
       .then((data) => {
         setTipoProductos(data.tipos_productos);
@@ -140,7 +146,7 @@ const ReportManagement = () => {
 
   const fetchProductos = () => {
     setLoading(true);
-    fetch(API_URL +"/producto/listar/")
+    fetch(API_URL + "/producto/listar/")
       .then((response) => response.json())
       .then((data) => {
         setProductos(data.productos);
@@ -151,7 +157,7 @@ const ReportManagement = () => {
 
   const fetchCategorias = () => {
     setLoading(true);
-    fetch(API_URL +"/producto/listar_categorias/")
+    fetch(API_URL + "/producto/listar_categorias/")
       .then((response) => response.json())
       .then((data) => {
         setCategorias(data.categorias);
@@ -162,7 +168,7 @@ const ReportManagement = () => {
 
   const fetchCategoriasCombos = () => {
     setLoading(true);
-    fetch(API_URL +"/combos/listcategoria/")
+    fetch(API_URL + "/combos/listcategoria/")
       .then((response) => response.json())
       .then((data) => {
         setCategoriasCombos(data.categorias_combos);
@@ -174,7 +180,7 @@ const ReportManagement = () => {
 
   const fetchSucursales = () => {
     setLoading(true);
-    fetch(API_URL +"/sucursal/sucusarleslist/")
+    fetch(API_URL + "/sucursal/sucusarleslist/")
       .then((response) => response.json())
       .then((data) => {
         setSucursales(data.sucursales);
@@ -185,7 +191,7 @@ const ReportManagement = () => {
 
   const fetchMeseros = () => {
     setLoading(true);
-    fetch(API_URL +"/Mesero/listar_meseros/")
+    fetch(API_URL + "/Mesero/listar_meseros/")
       .then((response) => response.json())
       .then((data) => {
         setMeseros(data.meseros);
@@ -196,7 +202,7 @@ const ReportManagement = () => {
 
   const fetchEmpresaInfo = () => {
     setLoading(true);
-    fetch(API_URL +"/empresa/infoEmpresa/", {
+    fetch(API_URL + "/empresa/infoEmpresa/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -225,6 +231,7 @@ const ReportManagement = () => {
     { key: 7, reportName: "Reporte de ventas" },
     { key: 8, reportName: "Reporte de pagos" },
     { key: 9, reportName: "Reporte de reverso" },
+    { key: 10, reportName: "Reporte de top ventas" },
   ];
 
   const handleSucursal = () => {
@@ -244,13 +251,13 @@ const ReportManagement = () => {
     let url;
 
     if (selectedTipoEmpleado === "todas" && selectedSucursal === "todas") {
-      url = API_URL +"/empleado/listar-empleados-tipo/";
+      url = API_URL + "/empleado/listar-empleados-tipo/";
     } else if (selectedTipoEmpleado === "todas") {
-      url = API_URL +`/empleado/listar-empleados-tipo/${selectedSucursal}/`;
+      url = API_URL + `/empleado/listar-empleados-tipo/${selectedSucursal}/`;
     } else if (selectedSucursal === "todas") {
-      url = API_URL +`/empleado/listar-empleados-tipo/todas/${selectedTipoEmpleado}/`;
+      url = API_URL + `/empleado/listar-empleados-tipo/todas/${selectedTipoEmpleado}/`;
     } else {
-      url = API_URL +`/empleado/listar-empleados-tipo/${selectedSucursal}/${selectedTipoEmpleado}/`;
+      url = API_URL + `/empleado/listar-empleados-tipo/${selectedSucursal}/${selectedTipoEmpleado}/`;
     }
     // Verificar si selectedTipoEmpleado es null antes de hacer la solicitud GET
     if (selectedTipoEmpleado !== null) {
@@ -283,7 +290,7 @@ const ReportManagement = () => {
 
 
   const handlePagos = () => {
-    fetch(API_URL +"/pagos/ConsultarPagos/")
+    fetch(API_URL + "/pagos/ConsultarPagos/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos de pagos:", data.pagos);
@@ -302,7 +309,7 @@ const ReportManagement = () => {
   };
 
   const handleGenerateFacturas = () => {
-    fetch(API_URL +"/Mesero/validar_facturas/")
+    fetch(API_URL + "/Mesero/validar_facturas/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos de facturas emitidas:", data);
@@ -324,7 +331,7 @@ const ReportManagement = () => {
 
   const generateClientesReport = () => {
     setLoading(true);
-    fetch(API_URL +"/cliente/ver_clientes/")
+    fetch(API_URL + "/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => {
         setLoading(false);
@@ -359,9 +366,9 @@ const ReportManagement = () => {
       let url;
 
       if (selectedOption === "todas") {
-        url = API_URL +"/producto/listar-productos/";
+        url = API_URL + "/producto/listar-productos/";
       } else {
-        url = API_URL +`/producto/listar-productos/categoria/${selectedOption}/`;
+        url = API_URL + `/producto/listar-productos/categoria/${selectedOption}/`;
       }
 
       fetch(url)
@@ -392,9 +399,9 @@ const ReportManagement = () => {
       let url;
 
       if (selectedCombos === "todas") {
-        url = API_URL +"/combos/ver_combost/";
+        url = API_URL + "/combos/ver_combost/";
       } else {
-        url = API_URL +`/combos/ver_combosc/${selectedCombos}/`;
+        url = API_URL + `/combos/ver_combosc/${selectedCombos}/`;
       }
 
       fetch(url)
@@ -409,6 +416,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
+          setModalVisibleCombos(false);
         })
         .catch((error) =>
           console.error("Error al obtener los combos:", error)
@@ -417,6 +425,11 @@ const ReportManagement = () => {
       console.log("No se ha seleccionado ninguna categoría");
     }
   }
+  const formatDate = (dateString) => {
+    const [month, year] = dateString.split('/');
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    return `${monthNames[parseInt(month) - 1]}/${year}`;
+  };
 
   const handleVentas = () => {
     console.log("Tipo de Reporte Seleccionado:", selectedVenta);
@@ -424,59 +437,61 @@ const ReportManagement = () => {
     console.log("Sucursal seleccionada:", selectedSucursal);
     console.log("Tipo seleccionado:", selectedTipoProducto);
 
-    if (dateRange && dateRange.length === 2) {
-      let url;
-      if (selectedVenta === "mesero") {
-        if (selectedMesero === "todas") {
-          url = API_URL +"/Mesero/listapedidospagados/";
-        } else {
-          url = API_URL +`/Mesero/listapedidospagado/${selectedMesero}/`;
-        }
-      } else if (selectedVenta === "sucursal") {
-        if (selectedSucursal === "todas") {
-          url = API_URL +"/Mesero/listapedidossucursal/";
-        } else {
-          url = API_URL +`/Mesero/listapedidossucursalid/${selectedSucursal}/`;
-        }
-      } else if (selectedVenta === "productos") {
-        if (selectedProducto === "todas") {
-          url = API_URL +"/Mesero/listapedidosproducto/";
-        } else {
-          url = API_URL +`/Mesero/listapedidosproductos/${selectedProducto}/`;
-        }
-      } else if (selectedVenta === "tipoproducto") {
-        if (selectedTipoProducto === "todas") {
-          url = API_URL +"/Mesero/listapedidostipoproducto/";
-        } else {
-          url = API_URL +`/Mesero/listapedidostipoproductos/${selectedTipoProducto}/`;
-        }
+    let url;
+    if (selectedVenta === "mesero") {
+      if (selectedMesero === "todas") {
+        url = API_URL + "/Mesero/listapedidospagados/";
+      } else {
+        url = API_URL + `/Mesero/listapedidospagado/${selectedMesero}/`;
       }
-
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Datos de pedidos obtenidos:", data.pedidos);
-          console.log("Rango fecha:", dateRange);
-          GenerarReportePDF({
-            empresaInfo: empresaInfo,
-            logoEmpresa: logoEmpresa,
-            selectedReport: "venta",
-            selectedSucursal: selectedSucursalName,
-            selectedMesero: selectedMeseroName,
-            selectedProducto: selectedProductoName,
-            selectedTipoProducto: selectedTipoProductoName,
-            selectedVenta: selectedVenta,
-            ventasmesero: data.pedidos,
-            dateRange: dateRange,
-            handleShowViewer: handleShowViewer,
-            setPdfBlob: setPdfBlob
-          });
-          setModalVisibleVentas(false);
-        })
-        .catch((error) => console.error("Error al obtener los datos de pedidos:", error));
-    } else {
-      console.error("Rango de fechas no válido:", dateRange);
+    } else if (selectedVenta === "sucursal") {
+      if (selectedSucursal === "todas") {
+        url = API_URL + "/Mesero/listapedidossucursal/";
+      } else {
+        url = API_URL + `/Mesero/listapedidossucursalid/${selectedSucursal}/`;
+      }
+    } else if (selectedVenta === "productos") {
+      if (selectedProducto === "todas") {
+        url = API_URL + "/Mesero/listapedidosproducto/";
+      } else {
+        url = API_URL + `/Mesero/listapedidosproductos/${selectedProducto}/`;
+      }
+    } else if (selectedVenta === "tipoproducto") {
+      if (selectedTipoProducto === "todas") {
+        url = API_URL + "/Mesero/listapedidostipoproducto/";
+      } else {
+        url = API_URL + `/Mesero/listapedidostipoproductos/${selectedTipoProducto}/`;
+      }
+    } else if (selectedVenta === "mes") {
+      if (startMonthYear && endMonthYear) {
+        url = API_URL + `/Mesero/listapedidosmes/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+      }
     }
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Datos de pedidos obtenidos:", data.pedidos);
+        console.log("Rango fecha:", dateRange);
+        const selectedMesName = selectedVenta === 'mes' ? `${formatDate(startMonthYear)} - ${formatDate(endMonthYear)}` : '';
+        GenerarReportePDF({
+          empresaInfo: empresaInfo,
+          logoEmpresa: logoEmpresa,
+          selectedReport: "venta",
+          selectedSucursal: selectedSucursalName,
+          selectedMesero: selectedMeseroName,
+          selectedProducto: selectedProductoName,
+          selectedTipoProducto: selectedTipoProductoName,
+          selectedMesName: selectedMesName,
+          selectedVenta: selectedVenta,
+          ventasmesero: data.pedidos,
+          dateRange: dateRange,
+          handleShowViewer: handleShowViewer,
+          setPdfBlob: setPdfBlob
+        });
+        setModalVisibleVentas(false);
+      })
+      .catch((error) => console.error("Error al obtener los datos de pedidos:", error));
   };
 
   const handleReverso = () => {
@@ -484,11 +499,11 @@ const ReportManagement = () => {
     if (selectedReverso != null) {
       let url;
       if (selectedReverso === "todas") {
-        url = API_URL +"/Mesero/lista_reverso_factura/";
+        url = API_URL + "/Mesero/lista_reverso_factura/";
       } else if (selectedReverso === "validas") {
-        url = API_URL +`/Mesero/factura_v_report/`;
+        url = API_URL + `/Mesero/factura_v_report/`;
       } else {
-        url = API_URL +`/Mesero/factura_n_report/`;
+        url = API_URL + `/Mesero/factura_n_report/`;
       }
 
       fetch(url)
@@ -504,6 +519,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
+          setModalVisibleReverso(false);
         })
         .catch((error) =>
           console.error("Error al obtener los reversos:", error)
@@ -512,6 +528,42 @@ const ReportManagement = () => {
       console.log("No se ha seleccionado ningún reverso");
     }
   }
+
+  const handleGenerateTopMeseroVentas = () => {
+    // Generar informe para el top de ventas por mesero
+    let url;
+    if (selectedTop === 'top_mesero') {
+      if (startMonthYear && endMonthYear) {
+        url = API_URL + `/Mesero/listaventasmeseros/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+      }
+    } else if (selectedTop === 'top_sucursal') {
+      if (startMonthYear && endMonthYear) {
+        url = API_URL + `/Mesero/listaventasmesero/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+      }
+    }
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Datos del mesero con mayores ventas:", data);
+        const selectedMesName = selectedReport === 'top' ? `${formatDate(startMonthYear)} - ${formatDate(endMonthYear)}` : '';
+        if (data.mesero_mayor_ventas) {
+          const meseroData = data.mesero_mayor_ventas;
+          GenerarReportePDF({
+            empresaInfo: empresaInfo,
+            logoEmpresa: logoEmpresa,
+            meseroData: meseroData,
+            selectedMesName: selectedMesName,
+            selectedReport: "top",
+            handleShowViewer: handleShowViewer,
+            setPdfBlob: setPdfBlob
+          });
+          setModalVisibleTop(false);
+        } else {
+          console.log("No se encontraron meseros con pedidos pagados");
+        }
+      })
+      .catch((error) => console.error("Error al obtener los datos del mesero con mayores ventas:", error));
+  };
 
   const handleShowViewer = () => {
     setPdfViewerVisible(true);
@@ -558,6 +610,9 @@ const ReportManagement = () => {
               } else if (record.reportName === "Reporte de reverso") {
                 setSelectedReport("reverso");
                 setModalVisibleReverso(true);
+              } else if (record.reportName === "Reporte de top ventas") {
+                setSelectedReport("top");
+                setModalVisibleTop(true);
               }
             }}>
               GENERAR
@@ -609,8 +664,8 @@ const ReportManagement = () => {
             >
               <Option value="todas">Todos los tipos de empleados</Option>
               <Option value="jefe_cocina">Jefes de cocina</Option>
-              <Option value="motorizado">Motorizados</Option>
-              <Option value="mesero">Meseros</Option>
+              <Option value="motorizados">Motorizados</Option>
+              <Option value="meseros">Meseros</Option>
             </Select>
           </div>
 
@@ -685,6 +740,51 @@ const ReportManagement = () => {
         </div>
       </Modal>
 
+      <Modal
+        title="Seleccionar Top"
+        open={modalVisibleTop}
+        onCancel={() => setModalVisibleTop(false)}
+        footer={null}
+      >
+        <div style={{ marginBottom: "20px" }}>
+          <p>Seleccione una opción:</p>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Seleccione una opción"
+            onChange={(value) => setSelectedTop(value)}
+          >
+            <Option value="top_mesero">Top ventas mesero</Option>
+            <Option value="top_sucursal">Top ventas sucursal</Option>
+          </Select>
+        </div>
+        <div style={{ marginBottom: "20px" }}>
+          <p>Seleccione el mes y año de inicio:</p>
+          <DatePicker.MonthPicker
+            style={{ width: "100%" }}
+            format="MM/YYYY"
+            onChange={(date, dateString, option) => {
+              setStartMonthYear(dateString);
+              setSelectedMesName(option.children);
+            }}
+          />
+
+          <p style={{ marginTop: "20px" }}>Seleccione el mes y año de fin:</p>
+          <DatePicker.MonthPicker
+            style={{ width: "100%" }}
+            format="MM/YYYY"
+            onChange={(date, dateString, option) => {
+              setEndMonthYear(dateString);
+              setSelectedMesName(option.children);
+            }}
+          />
+        </div>
+
+        <div style={{ alignSelf: "flex-end" }}>
+          <Button type="primary" onClick={handleGenerateTopMeseroVentas}>
+            Generar Reporte
+          </Button>
+        </div>
+      </Modal>
 
       <Modal
         title="Generar Reporte de Ventas"
@@ -705,14 +805,41 @@ const ReportManagement = () => {
                 setShowMeseroOptions(value === "mesero");
                 setShowProductoOptions(value === "productos");
                 setShowTipoProductoOptions(value === "tipoproducto");
+                setShowMesOptions(value === "mes");
               }}
             >
               <Select.Option value="sucursal">Sucursal</Select.Option>
               <Select.Option value="mesero">Mesero</Select.Option>
               <Select.Option value="productos">Producto</Select.Option>
               <Select.Option value="tipoproducto">Tipo de producto</Select.Option>
+              <Select.Option value="mes">Mes y Año</Select.Option>
             </Select>
           </div>
+
+          {/* Opciones adicionales para "Mes y Año" */}
+          {showMesOptions && (
+            <div style={{ marginBottom: "20px" }}>
+              <p>Seleccione el mes y año de inicio:</p>
+              <DatePicker.MonthPicker
+                style={{ width: "100%" }}
+                format="MM/YYYY"
+                onChange={(date, dateString, option) => {
+                  setStartMonthYear(dateString);
+                  setSelectedMesName(option.children);
+                }}
+              />
+
+              <p style={{ marginTop: "20px" }}>Seleccione el mes y año de fin:</p>
+              <DatePicker.MonthPicker
+                style={{ width: "100%" }}
+                format="MM/YYYY"
+                onChange={(date, dateString, option) => {
+                  setEndMonthYear(dateString);
+                  setSelectedMesName(option.children);
+                }}
+              />
+            </div>
+          )}
 
           {/* Opciones adicionales para "Mesero" */}
           {showMeseroOptions && (

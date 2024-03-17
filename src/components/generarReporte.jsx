@@ -5,7 +5,7 @@ import Plotly from 'plotly.js-dist';
 import API_URL from '../config.js';
 const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSucursal, selectedTipoEmpleado, selectedReport,
   facturasEmitidas, clientes, productos, combos, sucursal, ventasmesero, setPdfBlob, handleShowViewer, selectedVenta, dateRange,
-  selectedMesero, selectedProducto, selectedTipoProducto, pagos, reverso }) => {
+  selectedMesero, selectedProducto, selectedTipoProducto, pagos, reverso, selectedMesName, meseroData }) => {
   console.log(dateRange);
   const generarReportePDF = () => {
     const doc = new jsPDF();
@@ -62,13 +62,15 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       doc.setFontSize(10);
       doc.text(`Datos filtrados por sucursal "${selectedSucursal}" y tipos de empleados "${selectedTipoEmpleado}"`, 10, 47);
 
-      const headers = ['Nombre', 'Apellido', 'Teléfono', 'Ciudad', 'Fecha'];
+      const headers = ['Nombre', 'Apellido', 'Teléfono', 'Ciudad', 'Fecha', 'Sucursal', 'Tipo'];
       const data = empleadosData.map(empleado => [
         empleado.nombre,
         empleado.apellido,
         empleado.telefono,
         empleado.ciudad,
         empleado.fecha,
+        empleado.sucursal,
+        empleado.tipo_empleado
       ]);
 
       // Calcular el total de empleados
@@ -78,7 +80,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
         startY: 53,
         head: [headers],
         body: data,
-        margin: { left: 20, right: 20 },
+        margin: { left: 8, right: 8 },
       });
 
       doc.setFont("helvetica", "bold");
@@ -1031,6 +1033,57 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
           console.error('dateRange no está definido o no tiene al menos dos elementos.');
         }
       }
+      if (selectedVenta === 'mes') {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text('Reporte de Ventas por Mes y Año', 10, 40);
+        doc.setFont("helvetica");
+        doc.setFontSize(10);
+
+        const headers = ['CodVenta', 'Fecha Pedido', 'Detalle de Pedido', 'Precio', 'Empleado'];
+
+        if (ventasmesero.length === 0) {
+          doc.text('No hay ventas del tipo de producto en el rango de fechas seleccionado.', 10, 48);
+        } else {
+          const data = [];
+          doc.setFontSize(10);
+          doc.text(`Ventas filtradas por mes y año "${selectedMesName}"`, 10, 48);
+          ventasmesero.forEach(venta => {
+            const detalle_pedido = venta.detalle_pedido.map(detalle => `${detalle.nombreproducto} (${detalle.cantidad})`).join('\n');
+            data.push([
+              venta.id_pedido,
+              venta.fecha_pedido,
+              detalle_pedido,
+              venta.precio,
+              venta.nombre_mesero,
+            ]);
+          });
+
+          doc.autoTable({
+            startY: 53,
+            head: [headers],
+            body: data,
+            margin: { left: 8, right: 8 },
+          });
+
+          // Calcular la suma de los precios de las ventas
+          const totalVenta = ventasmesero.reduce((total, venta) => total + parseFloat(venta.precio), 0);
+
+          // Obtener el ancho del documento
+          const docWidth = doc.internal.pageSize.width;
+
+          // Obtener el ancho del texto
+          const textWidth = doc.getStringUnitWidth(`Total de ventas: $ ${totalVenta.toFixed(2)}`) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+
+          // Colocar el texto a mano derecha
+          doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
+          let fileName = 'reporte_ventas_mes_año.pdf';
+
+          doc.save(fileName);
+          setPdfBlob(doc.output('blob'));
+          handleShowViewer();
+        }
+      }
     }
     if (selectedReport === 'pagos') {
       doc.setFont("helvetica", "bold");
@@ -1113,6 +1166,41 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       }
     }
 
+    if (selectedReport === 'top') {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text('Reporte Top Venta', 10, 40);
+      doc.setFontSize(10);
+      doc.text(`Mayores ventas por "${meseroData.nombre_mesero || meseroData.nombre_sucursal}" con un total de ${meseroData.total_ventas}`, 10, 48);
+      doc.text(`${selectedMesName}`, 10, 54);
+      doc.setFont("helvetica");
+      doc.setFontSize(10);
+
+      const headers = ['CodVenta', 'Fecha Pedido', 'Detalle de Pedido', 'Total'];
+
+      if (meseroData.pedidos.length > 0) {
+        const data = [];
+        meseroData.pedidos.forEach(pedido => {
+          const detalle_pedido = pedido.detalle_pedido.map(detalle => `${detalle.nombreproducto} (${detalle.cantidad})`).join('\n');
+          data.push([
+            pedido.id_pedido,
+            pedido.fecha_pedido,
+            detalle_pedido,
+            pedido.precio
+          ]);
+        });
+
+        doc.autoTable({
+          startY: 58,
+          head: [headers],
+          body: data,
+          margin: { left: 15, right: 15 }
+        });
+      } else {
+        doc.text('No hay pedidos para el mesero con mayor venta.', 10, 48);
+      }
+    }
+
     let fileName = '';
     if (selectedReport === 'empleados') {
       fileName = 'reporte_empleados.pdf';
@@ -1151,6 +1239,11 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       handleShowViewer();
     } else if (selectedReport === 'reverso') {
       fileName = 'reporte_reverso.pdf';
+      doc.save(fileName);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
+    } else if (selectedReport === 'top') {
+      fileName = 'reporte_top_ventas.pdf';
       doc.save(fileName);
       setPdfBlob(doc.output('blob'));
       handleShowViewer();
