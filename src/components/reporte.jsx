@@ -38,6 +38,7 @@ const ReportManagement = () => {
   const [showMeseroOptions, setShowMeseroOptions] = useState(false);
   const [showProductoOptions, setShowProductoOptions] = useState(false);
   const [dateRange, setDateRange] = useState(null);
+  const [dateRanges, setDateRanges] = useState(null);
   const [meseros, setMeseros] = useState([]);
   const [selectedMesero, setSelectedMesero] = useState(null);
   const [selectedMeseroName, setSelectedMeseroName] = useState("")
@@ -51,6 +52,9 @@ const ReportManagement = () => {
 
   const [modalVisibleReverso, setModalVisibleReverso] = useState(false);
   const [selectedReverso, setSelectedReverso] = useState(null);
+  const [fechaMinima, setFechaMinima] = useState(null);
+  const [fechaMaxima, setFechaMaxima] = useState(null);
+
   const [startMonthYear, setStartMonthYear] = useState(null);
   const [endMonthYear, setEndMonthYear] = useState(null);
   const [selectedMesName, setSelectedMesName] = useState("")
@@ -58,6 +62,10 @@ const ReportManagement = () => {
 
   const [modalVisibleTop, setModalVisibleTop] = useState(false);
   const [selectedTop, setSelectedTop] = useState(null);
+  const [fechaMinimaTop, setFechaMinimaTop] = useState(null);
+  const [fechaMaximaTop, setFechaMaximaTop] = useState(null);
+  const [fechaMinimaSu, setFechaMinimaSu] = useState(null);
+  const [fechaMaximaSu, setFechaMaximaSu] = useState(null);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -131,7 +139,61 @@ const ReportManagement = () => {
     fetchMeseros();
     fetchProductos();
     fetchTipoProductos();
+    obtenerFechasReverso();
+    obtenerFechasVentas();
+    obtenerFechasSucursal();
   }, []);
+
+  const obtenerFechasReverso = async () => {
+    try {
+      const response = await fetch(API_URL + "/Mesero/fechareverso/");
+      const data = await response.json();
+
+      if (response.ok) {
+        setFechaMinima(data.fecha_minima ? moment(data.fecha_minima) : null);
+        setFechaMaxima(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+      } else {
+        console.error('Error al obtener las fechas de reverso:', data.error);
+      }
+    } catch (error) {
+      console.error('Error al obtener las fechas de reverso:', error);
+    }
+  };
+
+  const obtenerFechasVentas = async () => {
+    try {
+      const response = await fetch(API_URL + "/Mesero/fechatop/");
+      const data = await response.json();
+
+      if (response.ok) {
+        setFechaMinimaTop(data.fecha_minima ? moment(data.fecha_minima) : null);
+        setFechaMaximaTop(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+      } else {
+        console.error('Error al obtener las fechas de reverso:', data.error);
+      }
+    } catch (error) {
+      console.error('Error al obtener las fechas de reverso:', error);
+    }
+  };
+
+  const obtenerFechasSucursal = async (selectedSucursal) => {
+    if (selectedSucursal !== undefined) {
+      console.log("ID de la sucursal:", selectedSucursal);
+      try {
+        const response = await fetch(API_URL + `/Mesero/fechasucursal/${selectedSucursal}/`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setFechaMinimaSu(data.fecha_minima ? moment(data.fecha_minima) : null);
+          setFechaMaximaSu(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+        } else {
+          console.error('Error al obtener las fechas de la sucursal:', data.error);
+        }
+      } catch (error) {
+        console.error('Error al obtener las fechas de la sucursal:', error);
+      }
+    }
+  };
 
   const fetchTipoProductos = () => {
     setLoading(true);
@@ -228,8 +290,8 @@ const ReportManagement = () => {
     { key: 4, reportName: "Reporte de productos" },
     { key: 5, reportName: "Reporte de combos" },
     { key: 6, reportName: "Reporte de sucursales" },
-    { key: 7, reportName: "Reporte de ventas" },
-    { key: 8, reportName: "Reporte de pagos" },
+    { key: 7, reportName: "Reporte de pagos" },
+    { key: 8, reportName: "Reporte de ventas" },
     { key: 9, reportName: "Reporte de reverso" },
     { key: 10, reportName: "Reporte de top ventas" },
   ];
@@ -246,7 +308,7 @@ const ReportManagement = () => {
     });
   };
 
-  const handleGenerateReport = () => {
+  const handleEmpleados = () => {
     console.log("Sucursal seleccionada:", selectedSucursal);
     let url;
 
@@ -515,7 +577,7 @@ const ReportManagement = () => {
             logoEmpresa: logoEmpresa,
             selectedReport: "reverso",
             reverso: data.reverso,
-            dateRange: dateRange,
+            dateRange: dateRanges,
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
@@ -529,16 +591,16 @@ const ReportManagement = () => {
     }
   }
 
-  const handleGenerateTopMeseroVentas = () => {
+  const handleTop = () => {
     // Generar informe para el top de ventas por mesero
     let url;
     if (selectedTop === 'top_mesero') {
       if (startMonthYear && endMonthYear) {
-        url = API_URL + `/Mesero/listaventasmeseros/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+        url = API_URL + `/Mesero/listaventasmesero/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
       }
     } else if (selectedTop === 'top_sucursal') {
       if (startMonthYear && endMonthYear) {
-        url = API_URL + `/Mesero/listaventasmesero/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+        url = API_URL + `/Mesero/listaventassucursal/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
       }
     }
     fetch(url)
@@ -622,7 +684,7 @@ const ReportManagement = () => {
       </Table>
 
       <Modal
-        title="Generar Reporte de Empleados"
+        title="Reporte de Empleados"
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);
@@ -664,13 +726,13 @@ const ReportManagement = () => {
             >
               <Option value="todas">Todos los tipos de empleados</Option>
               <Option value="jefe_cocina">Jefes de cocina</Option>
-              <Option value="motorizados">Motorizados</Option>
-              <Option value="meseros">Meseros</Option>
+              <Option value="motorizado">Motorizados</Option>
+              <Option value="mesero">Meseros</Option>
             </Select>
           </div>
 
           <div style={{ alignSelf: "flex-end" }}>
-            <Button type="primary" onClick={handleGenerateReport}>
+            <Button type="primary" onClick={handleEmpleados}>
               Generar Reporte
             </Button>
           </div>
@@ -678,7 +740,7 @@ const ReportManagement = () => {
       </Modal>
       {/* Nuevo modal para seleccionar todos los productos o categorías */}
       <Modal
-        title="Seleccionar filtro"
+        title="Reporte de Productos"
         open={modalVisibleProductos}
         onCancel={() => setModalVisibleProductos(false)}
         footer={null}
@@ -710,7 +772,7 @@ const ReportManagement = () => {
 
 
       <Modal
-        title="Seleccionar filtro"
+        title="Reporte de Combos"
         open={modalVisibleCombos}
         onCancel={() => setModalVisibleCombos(false)}
         footer={null}
@@ -741,7 +803,7 @@ const ReportManagement = () => {
       </Modal>
 
       <Modal
-        title="Seleccionar Top"
+        title="Reporte de Top ventas"
         open={modalVisibleTop}
         onCancel={() => setModalVisibleTop(false)}
         footer={null}
@@ -766,6 +828,14 @@ const ReportManagement = () => {
               setStartMonthYear(dateString);
               setSelectedMesName(option.children);
             }}
+            disabledDate={(current) => {
+              const minFecha = moment(fechaMinimaTop);
+              const maxFecha = moment(fechaMaximaTop);
+              const estaFueraDeRango =
+                current.isBefore(minFecha, 'month') || current.isAfter(maxFecha, 'month');
+
+              return estaFueraDeRango;
+            }}
           />
 
           <p style={{ marginTop: "20px" }}>Seleccione el mes y año de fin:</p>
@@ -776,18 +846,26 @@ const ReportManagement = () => {
               setEndMonthYear(dateString);
               setSelectedMesName(option.children);
             }}
+            disabledDate={(current) => {
+              const minFecha = moment(fechaMinimaTop);
+              const maxFecha = moment(fechaMaximaTop);
+              const estaFueraDeRango =
+                current.isBefore(minFecha, 'month') || current.isAfter(maxFecha, 'month');
+
+              return estaFueraDeRango;
+            }}
           />
         </div>
 
         <div style={{ alignSelf: "flex-end" }}>
-          <Button type="primary" onClick={handleGenerateTopMeseroVentas}>
+          <Button type="primary" onClick={handleTop}>
             Generar Reporte
           </Button>
         </div>
       </Modal>
 
       <Modal
-        title="Generar Reporte de Ventas"
+        title="Reporte de Ventas"
         open={modalVisibleVentas}
         onCancel={() => setModalVisibleVentas(false)}
         footer={null}
@@ -827,6 +905,14 @@ const ReportManagement = () => {
                   setStartMonthYear(dateString);
                   setSelectedMesName(option.children);
                 }}
+                disabledDate={(current) => {
+                  const minFecha = moment(fechaMinimaTop);
+                  const maxFecha = moment(fechaMaximaTop);
+                  const estaFueraDeRango =
+                    current.isBefore(minFecha, 'month') || current.isAfter(maxFecha, 'month');
+
+                  return estaFueraDeRango;
+                }}
               />
 
               <p style={{ marginTop: "20px" }}>Seleccione el mes y año de fin:</p>
@@ -836,6 +922,14 @@ const ReportManagement = () => {
                 onChange={(date, dateString, option) => {
                   setEndMonthYear(dateString);
                   setSelectedMesName(option.children);
+                }}
+                disabledDate={(current) => {
+                  const minFecha = moment(fechaMinimaTop);
+                  const maxFecha = moment(fechaMaximaTop);
+                  const estaFueraDeRango =
+                    current.isBefore(minFecha, 'month') || current.isAfter(maxFecha, 'month');
+
+                  return estaFueraDeRango;
                 }}
               />
             </div>
@@ -871,7 +965,13 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                disabledDate={(current) => {
+                  const minFecha = moment(fechaMinimaTop);
+                  const maxFecha = moment(fechaMaximaTop);
+                  const estaFueraDeRango =
+                    current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                  return estaFueraDeRango;
+                }}
               />
             </div>
           )}
@@ -886,6 +986,11 @@ const ReportManagement = () => {
                 onChange={(value, option) => {
                   setSelectedSucursal(value);
                   setSelectedSucursalName(option.children);
+                  if (value === "todas") {
+                    obtenerFechasVentas();
+                  } else {
+                    obtenerFechasSucursal(value);
+                  }
                 }}
               >
                 <Option key="todas" value="todas">
@@ -906,7 +1011,21 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                disabledDate={(current) => {
+                  if (selectedSucursal === "todas") {
+                    const minFecha = moment(fechaMinimaTop);
+                    const maxFecha = moment(fechaMaximaTop);
+                    const estaFueraDeRango =
+                      current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                    return estaFueraDeRango;
+                  } else {
+                    const minFecha = moment(fechaMinimaSu);
+                    const maxFecha = moment(fechaMaximaSu);
+                    const estaFueraDeRango =
+                      current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                    return estaFueraDeRango;
+                  }
+                }}
               />
             </div>
           )}
@@ -941,7 +1060,13 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                disabledDate={(current) => {
+                  const minFecha = moment(fechaMinimaTop);
+                  const maxFecha = moment(fechaMaximaTop);
+                  const estaFueraDeRango =
+                    current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                  return estaFueraDeRango;
+                }}
               />
             </div>
           )}
@@ -976,7 +1101,13 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                disabledDate={(current) => {
+                  const minFecha = moment(fechaMinimaTop);
+                  const maxFecha = moment(fechaMaximaTop);
+                  const estaFueraDeRango =
+                    current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                  return estaFueraDeRango;
+                }}
               />
             </div>
           )}
@@ -1012,11 +1143,17 @@ const ReportManagement = () => {
           <p>Seleccione el rango de fechas:</p>
           <DatePicker.RangePicker
             style={{ width: "100%" }}
-            onChange={(dates) => setDateRange(dates)}
-            disabledDate={(current) => current && current > moment().endOf('day')}
+            onChange={(dates) => setDateRanges(dates)}
+            disabledDate={(current) => {
+              const minFecha = moment(fechaMinima);
+              const maxFecha = moment(fechaMaxima);
+              const estaFueraDeRango =
+                current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+
+              return estaFueraDeRango;
+            }}
           />
         </div>
-
         <div style={{ alignSelf: "flex-end" }}>
           <Button type="primary" onClick={handleReverso}>
             Generar Reporte

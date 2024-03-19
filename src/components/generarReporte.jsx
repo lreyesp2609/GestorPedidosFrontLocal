@@ -57,10 +57,10 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
     if (selectedReport === 'empleados') {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      doc.text('Reporte de Empleados', 10, 40);
+      doc.text('Reporte de Empleados', 8, 40);
       doc.setFont("helvetica");
       doc.setFontSize(10);
-      doc.text(`Datos filtrados por sucursal "${selectedSucursal}" y tipos de empleados "${selectedTipoEmpleado}"`, 10, 47);
+      doc.text(`Datos filtrados por sucursal "${selectedSucursal}" y tipos de empleados "${selectedTipoEmpleado}"`, 8, 47);
 
       const headers = ['Nombre', 'Apellido', 'Teléfono', 'Ciudad', 'Fecha', 'Sucursal', 'Tipo'];
       const data = empleadosData.map(empleado => [
@@ -84,8 +84,10 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       });
 
       doc.setFont("helvetica", "bold");
-      doc.text('Total de Empleados:', 20, doc.lastAutoTable.finalY + 10);
-      doc.text(totalEmpleados.toString(), 60, doc.lastAutoTable.finalY + 10);
+      doc.text('Total de Empleados:', 8, doc.lastAutoTable.finalY + 10);
+      doc.text(totalEmpleados.toString(), 45, doc.lastAutoTable.finalY + 10);
+      setPdfBlob(doc.output('blob'));
+      handleShowViewer();
     }
 
 
@@ -1202,7 +1204,7 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
     }
 
     let fileName = '';
-    if (selectedReport === 'empleados') {
+    if (selectedReport === 'empleado') {
       fileName = 'reporte_empleados.pdf';
       doc.save(fileName);
       setPdfBlob(doc.output('blob'));
