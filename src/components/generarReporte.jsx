@@ -90,34 +90,59 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       handleShowViewer();
     }
 
-
     if (selectedReport === 'facturas') {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.text('Reporte de Facturas Emitidas', 10, 40);
       doc.setFont("helvetica");
       doc.setFontSize(10);
-
+    
       const headers = ['Código', 'Cliente', 'Fecha Emisión', 'Mesero', 'Total', 'IVA', 'Descuento', 'Subtotal', 'Pagar'];
-      const data = facturasEmitidas.map(factura => [
-        factura.codigo_factura,
-        factura.cliente_completo,
-        factura.fecha_emision,
-        factura.mesero_completo,
-        factura.total,
-        factura.iva,
-        factura.descuento,
-        factura.subtotal,
-        factura.a_pagar,
-      ]);
+      let data = [];
+    
+      if (dateRange && dateRange.length >= 2) {
+        // Filtrar las facturas por rango de fechas
+        data = facturasEmitidas.filter(factura => {
+          const fechaEmision = new Date(factura.fecha_emision);
+          const fechaDesde = new Date(dateRange[0]);
+          const fechaHasta = new Date(dateRange[1]);
+    
+          // Ajustar la comparación para incluir el límite superior del rango
+          return fechaEmision >= fechaDesde && fechaEmision <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
+        }).map(factura => [
+          factura.codigo_factura,
+          factura.cliente_completo,
+          factura.fecha_emision,
+          factura.mesero_completo,
+          factura.total,
+          factura.iva,
+          factura.descuento,
+          factura.subtotal,
+          factura.a_pagar,
+        ]);
+      } else {
+        // Mostrar todas las facturas sin filtrar por rango de fechas
+        data = facturasEmitidas.map(factura => [
+          factura.codigo_factura,
+          factura.cliente_completo,
+          factura.fecha_emision,
+          factura.mesero_completo,
+          factura.total,
+          factura.iva,
+          factura.descuento,
+          factura.subtotal,
+          factura.a_pagar,
+        ]);
+      }
+    
       doc.autoTable({
         startY: 48,
         head: [headers],
         body: data,
         margin: { left: 10, right: 10 },
       });
-    }
-
+    }    
+    
     if (selectedReport === 'clientes') {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
