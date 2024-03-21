@@ -499,8 +499,6 @@ const ReportManagement = () => {
   };
 
   const handleEmpleados = () => {
-    setSelectedSucursal(null);
-    setSelectedTipoEmpleado(null);
     console.log("Sucursal seleccionada:", selectedSucursal);
     let url;
 
@@ -532,6 +530,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
+          cerrarModal();
         })
         .catch((error) =>
           console.error("Error al obtener los empleados:", error)
@@ -630,7 +629,6 @@ const ReportManagement = () => {
   };
 
   const HandleProductos = () => {
-    setSelectedOption(null);
     console.log("Categoría seleccionada:", selectedOption);
 
     if (selectedOption != null) {
@@ -803,9 +801,6 @@ const ReportManagement = () => {
   }
 
   const handleTop = () => {
-    setSelectedTop(null);
-    setStartMonthYear(null); 
-    setEndMonthYear(null); 
     // Generar informe para el top de ventas por mesero
     let url;
     if (selectedTop === 'top_mesero') {
@@ -843,6 +838,38 @@ const ReportManagement = () => {
 
   const handleShowViewer = () => {
     setPdfViewerVisible(true);
+  };
+
+  const cerrarModal = () => {
+    setModalVisible(false);
+    setModalVisibleProductos(false);
+    setModalVisibleCombos(false);
+    setModalVisibleTop(false);
+    setModalVisibleVentas(false);
+    setModalVisibleReverso(false);
+    setModalVisibleFacturas(false);
+    setModalVisibleClientes(false);
+    setModalVisiblePagos(false);
+    setSelectedSucursal(null);
+    setSelectedTipoEmpleado(null);
+    setSelectedOption(null);
+    setSelectedCombos(null);
+    setSelectedTop(null);
+    setStartMonthYear(null);
+    setEndMonthYear(null);
+    setSelectedVenta(null);
+    setSelectedMesero(null);
+    setDateRange(null);
+    setSelectedProducto(null);
+    setSelectedTipoProducto(null);
+    setSelectedReverso(null);
+    setDateRanges(null);
+    setShowTodosOptions(null);
+    setSelectedFacturas(null);
+    setSelectedClientes(null);
+    setShowCliOptions(null);
+    setSelectedPagos(null);
+    setShowPagOptions(null);
   };
 
   return (
@@ -901,7 +928,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de Empleados"
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -914,7 +941,7 @@ const ReportManagement = () => {
                 setSelectedSucursal(value);
                 setSelectedSucursalName(option.children);
               }}
-              value={selectedSucursal || undefined} //Restablecer valores del modal
+              value={selectedSucursal}
               loading={loading}
             >
               <Option key="todas" value="todas">
@@ -937,7 +964,7 @@ const ReportManagement = () => {
                 setSelectedTipoEmpleado(value);
                 setSelectedTipoEmpleadoName(option.children);
               }}
-              value={selectedTipoEmpleado || undefined}
+              value={selectedTipoEmpleado}
             >
               <Option value="todas">Todos los tipos de empleados</Option>
               <Option value="jefe_cocina">Jefes de cocina</Option>
@@ -957,7 +984,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de Productos"
         open={modalVisibleProductos}
-        onCancel={() => setModalVisibleProductos(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -966,7 +993,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedOption(value)}
-            value={selectedOption || undefined}
+            value={selectedOption}
           >
             <Option key="todas" value="todas">
               Todas los productos
@@ -990,7 +1017,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de Combos"
         open={modalVisibleCombos}
-        onCancel={() => setModalVisibleCombos(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -999,7 +1026,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedCombos(value)}
-            value={selectedCombos || undefined}
+            value={selectedCombos}
           >
             <Option key="todas" value="todas">
               Todas los combos
@@ -1024,9 +1051,7 @@ const ReportManagement = () => {
         title="Reporte de Top ventas"
         open={modalVisibleTop}
         onCancel={() => {
-          setModalVisibleTop(false);
-          setStartMonthYear(null); // Restablecer startMonthYear al cerrar el modal
-          setEndMonthYear(null); // Restablecer endMonthYear al cerrar el modal
+          cerrarModal();
         }}
         footer={null}
       >
@@ -1036,7 +1061,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedTop(value)}
-            value={selectedTop || undefined}
+            value={selectedTop}
           >
             <Option value="top_mesero">Top ventas mesero</Option>
             <Option value="top_sucursal">Top ventas sucursal</Option>
@@ -1049,9 +1074,9 @@ const ReportManagement = () => {
             format="MM/YYYY"
             onChange={(date, dateString, option) => {
               setStartMonthYear(dateString);
-              setSelectedMesName(option?.children || '');
+              setSelectedMesName(option?.children);
             }}
-            value={startMonthYear ? moment(startMonthYear, 'MM/YYYY') : undefined}
+            value={startMonthYear}
             disabledDate={(current) => {
               const minFecha = moment(fechaMinimaVentas);
               const maxFecha = moment(fechaMaximaVentas);
@@ -1068,9 +1093,9 @@ const ReportManagement = () => {
             format="MM/YYYY"
             onChange={(date, dateString, option) => {
               setEndMonthYear(dateString);
-              setSelectedMesName(option?.children || '');
+              setSelectedMesName(option?.children);
             }}
-            value={endMonthYear ? moment(endMonthYear, 'MM/YYYY') : undefined}
+            value={endMonthYear}
             disabledDate={(current) => {
               const minFecha = moment(fechaMinimaVentas);
               const maxFecha = moment(fechaMaximaVentas);
@@ -1093,7 +1118,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de Ventas"
         open={modalVisibleVentas}
-        onCancel={() => setModalVisibleVentas(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -1111,6 +1136,7 @@ const ReportManagement = () => {
                 setShowTipoProductoOptions(value === "tipoproducto");
                 setShowMesOptions(value === "mes");
               }}
+              value={selectedVenta}
             >
               <Select.Option value="sucursal">Sucursal</Select.Option>
               <Select.Option value="mesero">Mesero</Select.Option>
@@ -1131,6 +1157,7 @@ const ReportManagement = () => {
                   setStartMonthYear(dateString);
                   setSelectedMesName(option.children);
                 }}
+                value={startMonthYear}
                 disabledDate={(current) => {
                   const minFecha = moment(fechaMinimaVentas);
                   const maxFecha = moment(fechaMaximaVentas);
@@ -1149,6 +1176,7 @@ const ReportManagement = () => {
                   setEndMonthYear(dateString);
                   setSelectedMesName(option.children);
                 }}
+                value={endMonthYear}
                 disabledDate={(current) => {
                   const minFecha = moment(fechaMinimaVentas);
                   const maxFecha = moment(fechaMaximaVentas);
@@ -1177,6 +1205,7 @@ const ReportManagement = () => {
                     obtenerFechasMesero(value);
                   }
                 }}
+                value={selectedMesero}
               >
                 <Option key="todas" value="todas">
                   Todas los meseros
@@ -1196,6 +1225,7 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
+                value={dateRange}
                 disabledDate={(current) => {
                   if (selectedMesero === "todas") {
                     const minFecha = moment(fechaMinimaVentas);
@@ -1231,6 +1261,7 @@ const ReportManagement = () => {
                     obtenerFechasSucursal(value);
                   }
                 }}
+                value={selectedSucursal}
               >
                 <Option key="todas" value="todas">
                   Todas las sucursales
@@ -1250,6 +1281,7 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
+                value={dateRange}
                 disabledDate={(current) => {
                   if (selectedSucursal === "todas") {
                     const minFecha = moment(fechaMinimaVentas);
@@ -1285,6 +1317,7 @@ const ReportManagement = () => {
                     obtenerFechasProducto(value);
                   }
                 }}
+                value={selectedProducto}
               >
                 <Option key="todas" value="todas">
                   Todas los productos
@@ -1304,6 +1337,7 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
+                value={dateRange}
                 disabledDate={(current) => {
                   if (selectedProducto === "todas") {
                     const minFecha = moment(fechaMinimaVentas);
@@ -1339,6 +1373,7 @@ const ReportManagement = () => {
                     obtenerFechasTipoProducto(value);
                   }
                 }}
+                value={selectedTipoProducto}
               >
                 <Option key="todas" value="todas">
                   Todos los tipos de producto
@@ -1358,6 +1393,7 @@ const ReportManagement = () => {
               <DatePicker.RangePicker
                 style={{ width: "100%" }}
                 onChange={(dates) => setDateRange(dates)}
+                value={dateRange}
                 disabledDate={(current) => {
                   if (selectedTipoProducto === "todas") {
                     const minFecha = moment(fechaMinimaVentas);
@@ -1388,7 +1424,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de reverso"
         open={modalVisibleReverso}
-        onCancel={() => setModalVisibleReverso(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -1397,6 +1433,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedReverso(value)}
+            value={selectedReverso}
           >
             <Option value="todas">Todos los reversos de factura</Option>
             <Option value="validas">Facturas válidas</Option>
@@ -1409,6 +1446,7 @@ const ReportManagement = () => {
           <DatePicker.RangePicker
             style={{ width: "100%" }}
             onChange={(dates) => setDateRanges(dates)}
+            value={dateRanges}
             disabledDate={(current) => {
               const minFecha = moment(fechaMinima);
               const maxFecha = moment(fechaMaxima);
@@ -1429,7 +1467,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de facturas emitidas"
         open={modalVisibleFacturas}
-        onCancel={() => setModalVisibleFacturas(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -1440,6 +1478,7 @@ const ReportManagement = () => {
             onChange={(value) => {
               setShowTodosOptions(value === "rango");
             }}
+            value={showTodosOptions}
           >
             <Option value="rango">Por rango de fechas</Option>
             <Option value="todas">Historial empresarial</Option>
@@ -1456,6 +1495,7 @@ const ReportManagement = () => {
               setShowSucursalOptions(value === "sucursal");
               setShowMeseroOptions(value === "mesero");
             }}
+            value={selectedFacturas}
           >
             <Option value="todas">Todas las facturas</Option>
             <Option value="mesero">Mesero</Option>
@@ -1474,6 +1514,7 @@ const ReportManagement = () => {
                 setSelectedMeseroName(option.children);
                 obtenerFechasMeseroFact(value);
               }}
+              value={selectedMesero}
             >
               {meseros.map((mesero) => (
                 <Option key={mesero.id_mesero} value={mesero.id_mesero}>
@@ -1495,6 +1536,7 @@ const ReportManagement = () => {
                 setSelectedSucursalName(option.children);
                 obtenerFechasSucFact(value);
               }}
+              value={selectedSucursal}
             >
               {sucursales.map((sucursal) => (
                 <Option key={sucursal.id_sucursal} value={sucursal.id_sucursal}>
@@ -1511,6 +1553,7 @@ const ReportManagement = () => {
             <DatePicker.RangePicker
               style={{ width: "100%" }}
               onChange={(dates) => setDateRange(dates)}
+              value={dateRange}
               disabledDate={(current) => {
                 if (showMeseroOptions) {
                   const minFecha = moment(fechaMinimas);
@@ -1548,7 +1591,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de clientes"
         open={modalVisibleClientes}
-        onCancel={() => setModalVisibleClientes(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -1565,6 +1608,7 @@ const ReportManagement = () => {
               // Restablecer el rango de fechas
               setDateRange([]);
             }}
+            value={selectedClientes}
           >
             <Option value="rango">Por rango de fechas</Option>
             <Option value="todas">Historial empresarial</Option>
@@ -1581,6 +1625,7 @@ const ReportManagement = () => {
                 setShowCliDiaOptions(value == "dia");
                 setShowCliMesOptions(value == "mes");
               }}
+              value={showCliDiaOptions}
             >
               <Option value="dia">Por día</Option>
               <Option value="mes">Por mes</Option>
@@ -1594,6 +1639,7 @@ const ReportManagement = () => {
             <DatePicker.RangePicker
               style={{ width: "100%" }}
               onChange={(dates) => setDateRange(dates)}
+              value={dateRange}
               disabledDate={(current) => {
                 const minFecha = moment(fechaMinCli);
                 const maxFecha = moment(fechaMaxCli);
@@ -1611,6 +1657,7 @@ const ReportManagement = () => {
             <DatePicker.MonthPicker
               style={{ width: "100%" }}
               onChange={(dates) => setDateRange(dates)}
+              value={dateRange}
               disabledDate={(current) => {
                 const minFecha = moment(fechaMinCli);
                 const maxFecha = moment(fechaMaxCli);
@@ -1632,7 +1679,7 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de pagos"
         open={modalVisiblePagos}
-        onCancel={() => setModalVisiblePagos(false)}
+        onCancel={() => cerrarModal()}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -1649,6 +1696,7 @@ const ReportManagement = () => {
               // Restablecer el rango de fechas
               setDateRange([]);
             }}
+            value={selectedPagos}
           >
             <Option value="rango">Por rango de fechas</Option>
             <Option value="todas">Historial empresarial</Option>
@@ -1665,6 +1713,7 @@ const ReportManagement = () => {
                 setShowPagDiaOptions(value == "dia");
                 setShowPagMesOptions(value == "mes");
               }}
+              value={showPagOptions}
             >
               <Option value="dia">Por día</Option>
               <Option value="mes">Por mes</Option>
@@ -1678,6 +1727,7 @@ const ReportManagement = () => {
             <DatePicker.RangePicker
               style={{ width: "100%" }}
               onChange={(dates) => setDateRange(dates)}
+              value={dateRange}
               disabledDate={(current) => {
                 const minFecha = moment(fechaMinPag);
                 const maxFecha = moment(fechaMaxPag);
@@ -1695,6 +1745,7 @@ const ReportManagement = () => {
             <DatePicker.MonthPicker
               style={{ width: "100%" }}
               onChange={(dates) => setDateRange(dates)}
+              value={dateRange}
               disabledDate={(current) => {
                 const minFecha = moment(fechaMinPag);
                 const maxFecha = moment(fechaMaxPag);
