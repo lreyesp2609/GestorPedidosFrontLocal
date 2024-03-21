@@ -86,7 +86,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       doc.setFont("helvetica", "bold");
       doc.text('Total de Empleados:', 8, doc.lastAutoTable.finalY + 10);
       doc.text(totalEmpleados.toString(), 45, doc.lastAutoTable.finalY + 10);
-      setPdfBlob(doc.output('blob'));
+
+      // Establecer el nombre del documento PDF
+      doc.setProperties({
+        title: 'Reporte de Empleados',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de empleados generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
       handleShowViewer();
     }
 
@@ -96,17 +109,17 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       doc.text('Reporte de Facturas Emitidas', 10, 40);
       doc.setFont("helvetica");
       doc.setFontSize(10);
-    
+
       const headers = ['Código', 'Cliente', 'Fecha Emisión', 'Mesero', 'Total', 'IVA', 'Descuento', 'Subtotal', 'Pagar'];
       let data = [];
-    
+
       if (dateRange && dateRange.length >= 2) {
         // Filtrar las facturas por rango de fechas
         data = facturasEmitidas.filter(factura => {
           const fechaEmision = new Date(factura.fecha_emision);
           const fechaDesde = new Date(dateRange[0]);
           const fechaHasta = new Date(dateRange[1]);
-    
+
           // Ajustar la comparación para incluir el límite superior del rango
           return fechaEmision >= fechaDesde && fechaEmision <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
         }).map(factura => [
@@ -134,15 +147,29 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
           factura.a_pagar,
         ]);
       }
-    
+
       doc.autoTable({
         startY: 48,
         head: [headers],
         body: data,
         margin: { left: 10, right: 10 },
       });
-    }    
-    
+      // Establecer el nombre del documento PDF
+      doc.setProperties({
+        title: 'Reporte de Facturas',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de facturas generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
+      handleShowViewer();
+    }
+
     if (selectedReport === 'clientes') {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
@@ -153,15 +180,35 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       // Cabeceras para la tabla de clientes
       const headers = ['Código', 'Nombres', 'RUC/Cédula', 'Teléfono', 'Puntos', 'Registro'];
 
-      // Transformar los datos de clientes en un array bidimensional para la tabla
-      const data = clientes.map(cliente => [
-        cliente.id_cliente,
-        `${cliente.snombre || ''} ${cliente.capellido || ''}`,
-        cliente.ruc_cedula,
-        cliente.ctelefono,
-        cliente.cpuntos,
-        cliente.cregistro,
-      ]);
+      let data = [];
+
+      if (dateRange && dateRange.length >= 2) {
+        data = clientes.filter(cliente => {
+          const fechaEmision = new Date(cliente.cregistro);
+          const fechaDesde = new Date(dateRange[0]);
+          const fechaHasta = new Date(dateRange[1]);
+
+          // Ajustar la comparación para incluir el límite superior del rango
+          return fechaEmision >= fechaDesde && fechaEmision <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
+        }).map(cliente => [
+          cliente.id_cliente,
+          cliente.nombre,
+          cliente.ruc_cedula,
+          cliente.ctelefono,
+          cliente.cpuntos,
+          cliente.cregistro,
+        ]);
+      } else {
+        // Mostrar todas los clientes sin filtrar por rango de fechas
+        data = clientes.map(cliente => [
+          cliente.id_cliente,
+          cliente.nombre,
+          cliente.ruc_cedula,
+          cliente.ctelefono,
+          cliente.cpuntos,
+          cliente.cregistro,
+        ]);
+      }
 
       // Añadir la tabla de clientes al PDF
       doc.autoTable({
@@ -170,6 +217,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
         body: data,
         margin: { left: 10, right: 10 },
       });
+      // Establecer el nombre del documento PDF
+      doc.setProperties({
+        title: 'Reporte de Clientes',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de clientes generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
+      handleShowViewer();
     }
 
     if (selectedReport === 'productos') {
@@ -199,6 +260,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
         body: data,
         margin: { left: 10, right: 10 },
       });
+      // Establecer el nombre del documento PDF
+      doc.setProperties({
+        title: 'Reporte de Productos',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de productos generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
+      handleShowViewer();
     }
 
     if (selectedReport === 'combos') {
@@ -227,6 +302,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
         body: data,
         margin: { left: 10, right: 10 },
       });
+      // Establecer el nombre del documento PDF
+      doc.setProperties({
+        title: 'Reporte de Combos',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de combos generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
+      handleShowViewer();
     }
 
     if (selectedReport === 'sucursal') {
@@ -265,6 +354,21 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
       doc.setFont("helvetica", "bold");
       doc.text('Total de empleados:', 150, finalY + 10); // Alineado a la derecha
       doc.text(totalEmpleados.toString(), 187, finalY + 10); // Alineado a la derecha
+
+      // Establecer el nombre del documento PDF
+      doc.setProperties({
+        title: 'Reporte de Sucursal',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de sucursal generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
+      handleShowViewer();
     }
 
     if (selectedReport === 'venta') {
@@ -453,12 +557,19 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
               .then(function (pieChartUrl) {
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
+                // Establecer el nombre del documento PDF
+                doc.setProperties({
+                  title: 'Reporte de Ventas Mesero',
+                  author: 'Hamburguesas al carbón',
+                  subject: 'Reporte de ventas mesero generado',
+                  creator: 'Hamburguesas al carbón'
+                });
 
-                // Guardar el PDF después de agregar los gráficos
-                let fileName = 'reporte_ventas_m.pdf';
+                // Generar el PDF
+                const pdfBlob = doc.output('blob');
 
-                doc.save(fileName);
-                setPdfBlob(doc.output('blob'));
+                // Pasar el objeto Blob al visor
+                setPdfBlob(pdfBlob);
                 handleShowViewer();
               })
               .catch(function (error) {
@@ -646,11 +757,18 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
 
-                // Guardar el PDF después de agregar los gráficos
-                let fileName = 'reporte_ventas_s.pdf';
+                doc.setProperties({
+                  title: 'Reporte de Ventas Sucursal',
+                  author: 'Hamburguesas al carbón',
+                  subject: 'Reporte de ventas sucursal generado',
+                  creator: 'Hamburguesas al carbón'
+                });
 
-                doc.save(fileName);
-                setPdfBlob(doc.output('blob'));
+                // Generar el PDF
+                const pdfBlob = doc.output('blob');
+
+                // Pasar el objeto Blob al visor
+                setPdfBlob(pdfBlob);
                 handleShowViewer();
               })
               .catch(function (error) {
@@ -845,11 +963,18 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
 
-                // Guardar el PDF después de agregar los gráficos
-                let fileName = 'reporte_ventas_p.pdf';
+                doc.setProperties({
+                  title: 'Reporte de Ventas Productos',
+                  author: 'Hamburguesas al carbón',
+                  subject: 'Reporte de ventas productos generado',
+                  creator: 'Hamburguesas al carbón'
+                });
 
-                doc.save(fileName);
-                setPdfBlob(doc.output('blob'));
+                // Generar el PDF
+                const pdfBlob = doc.output('blob');
+
+                // Pasar el objeto Blob al visor
+                setPdfBlob(pdfBlob);
                 handleShowViewer();
               })
               .catch(function (error) {
@@ -1045,11 +1170,18 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
                 // Agregar el gráfico de pastel al PDF
                 doc.addImage(pieChartUrl, 'PNG', 10, 150, 150, 110);
 
-                // Guardar el PDF después de agregar los gráficos
-                let fileName = 'reporte_ventas_tp.pdf';
+                doc.setProperties({
+                  title: 'Reporte de Ventas Tipo Producto',
+                  author: 'Hamburguesas al carbón',
+                  subject: 'Reporte de ventas tipo producto generado',
+                  creator: 'Hamburguesas al carbón'
+                });
 
-                doc.save(fileName);
-                setPdfBlob(doc.output('blob'));
+                // Generar el PDF
+                const pdfBlob = doc.output('blob');
+
+                // Pasar el objeto Blob al visor
+                setPdfBlob(pdfBlob);
                 handleShowViewer();
               })
               .catch(function (error) {
@@ -1104,10 +1236,19 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
 
           // Colocar el texto a mano derecha
           doc.text(`Total de ventas: $${totalVenta.toFixed(2)}`, docWidth - textWidth - 10, doc.autoTable.previous.finalY + 10);
-          let fileName = 'reporte_ventas_mes_año.pdf';
 
-          doc.save(fileName);
-          setPdfBlob(doc.output('blob'));
+          doc.setProperties({
+            title: 'Reporte de Ventas Mes',
+            author: 'Hamburguesas al carbón',
+            subject: 'Reporte de ventas mes generado',
+            creator: 'Hamburguesas al carbón'
+          });
+
+          // Generar el PDF
+          const pdfBlob = doc.output('blob');
+
+          // Pasar el objeto Blob al visor
+          setPdfBlob(pdfBlob);
           handleShowViewer();
         }
       }
@@ -1145,6 +1286,20 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
         body: data,
         margin: { left: 18, right: 18 },
       });
+
+      doc.setProperties({
+        title: 'Reporte de Pagos',
+        author: 'Hamburguesas al carbón',
+        subject: 'Reporte de pagos generado',
+        creator: 'Hamburguesas al carbón'
+      });
+
+      // Generar el PDF
+      const pdfBlob = doc.output('blob');
+
+      // Pasar el objeto Blob al visor
+      setPdfBlob(pdfBlob);
+      handleShowViewer();
     }
 
     if (selectedReport === 'reverso') {
@@ -1187,6 +1342,19 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             body: data,
             margin: { left: 8, right: 8 },
           });
+          doc.setProperties({
+            title: 'Reporte de Reverso',
+            author: 'Hamburguesas al carbón',
+            subject: 'Reporte de reverso generado',
+            creator: 'Hamburguesas al carbón'
+          });
+    
+          // Generar el PDF
+          const pdfBlob = doc.output('blob');
+    
+          // Pasar el objeto Blob al visor
+          setPdfBlob(pdfBlob);
+          handleShowViewer();
         }
       } else {
         console.error('dateRange no está definido o no tiene al menos dos elementos.');
@@ -1223,57 +1391,23 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
           body: data,
           margin: { left: 15, right: 15 }
         });
+
+        doc.setProperties({
+          title: 'Reporte de Top Ventas',
+          author: 'Hamburguesas al carbón',
+          subject: 'Reporte de top generado',
+          creator: 'Hamburguesas al carbón'
+        });
+  
+        // Generar el PDF
+        const pdfBlob = doc.output('blob');
+  
+        // Pasar el objeto Blob al visor
+        setPdfBlob(pdfBlob);
+        handleShowViewer();
       } else {
         doc.text('No hay pedidos para el mesero con mayor venta.', 10, 48);
       }
-    }
-
-    let fileName = '';
-    if (selectedReport === 'empleado') {
-      fileName = 'reporte_empleados.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'facturas') {
-      fileName = 'reporte_facturas_emitidas.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'clientes') {
-      fileName = 'reporte_clientes.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'productos') {
-      fileName = 'reporte_productos.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'combos') {
-      fileName = 'reporte_combos.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'sucursal') {
-      fileName = 'reporte_sucursal.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'pagos') {
-      fileName = 'reporte_pagos.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'reverso') {
-      fileName = 'reporte_reverso.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
-    } else if (selectedReport === 'top') {
-      fileName = 'reporte_top_ventas.pdf';
-      doc.save(fileName);
-      setPdfBlob(doc.output('blob'));
-      handleShowViewer();
     }
   };
   generarReportePDF();

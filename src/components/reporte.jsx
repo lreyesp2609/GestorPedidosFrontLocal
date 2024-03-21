@@ -78,10 +78,24 @@ const ReportManagement = () => {
   const [fechaMaximax, setFechaMaxSucFac] = useState(null);
   const [fechaMinimat, setFechaMinTodFac] = useState(null);
   const [fechaMaximat, setFechaMaxTodFac] = useState(null);
+  const [fechaMinCli, setFechaMinClie] = useState(null);
+  const [fechaMaxCli, setFechaMaxClie] = useState(null);
+  const [fechaMinPag, setFechaMinPag] = useState(null);
+  const [fechaMaxPag, setFechaMaxPag] = useState(null);
 
   const [modalVisibleFacturas, setModalVisibleFacturas] = useState(false);
   const [selectedFacturas, setSelectedFacturas] = useState(null);
   const [showTodosOptions, setShowTodosOptions] = useState(false);
+  const [modalVisibleClientes, setModalVisibleClientes] = useState(false);
+  const [selectedClientes, setSelectedClientes] = useState(null);
+  const [showCliOptions, setShowCliOptions] = useState(false);
+  const [showCliDiaOptions, setShowCliDiaOptions] = useState(false);
+  const [showCliMesOptions, setShowCliMesOptions] = useState(false);
+  const [modalVisiblePagos, setModalVisiblePagos] = useState(false);
+  const [selectedPagos, setSelectedPagos] = useState(null);
+  const [showPagOptions, setShowPagOptions] = useState(false);
+  const [showPagDiaOptions, setShowPagDiaOptions] = useState(false);
+  const [showPagMesOptions, setShowPagMesOptions] = useState(false);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -129,9 +143,7 @@ const ReportManagement = () => {
         </Button>
       </div>
     ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
+    filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />,
     onFilter: (value, record) =>
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownOpenChange: (visible) => {
@@ -139,12 +151,17 @@ const ReportManagement = () => {
         setTimeout(() => document.getElementById("searchInput").select(), 100);
       }
     },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <span style={{ fontWeight: "bold" }}>{text}</span>
-      ) : (
-        text
-      ),
+    render: (text) => {
+      if (searchText) {
+        return searchedColumn === dataIndex ? (
+          <span style={{ fontWeight: "bold" }}>{text}</span>
+        ) : (
+          text
+        );
+      } else {
+        return text;
+      }
+    },
   });
 
   useEffect(() => {
@@ -164,7 +181,15 @@ const ReportManagement = () => {
     obtenerFechasMeseroFact();
     obtenerFechasSucFact();
     obtenerFechasToFact();
+    obtenerFechasClientes();
+    obtenerFechasPagos();
   }, []);
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    setSelectedSucursal(null);
+    setSelectedTipoEmpleado(null);
+  };
 
   const obtenerFechasReverso = async () => {
     try {
@@ -328,6 +353,38 @@ const ReportManagement = () => {
     }
   };
 
+  const obtenerFechasClientes = async () => {
+    try {
+      const response = await fetch(API_URL + `/cliente/ver_clientes/`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setFechaMinClie(data.fecha_minima ? moment(data.fecha_minima) : null);
+        setFechaMaxClie(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+      } else {
+        console.error('Error al obtener las fechas del cliente:', data.error);
+      }
+    } catch (error) {
+      console.error('Error al obtener las fechas del v:', error);
+    }
+  };
+
+  const obtenerFechasPagos = async () => {
+    try {
+      const response = await fetch(API_URL + `/pagos/ConsultarPagos/`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setFechaMinPag(data.fecha_minima ? moment(data.fecha_minima) : null);
+        setFechaMaxPag(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+      } else {
+        console.error('Error al obtener las fechas de pagos:', data.error);
+      }
+    } catch (error) {
+      console.error('Error al obtener las fechas de pagos:', error);
+    }
+  };
+
   const fetchTipoProductos = () => {
     setLoading(true);
     fetch(API_URL + "/producto/listarproductos/")
@@ -417,16 +474,16 @@ const ReportManagement = () => {
   };
 
   const data = [
-    { key: 1, reportName: "Reporte de empleados" },
-    { key: 2, reportName: "Reporte de facturas emitidas" },
-    { key: 3, reportName: "Reporte de clientes" },
-    { key: 4, reportName: "Reporte de productos" },
-    { key: 5, reportName: "Reporte de combos" },
-    { key: 6, reportName: "Reporte de sucursales" },
-    { key: 7, reportName: "Reporte de pagos" },
-    { key: 8, reportName: "Reporte de ventas" },
-    { key: 9, reportName: "Reporte de reverso" },
-    { key: 10, reportName: "Reporte de top ventas" },
+    { key: 1, reporte: "Reporte de empleados" },
+    { key: 2, reporte: "Reporte de facturas emitidas" },
+    { key: 3, reporte: "Reporte de clientes" },
+    { key: 4, reporte: "Reporte de productos" },
+    { key: 5, reporte: "Reporte de combos" },
+    { key: 6, reporte: "Reporte de sucursales" },
+    { key: 7, reporte: "Reporte de pagos" },
+    { key: 8, reporte: "Reporte de ventas" },
+    { key: 9, reporte: "Reporte de reverso" },
+    { key: 10, reporte: "Reporte de top ventas" },
   ];
 
   const handleSucursal = () => {
@@ -442,6 +499,8 @@ const ReportManagement = () => {
   };
 
   const handleEmpleados = () => {
+    setSelectedSucursal(null);
+    setSelectedTipoEmpleado(null);
     console.log("Sucursal seleccionada:", selectedSucursal);
     let url;
 
@@ -485,7 +544,13 @@ const ReportManagement = () => {
 
 
   const handlePagos = () => {
-    fetch(API_URL + "/pagos/ConsultarPagos/")
+    let url;
+    if (selectedPagos === "todas") {
+      url = `${API_URL}/pagos/ConsultarPagos/`;
+    } else {
+      url = `${API_URL}/pagos/ConsultarPagos/`;
+    }
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos de pagos:", data.pagos);
@@ -497,6 +562,7 @@ const ReportManagement = () => {
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
+        setModalVisiblePagos(false);
       })
       .catch((error) =>
         console.error("Error al obtener las pagos", error)
@@ -529,6 +595,7 @@ const ReportManagement = () => {
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
+        setModalVisibleFacturas(false);
       })
       .catch((error) =>
         console.error("Error al obtener las facturas emitidas:", error)
@@ -536,36 +603,34 @@ const ReportManagement = () => {
   };
 
   const generateClientesReport = () => {
-    setLoading(true);
-    fetch(API_URL + "/cliente/ver_clientes/")
+    let url;
+    if (selectedClientes === "todas") {
+      url = `${API_URL}/cliente/ver_clientes/`;
+    } else {
+      url = `${API_URL}/cliente/ver_clientes/`;
+    }
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        setLoading(false);
-        if (Array.isArray(data.clientes)) {
-          const clientes = data.clientes.sort((a, b) => {
-            const nombreCompletoA = `${a.snombre || ''} ${a.capellido || ''}`.trim().toLowerCase();
-            const nombreCompletoB = `${b.snombre || ''} ${b.capellido || ''}`.trim().toLowerCase();
-            return nombreCompletoA.localeCompare(nombreCompletoB);
-          });
-          GenerarReportePDF({
-            empresaInfo: empresaInfo,
-            logoEmpresa: logoEmpresa,
-            selectedReport: "clientes",
-            clientes: clientes,
-            handleShowViewer: handleShowViewer,
-            setPdfBlob: setPdfBlob
-          });
-        } else {
-          console.error("Error: El campo clientes no es un array.");
-        }
+        console.log("Rango fecha:", dateRange);
+        GenerarReportePDF({
+          empresaInfo: empresaInfo,
+          logoEmpresa: logoEmpresa,
+          dateRange: dateRange,
+          selectedReport: "clientes",
+          clientes: data.clientes,
+          handleShowViewer: handleShowViewer,
+          setPdfBlob: setPdfBlob
+        });
+        setModalVisibleClientes(false);
       })
       .catch((error) => {
-        setLoading(false);
         console.error("Error fetching clientes:", error);
       });
   };
 
   const HandleProductos = () => {
+    setSelectedOption(null);
     console.log("Categoría seleccionada:", selectedOption);
 
     if (selectedOption != null) {
@@ -589,6 +654,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
+          setModalVisibleProductos(false);
         })
         .catch((error) =>
           console.error("Error al obtener los productos:", error)
@@ -631,6 +697,7 @@ const ReportManagement = () => {
       console.log("No se ha seleccionado ninguna categoría");
     }
   }
+  //Const para los meses en los reportes 
   const formatDate = (dateString) => {
     const [month, year] = dateString.split('/');
     const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -736,6 +803,9 @@ const ReportManagement = () => {
   }
 
   const handleTop = () => {
+    setSelectedTop(null);
+    setStartMonthYear(null); 
+    setEndMonthYear(null); 
     // Generar informe para el top de ventas por mesero
     let url;
     if (selectedTop === 'top_mesero') {
@@ -777,62 +847,61 @@ const ReportManagement = () => {
 
   return (
     <>
-      <Table dataSource={data}>
-        <Column
-          title="Nombre del Reporte"
-          dataIndex="reportName"
-          key="reportName"
-          {...getColumnSearchProps("reportName")}
-        />
-        <Column
-          title="Acción"
-          key="action"
-          render={(text, record) => (
-            <Button type="primary" onClick={() => {
-              if (record.reportName === "Reporte de empleados") {
-                setSelectedReport("empleados");
-                setModalVisible(true);
-              } else if (record.reportName === "Reporte de facturas emitidas") {
-                setSelectedReport("facturas");
-                setModalVisibleFacturas(true);
-              } else if (record.reportName === "Reporte de clientes") {
-                setSelectedReport("clientes");
-                generateClientesReport();
-              } else if (record.reportName === "Reporte de productos") {
-                setSelectedReport("productos");
-                setModalVisibleProductos(true);
-              } else if (record.reportName === "Reporte de combos") {
-                setSelectedReport("combos");
-                setModalVisibleCombos(true);
-              } else if (record.reportName === "Reporte de sucursales") {
-                setSelectedReport("sucursal");
-                handleSucursal(true);
-              } else if (record.reportName === "Reporte de ventas") {
-                setSelectedReport("venta");
-                setModalVisibleVentas(true);
-              } else if (record.reportName === "Reporte de pagos") {
-                setSelectedReport("pagos");
-                handlePagos(true);
-              } else if (record.reportName === "Reporte de reverso") {
-                setSelectedReport("reverso");
-                setModalVisibleReverso(true);
-              } else if (record.reportName === "Reporte de top ventas") {
-                setSelectedReport("top");
-                setModalVisibleTop(true);
-              }
-            }}>
-              GENERAR
-            </Button>
-          )}
-        />
-      </Table>
-
+      <div style={{ maxHeight: '430px', overflow: 'auto' }}>
+        <Table dataSource={data}>
+          <Column
+            title="Nombre del Reporte"
+            dataIndex="reporte"
+            key="reporte"
+            {...getColumnSearchProps("reporte")}
+          />
+          <Column
+            title="Acción"
+            key="action"
+            render={(text, record) => (
+              <Button type="primary" onClick={() => {
+                if (record.reporte === "Reporte de empleados") {
+                  setSelectedReport("empleados");
+                  setModalVisible(true);
+                } else if (record.reporte === "Reporte de facturas emitidas") {
+                  setSelectedReport("facturas");
+                  setModalVisibleFacturas(true);
+                } else if (record.reporte === "Reporte de clientes") {
+                  setSelectedReport("clientes");
+                  setModalVisibleClientes(true);
+                } else if (record.reporte === "Reporte de productos") {
+                  setSelectedReport("productos");
+                  setModalVisibleProductos(true);
+                } else if (record.reporte === "Reporte de combos") {
+                  setSelectedReport("combos");
+                  setModalVisibleCombos(true);
+                } else if (record.reporte === "Reporte de sucursales") {
+                  setSelectedReport("sucursal");
+                  handleSucursal(true);
+                } else if (record.reporte === "Reporte de ventas") {
+                  setSelectedReport("venta");
+                  setModalVisibleVentas(true);
+                } else if (record.reporte === "Reporte de pagos") {
+                  setSelectedReport("pagos");
+                  setModalVisiblePagos(true);
+                } else if (record.reporte === "Reporte de reverso") {
+                  setSelectedReport("reverso");
+                  setModalVisibleReverso(true);
+                } else if (record.reporte === "Reporte de top ventas") {
+                  setSelectedReport("top");
+                  setModalVisibleTop(true);
+                }
+              }}>
+                GENERAR
+              </Button>
+            )}
+          />
+        </Table>
+      </div>
       <Modal
         title="Reporte de Empleados"
         open={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-        }}
+        onCancel={() => setModalVisible(false)}
         footer={null}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -845,6 +914,7 @@ const ReportManagement = () => {
                 setSelectedSucursal(value);
                 setSelectedSucursalName(option.children);
               }}
+              value={selectedSucursal || undefined} //Restablecer valores del modal
               loading={loading}
             >
               <Option key="todas" value="todas">
@@ -867,6 +937,7 @@ const ReportManagement = () => {
                 setSelectedTipoEmpleado(value);
                 setSelectedTipoEmpleadoName(option.children);
               }}
+              value={selectedTipoEmpleado || undefined}
             >
               <Option value="todas">Todos los tipos de empleados</Option>
               <Option value="jefe_cocina">Jefes de cocina</Option>
@@ -895,6 +966,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedOption(value)}
+            value={selectedOption || undefined}
           >
             <Option key="todas" value="todas">
               Todas los productos
@@ -927,6 +999,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedCombos(value)}
+            value={selectedCombos || undefined}
           >
             <Option key="todas" value="todas">
               Todas los combos
@@ -950,7 +1023,11 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de Top ventas"
         open={modalVisibleTop}
-        onCancel={() => setModalVisibleTop(false)}
+        onCancel={() => {
+          setModalVisibleTop(false);
+          setStartMonthYear(null); // Restablecer startMonthYear al cerrar el modal
+          setEndMonthYear(null); // Restablecer endMonthYear al cerrar el modal
+        }}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -959,6 +1036,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => setSelectedTop(value)}
+            value={selectedTop || undefined}
           >
             <Option value="top_mesero">Top ventas mesero</Option>
             <Option value="top_sucursal">Top ventas sucursal</Option>
@@ -971,8 +1049,9 @@ const ReportManagement = () => {
             format="MM/YYYY"
             onChange={(date, dateString, option) => {
               setStartMonthYear(dateString);
-              setSelectedMesName(option.children);
+              setSelectedMesName(option?.children || '');
             }}
+            value={startMonthYear ? moment(startMonthYear, 'MM/YYYY') : undefined}
             disabledDate={(current) => {
               const minFecha = moment(fechaMinimaVentas);
               const maxFecha = moment(fechaMaximaVentas);
@@ -989,8 +1068,9 @@ const ReportManagement = () => {
             format="MM/YYYY"
             onChange={(date, dateString, option) => {
               setEndMonthYear(dateString);
-              setSelectedMesName(option.children);
+              setSelectedMesName(option?.children || '');
             }}
+            value={endMonthYear ? moment(endMonthYear, 'MM/YYYY') : undefined}
             disabledDate={(current) => {
               const minFecha = moment(fechaMinimaVentas);
               const maxFecha = moment(fechaMaximaVentas);
@@ -1445,8 +1525,8 @@ const ReportManagement = () => {
                   const estaFueraDeRango =
                     current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
                   return estaFueraDeRango;
-                  
-                } else if (selectedFacturas=="todas") {
+
+                } else if (selectedFacturas == "todas") {
                   const minFecha = moment(fechaMinimat);
                   const maxFecha = moment(fechaMaximat);
                   const estaFueraDeRango =
@@ -1460,6 +1540,174 @@ const ReportManagement = () => {
 
         <div style={{ alignSelf: "flex-end" }}>
           <Button type="primary" onClick={handleGenerateFacturas}>
+            Generar Reporte
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Reporte de clientes"
+        open={modalVisibleClientes}
+        onCancel={() => setModalVisibleClientes(false)}
+        footer={null}
+      >
+        <div style={{ marginBottom: "20px" }}>
+          <p>Seleccione un filtro:</p>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Seleccione una opción"
+            onChange={(value) => {
+              setSelectedClientes(value);
+              setShowCliOptions(value == "rango");
+              // Restablecer los estados de los componentes DatePicker
+              setShowCliDiaOptions(false);
+              setShowCliMesOptions(false);
+              // Restablecer el rango de fechas
+              setDateRange([]);
+            }}
+          >
+            <Option value="rango">Por rango de fechas</Option>
+            <Option value="todas">Historial empresarial</Option>
+          </Select>
+        </div>
+
+        {showCliOptions && (
+          <div style={{ marginBottom: "20px" }}>
+            <p>Seleccione un tipo:</p>
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Seleccione un tipo"
+              onChange={(value) => {
+                setShowCliDiaOptions(value == "dia");
+                setShowCliMesOptions(value == "mes");
+              }}
+            >
+              <Option value="dia">Por día</Option>
+              <Option value="mes">Por mes</Option>
+            </Select>
+          </div>
+        )}
+
+        {showCliDiaOptions && (
+          <div style={{ marginBottom: "20px" }}>
+            <p>Seleccione el rango de fechas:</p>
+            <DatePicker.RangePicker
+              style={{ width: "100%" }}
+              onChange={(dates) => setDateRange(dates)}
+              disabledDate={(current) => {
+                const minFecha = moment(fechaMinCli);
+                const maxFecha = moment(fechaMaxCli);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                return estaFueraDeRango;
+              }}
+            />
+          </div>
+        )}
+
+        {showCliMesOptions && (
+          <div style={{ marginBottom: "20px" }}>
+            <p>Seleccione el rango de fechas:</p>
+            <DatePicker.MonthPicker
+              style={{ width: "100%" }}
+              onChange={(dates) => setDateRange(dates)}
+              disabledDate={(current) => {
+                const minFecha = moment(fechaMinCli);
+                const maxFecha = moment(fechaMaxCli);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'month') || current.isAfter(maxFecha, 'month');
+                return estaFueraDeRango;
+              }}
+            />
+          </div>
+        )}
+
+        <div style={{ alignSelf: "flex-end" }}>
+          <Button type="primary" onClick={generateClientesReport}>
+            Generar Reporte
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Reporte de pagos"
+        open={modalVisiblePagos}
+        onCancel={() => setModalVisiblePagos(false)}
+        footer={null}
+      >
+        <div style={{ marginBottom: "20px" }}>
+          <p>Seleccione un filtro:</p>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Seleccione una opción"
+            onChange={(value) => {
+              setSelectedPagos(value);
+              setShowPagOptions(value == "rango");
+              // Restablecer los estados de los componentes DatePicker
+              setShowPagDiaOptions(false);
+              setShowPagMesOptions(false);
+              // Restablecer el rango de fechas
+              setDateRange([]);
+            }}
+          >
+            <Option value="rango">Por rango de fechas</Option>
+            <Option value="todas">Historial empresarial</Option>
+          </Select>
+        </div>
+
+        {showPagOptions && (
+          <div style={{ marginBottom: "20px" }}>
+            <p>Seleccione un tipo:</p>
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Seleccione un tipo"
+              onChange={(value) => {
+                setShowPagDiaOptions(value == "dia");
+                setShowPagMesOptions(value == "mes");
+              }}
+            >
+              <Option value="dia">Por día</Option>
+              <Option value="mes">Por mes</Option>
+            </Select>
+          </div>
+        )}
+
+        {showPagDiaOptions && (
+          <div style={{ marginBottom: "20px" }}>
+            <p>Seleccione el rango de fechas:</p>
+            <DatePicker.RangePicker
+              style={{ width: "100%" }}
+              onChange={(dates) => setDateRange(dates)}
+              disabledDate={(current) => {
+                const minFecha = moment(fechaMinPag);
+                const maxFecha = moment(fechaMaxPag);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                return estaFueraDeRango;
+              }}
+            />
+          </div>
+        )}
+
+        {showPagMesOptions && (
+          <div style={{ marginBottom: "20px" }}>
+            <p>Seleccione el rango de fechas:</p>
+            <DatePicker.MonthPicker
+              style={{ width: "100%" }}
+              onChange={(dates) => setDateRange(dates)}
+              disabledDate={(current) => {
+                const minFecha = moment(fechaMinPag);
+                const maxFecha = moment(fechaMaxPag);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'month') || current.isAfter(maxFecha, 'month');
+                return estaFueraDeRango;
+              }}
+            />
+          </div>
+        )}
+
+        <div style={{ alignSelf: "flex-end" }}>
+          <Button type="primary" onClick={handlePagos}>
             Generar Reporte
           </Button>
         </div>
