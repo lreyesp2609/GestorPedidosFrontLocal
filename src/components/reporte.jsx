@@ -1476,7 +1476,7 @@ const ReportManagement = () => {
             style={{ width: "100%" }}
             placeholder="Seleccione una opción"
             onChange={(value) => {
-              setShowTodosOptions(value === "rango");
+              setShowTodosOptions(value);
             }}
             value={showTodosOptions}
           >
@@ -1492,8 +1492,8 @@ const ReportManagement = () => {
             placeholder="Seleccione una opción"
             onChange={(value, option) => {
               setSelectedFacturas(value);
-              setShowSucursalOptions(value === "sucursal");
-              setShowMeseroOptions(value === "mesero");
+              setShowSucursalOptions(value);
+              setShowMeseroOptions(value);
             }}
             value={selectedFacturas}
           >
@@ -1503,7 +1503,7 @@ const ReportManagement = () => {
           </Select>
         </div>
 
-        {showMeseroOptions && (
+        {showMeseroOptions === "mesero" && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione un mesero:</p>
             <Select
@@ -1525,7 +1525,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showSucursalOptions && (
+        {showSucursalOptions === "sucursal" && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione una sucursal:</p>
             <Select
@@ -1547,7 +1547,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showTodosOptions && (
+        {showTodosOptions === "rango" && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.RangePicker
@@ -1601,7 +1601,7 @@ const ReportManagement = () => {
             placeholder="Seleccione una opción"
             onChange={(value) => {
               setSelectedClientes(value);
-              setShowCliOptions(value == "rango");
+              setShowCliOptions(value);
               // Restablecer los estados de los componentes DatePicker
               setShowCliDiaOptions(false);
               setShowCliMesOptions(false);
@@ -1615,15 +1615,15 @@ const ReportManagement = () => {
           </Select>
         </div>
 
-        {showCliOptions && (
+        {showCliOptions == "rango" && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione un tipo:</p>
             <Select
               style={{ width: "100%" }}
               placeholder="Seleccione un tipo"
               onChange={(value) => {
-                setShowCliDiaOptions(value == "dia");
-                setShowCliMesOptions(value == "mes");
+                setShowCliDiaOptions(value);
+                setShowCliMesOptions(value);
               }}
               value={showCliDiaOptions}
             >
@@ -1633,7 +1633,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showCliDiaOptions && (
+        {showCliDiaOptions == "dia" && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.RangePicker
@@ -1651,7 +1651,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showCliMesOptions && (
+        {showCliMesOptions == "mes" && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.MonthPicker
