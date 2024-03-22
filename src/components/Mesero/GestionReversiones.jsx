@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal } from "antd";
-import API_URL from '../../config';
+import GenerarNotaCreditoPDF from './GenerarNotaCreditoPDFS';
+
 const ReversionesFacturas = () => {
   const [facturas, setFacturas] = useState([]);
   const [meseros, setMeseros] = useState({});
@@ -11,12 +12,15 @@ const ReversionesFacturas = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [detalleFactura, setDetalleFactura] = useState(null);
   const [detalleNotaCredito, setDetalleNotaCredito] = useState(null);
+  const [empresaInfo, setEmpresaInfo] = useState(null);
+  const [logoEmpresa, setLogoEmpresa] = useState(null);
+  const [notaCreditoComponent, setNotaCreditoComponent] = useState(null);
 
   const id_cuenta = localStorage.getItem("id_cuenta");
 
   const ObtenerUsuario = async () => {
     if (id_cuenta) {
-      fetch(API_URL +`/Mesero/obtener_usuario/${id_cuenta}/`)
+      fetch(`http://127.0.0.1:8000/Mesero/obtener_usuario/${id_cuenta}/`)
         .then((response) => response.json())
         .then((data) => {
           setUserData(data.mesero);
@@ -32,10 +36,11 @@ const ReversionesFacturas = () => {
 
   useEffect(() => {
     ObtenerUsuario();
+    fetchEmpresaInfo();
   }, []);
 
   const cargarFacturas = () => {
-    fetch(API_URL +"/Mesero/lista_facturas/")
+    fetch("http://127.0.0.1:8000/Mesero/lista_facturas/")
       .then((response) => response.json())
       .then((data) => {
         const facturasFiltradas = data.facturas.filter(
@@ -49,7 +54,7 @@ const ReversionesFacturas = () => {
   useEffect(() => {
     cargarFacturas();
 
-    fetch(API_URL +"/Mesero/listar_meseros/")
+    fetch("http://127.0.0.1:8000/Mesero/listar_meseros/")
       .then((response) => response.json())
       .then((data) => {
         const meserosData = {};
@@ -60,7 +65,7 @@ const ReversionesFacturas = () => {
       })
       .catch((error) => console.error("Error fetching meseros:", error));
 
-    fetch(API_URL +"/cliente/ver_clientes/")
+    fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => {
         const clientesData = {};
@@ -83,10 +88,10 @@ const ReversionesFacturas = () => {
     setFacturasValidadas(facturasFiltradas);
   }, [facturas]);
 
-  const abrirModal = (idFactura) => {
-    setIdFacturaSeleccionada(idFactura);
+  const abrirModal = (id_factura) => {
+    setIdFacturaSeleccionada(id_factura);
     setModalVisible(true);
-    obtenerDetalles(idFactura);
+    obtenerDetalles(id_factura);
   };
 
   const cerrarModal = () => {
@@ -96,15 +101,15 @@ const ReversionesFacturas = () => {
     setDetalleNotaCredito(null);
   };
 
-  const obtenerDetalles = async (idFactura) => {
+  const obtenerDetalles = async (id_factura) => {
     try {
-      const response = await fetch(API_URL +`/Mesero/factura_detalles_nota_credito/${idFactura}/`);
+      const response = await fetch(`http://127.0.0.1:8000/Mesero/factura_detalles_nota_credito/${id_factura}/`);
       const data = await response.json();
-  
+
       if (data.factura) {
         setDetalleFactura(data.factura);
       }
-  
+
       if (data.nota_credito) {
         setDetalleNotaCredito(data.nota_credito);
       } else {
@@ -115,7 +120,65 @@ const ReversionesFacturas = () => {
     }
   };
 
+  const generarNotaCredito = async (id_factura) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/Mesero/factura_detalles_nota_credito/${id_factura}/`);
+      const data = await response.json();
+  
+      if (data.factura && data.nota_credito) {
+        setDetalleFactura(data.factura);
+        setDetalleNotaCredito(data.nota_credito);
+  
+        // Obtener los datos del PDF
+        const datosPDF = <GenerarNotaCreditoPDF
+          detalleFactura={data.factura}
+          detalleNotaCredito={data.nota_credito}
+          empresaInfo={empresaInfo}
+          logoEmpresa={logoEmpresa}
+          userData={userData}
+        />;
+  
+        // Descargar el PDF
+        const pdfBlob = new Blob([datosPDF], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = 'nota_credito.pdf';
+        link.click();
+      } else {
+        console.error('Datos incompletos recibidos del servidor');
+      }
+    } catch (error) {
+      console.error('Error al generar la nota de crédito:', error);
+    }
+  };
 
+  const fetchEmpresaInfo = async () => {
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/empresa/infoEmpresa/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mensaje: "Datos de la empresa",
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("No se pudo obtener la información de la empresa.");
+      }
+      const data = await response.json();
+      setEmpresaInfo(data.empresa_info);
+      if (data.empresa_info && data.empresa_info.elogo) {
+        setLogoEmpresa(`data:image/png;base64,${data.empresa_info.elogo}`);
+      }
+    } catch (error) {
+      console.error("Error al obtener la información de la empresa:", error);
+    }
+  };
 
   const facturasNoValidadas = facturas.filter(
     (factura) =>
@@ -297,7 +360,9 @@ const ReversionesFacturas = () => {
       key: "reversión",
       render: (text, record) => (
         <span>
-          <Button type="primary">Generar nota de credito</Button>
+          <Button type="primary" onClick={() => generarNotaCredito(record.id_factura)}>
+            Generar nota de crédito
+          </Button>
         </span>
       )
     }
@@ -305,6 +370,7 @@ const ReversionesFacturas = () => {
 
   return (
     <div>
+      {notaCreditoComponent && notaCreditoComponent}
       <h2>Reversion de Facturas</h2>
       <div style={{ overflowX: "auto" }}>
         <Table columns={columns} dataSource={facturasNoValidadas} />
@@ -320,35 +386,35 @@ const ReversionesFacturas = () => {
       )}
 
       <Modal
-  title="Detalles del Reverso"
-  visible={modalVisible}
-  onOk={cerrarModal}
-  onCancel={cerrarModal}
->
-  {detalleFactura && (
-    <div>
-      <h3>Detalles de la reversión</h3>
-      <p>Fecha de Emisión de la Factura: {detalleFactura.fecha_emision}</p>
-      {detalleNotaCredito && (
-        <div>
-          <p>Fecha de Emisión del Reverso: {detalleNotaCredito.fecha_emision}</p>
-          <p>Motivo: {detalleNotaCredito.motivo}</p>
-        </div>
-      )}
-      <h3>Productos</h3>
-      <ul>
-        {detalleFactura.detalles_factura.map((detalle, index) => (
-          <li key={index}>
-            {detalle.nombre_producto || detalle.id_combo} | Cantidad:{"  "}
-            {detalle.cantidad} | Precio:{" "}
-            {detalle.precio_unitario}
-          </li>
-        ))}
-      </ul>
-      <p>Total a Pagar: {detalleFactura.a_pagar}</p>
-    </div>
-  )}
-</Modal>
+        title="Detalles del Reverso"
+        visible={modalVisible}
+        onOk={cerrarModal}
+        onCancel={cerrarModal}
+      >
+        {detalleFactura && (
+          <div>
+            <h3>Detalles de la reversión</h3>
+            <p>Fecha de Emisión de la Factura: {detalleFactura.fecha_emision}</p>
+            {detalleNotaCredito && (
+              <div>
+                <p>Fecha de Emisión del Reverso: {detalleNotaCredito.fecha_emision}</p>
+                <p>Motivo: {detalleNotaCredito.motivo}</p>
+              </div>
+            )}
+            <h3>Productos</h3>
+            <ul>
+              {detalleFactura.detalles_factura.map((detalle, index) => (
+                <li key={index}>
+                  {detalle.nombre_producto || detalle.id_combo} | Cantidad:{"  "}
+                  {detalle.cantidad} | Precio:{" "}
+                  {detalle.precio_unitario}
+                </li>
+              ))}
+            </ul>
+            <p>Total a Pagar: {detalleFactura.a_pagar}</p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
