@@ -22,12 +22,10 @@ import Pedidos from "./pedido";
 import API_URL from '../config';
 
 const ShoppingCart = () => {
-  const [cart, setCart] = useContext(CartContext);
+  const { cart, setCart, totalPoints2, calcularTotalPoints } = useContext(CartContext);
   const [recompensa, setRecompensa] = useContext(RecompensaContext);
   const [mostrarPedido, setMostrarPedido] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [showCardForm, setShowCardForm] = useState(false);
   const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const lottieOptions = {
     loop: true,
@@ -49,10 +47,7 @@ const ShoppingCart = () => {
     marginBottom: "270px",
   };
 
-  const [locationData, setLocationData] = useState({
-    latitud: 0,
-    longitud: 0,
-  });
+
 
   const id_cuenta = localStorage.getItem("id_cuenta");
   useEffect(() => {
@@ -90,62 +85,86 @@ const ShoppingCart = () => {
     return iva;
   };
 
-  const handleModoPagoChange = (e) => {
-    setModoPago(e.target.value);
-    setFraccionadoValue(1);
+ 
+ 
+  const addToCart = (productId) => {
+    setCart((currItems) => {
+      const isItemFound = currItems.find((item) => item.id === productId);
+      if (isItemFound) {
+        return currItems.map((item) => {
+          if (item.id === productId) {
+            return { ...item, quantity: item.quantity + 1 };
+          } else {
+            return item;
+          }
+        });
+      } else {
+        notification.success({
+          message: 'Se agregó el producto al carrito',
+          placement: 'topLeft'
+        });
+        return [
+          ...currItems,
+          {
+            id: productId,
+            type: 'producto',
+            quantity: 1,
+            Name: selectedProduct.nombreproducto,
+            image: selectedProduct.imagenp,
+            puntos: selectedProduct.puntosp,
+            price: parseFloat(selectedProduct.preciounitario),
+            iva: selectedProduct.iva,
+          },
+        ];
+      }
+    });
   };
-  const handleFraccionadoInputChange = (value) => {
-    setFraccionadoValue(value);
-  };
-  const handleModoPedidoChange = (e) => {
-    setModoPedido(e.target.value);
-  };
-  const handleLocationChange = (location) => {
-    setSelectedLocation(location);
-    setShowElegirUbicacion(location === "Otro");
-    let newLocationData = {};
-    console.log(`Cambiando a la ubicación: ${location}`);
 
-    switch (location) {
-      case "Casa":
-        newLocationData = {
-          latitud: locationData.latitud1,
-          longitud: locationData.longitud1,
-        };
-        break;
-      case "Trabajo":
-        newLocationData = {
-          latitud: locationData.latitud2,
-          longitud: locationData.longitud2,
-        };
-        break;
-      case "Otro":
-        newLocationData = {
-          latitud: locationData.latitud3,
-          longitud: locationData.longitud3,
-        };
-        break;
-      default:
-        newLocationData = {
-          latitud: 0,
-          longitud: 0,
-        };
+
+  const addToCart2 = (productId, productName, productImage, productPoints) => {
+    console.log('userData:', totalPoints2);
+    console.log('productPoints:', productPoints);
+    const userPoints = parseInt(totalPoints2);
+    const pointsNeeded = parseInt(productPoints);
+    
+
+    if (!isNaN(userPoints) && !isNaN(pointsNeeded) && userPoints >= pointsNeeded) {
+      calcularTotalPoints(-pointsNeeded);
+      setRecompensa((currItems) => {
+        const isItemFound = currItems.find((item) => item.id === productId);
+        if (isItemFound) {
+          console.log('Item encontrado en el carrito. Actualizando cantidad...');
+          return currItems.map((item) => {
+            if (item.id === productId) {
+              return { ...item, quantity: item.quantity + 1  };
+            } else {
+              return item;
+            }
+          });
+        } else {
+          console.log('Añadiendo nueva recompensa al carrito...');
+          return [
+            ...currItems,
+            {
+              id: productId,
+              type: 'recompensa',
+              quantity: 1,
+              Name: productName,
+              image: productImage,
+              price: 0,
+              puntos: productPoints,
+            },
+          ];
+          
+        }
+      });
+    } else {
+      console.log('No tienes suficientes puntos para reclamar esta recompensa.');
+      notification.error({
+        message: 'Puntos insuficientes',
+        description: 'No tienes suficientes puntos para reclamar esta recompensa.',
+      });
     }
-    console.log("Nuevos datos de ubicación:", newLocationData);
-    setLocationData((prevLocationData) => ({
-      ...prevLocationData,
-      ...newLocationData,
-    }));
-  };
-
-  const handleShowCardForm = () => {
-    setShowCardForm(true);
-  };
-  const handleElegirUbicacionClick = () => {
-    setShowElegirUbicacion(false);
-  };
-  const cerrarCardForm = () => {
-    setShowCardForm(false);
   };
   const HacerClick = () => {
     const combinedItems = [...cart, ...recompensa];
@@ -158,10 +177,31 @@ const ShoppingCart = () => {
   const regresar = () => {
     setMostrarPedido(false);
   };
+  const removeItem = (productId) => {
+    setCart((currItems) => {
+      const updatedCart = currItems.map((item) => {
+        if (item.id === productId) {
+          return { ...item, quantity: Math.max(item.quantity - 1, 0) };
+        } else {
+          return item;
+        }
+      });
 
-  const CerrarModal = () => {
-    setMostrarModal(false);
-    setShowCardForm(false);
+      return updatedCart.filter((item) => item.quantity > 0);
+    });
+  };
+  const removeItem2 = (productId) => {
+    setRecompensa((currItems) => {
+      const updatedCart = currItems.map((item) => {
+        if (item.id === productId) {
+          return { ...item, quantity: Math.max(item.quantity - 1, 0) };
+        } else {
+          return item;
+        }
+      });
+
+      return updatedCart.filter((item) => item.quantity > 0);
+    });
   };
 
   const totalQuantity = cart.reduce((acc, curr) => acc + curr.quantity, 0) + recompensa.reduce((acc, curr) => acc + curr.quantity, 0);
@@ -194,7 +234,7 @@ const ShoppingCart = () => {
                       }}
                     >
                       <Row>
-                        <Col md={4}>
+                        <Col md={2}>
                           <img style={{
                             width: "90px",
                             height: "90px",
@@ -202,11 +242,62 @@ const ShoppingCart = () => {
                           }}
                             src={`data:image/png;base64,${item.image}`} alt="User" />
                         </Col>
-                        <Col md={8}>
+                        <Col md={5}>
                           <strong>{item.Name}</strong>
                           <br />
                           <span>{`Cantidad: ${item.quantity} - Precio: $${item.price} - Puntos: ${item.puntos}`}</span>
+                         
                         </Col>
+                        <Col md={5} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                          <Button
+                              onClick={() => removeItem(item.id)}
+                              size="lg"
+                              style={{
+                                  marginBottom: "10px",
+                                  marginTop: "10px",
+                                  backgroundColor: "#131212",
+                                  borderRadius: "8px",
+                                  padding: "15px 30px",
+                                  fontSize: "16px",
+                                  color: "#fff",
+                                  border: "1px solid #131212",
+                                  transition: "background-color 0.3s",
+                                  marginRight: '10px' // Ajusta el margen derecho
+                              }}
+                              onMouseOver={(e) =>
+                                  (e.target.style.backgroundColor = "#333")
+                              }
+                              onMouseOut={(e) =>
+                                  (e.target.style.backgroundColor = "#000")
+                              }
+                          >
+                              -
+                          </Button>
+                          <Button
+                              onClick={() => addToCart(item.id)}
+                              size="lg"
+                              style={{
+                                  marginBottom: "10px",
+                                  marginTop: "10px",
+                                  backgroundColor: "#131212",
+                                  borderRadius: "8px",
+                                  padding: "15px 30px",
+                                  fontSize: "16px",
+                                  color: "#fff",
+                                  border: "1px solid #131212",
+                                  transition: "background-color 0.3s",
+                                  marginRight: '10px' // Ajusta el margen derecho
+                              }}
+                              onMouseOver={(e) =>
+                                  (e.target.style.backgroundColor = "#333")
+                              }
+                              onMouseOut={(e) =>
+                                  (e.target.style.backgroundColor = "#000")
+                              }
+                          >
+                              +
+                          </Button>
+                      </Col>
                       </Row>
                     </div>
                   ))}
@@ -227,7 +318,7 @@ const ShoppingCart = () => {
                       }}
                     >
                       <Row>
-                        <Col md={4}>
+                        <Col md={2}>
                           <img style={{
                             width: "90px",
                             height: "90px",
@@ -235,10 +326,60 @@ const ShoppingCart = () => {
                           }}
                             src={`data:image/png;base64,${item.image}`} alt="User" />
                         </Col>
-                        <Col md={8}>
+                        <Col md={5}>
                           <strong>{item.Name}</strong>
                           <br />
                           <span>{`Cantidad: ${item.quantity} - Precio: $${item.price}`}</span>
+                        </Col>
+                        <Col md={5} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                          <Button
+                              onClick={() => removeItem2(item.id)}
+                              size="lg"
+                              style={{
+                                  marginBottom: "10px",
+                                  marginTop: "10px",
+                                  backgroundColor: "#131212",
+                                  borderRadius: "8px",
+                                  padding: "15px 30px",
+                                  fontSize: "16px",
+                                  color: "#fff",
+                                  border: "1px solid #131212",
+                                  transition: "background-color 0.3s",
+                                  marginRight: '10px' // Ajusta el margen derecho
+                              }}
+                              onMouseOver={(e) =>
+                                  (e.target.style.backgroundColor = "#333")
+                              }
+                              onMouseOut={(e) =>
+                                  (e.target.style.backgroundColor = "#000")
+                              }
+                          >
+                              -
+                          </Button>
+                          <Button
+                              onClick={() => addToCart2(item.id,item.Name,item.image,item.puntos  )}
+                              size="lg"
+                              style={{
+                                  marginBottom: "10px",
+                                  marginTop: "10px",
+                                  backgroundColor: "#131212",
+                                  borderRadius: "8px",
+                                  padding: "15px 30px",
+                                  fontSize: "16px",
+                                  color: "#fff",
+                                  border: "1px solid #131212",
+                                  transition: "background-color 0.3s",
+                                  marginRight: '10px' // Ajusta el margen derecho
+                              }}
+                              onMouseOver={(e) =>
+                                  (e.target.style.backgroundColor = "#333")
+                              }
+                              onMouseOut={(e) =>
+                                  (e.target.style.backgroundColor = "#000")
+                              }
+                          >
+                              +
+                          </Button>
                         </Col>
                       </Row>
                     </div>

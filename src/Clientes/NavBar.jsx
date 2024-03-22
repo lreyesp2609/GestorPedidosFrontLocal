@@ -29,7 +29,7 @@ import "../components/comanda.css";
 import API_URL from '../config';
 
 const NavBar = () => {
-  const [cart, setCart] = useContext(CartContext);
+  const { cart, setCart, totalPoints2, calcularTotalPoints } = useContext(CartContext);
   const [recompensa, setrecompensa] = useContext(RecompensaContext);
   const [ComponenteSeleccionado, setComponenteSeleccionado] = useState(() => {
     // Obtener el componente seleccionado de localStorage al cargar la página
@@ -286,7 +286,7 @@ const NavBar = () => {
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
                   >
-                    Puntos: {userData}
+                    Puntos: {totalPoints2}
                   </Nav.Link>
                 )}
                 {Logeado && (

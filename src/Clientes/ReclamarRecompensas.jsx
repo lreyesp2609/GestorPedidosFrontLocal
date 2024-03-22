@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Card as AntCard, message,notification, Alert } from 'antd';
 import { Row, Col, Button } from 'react-bootstrap';
 import {RecompensaContext} from "../context/RecompensaContext"
+import { CartContext } from "../context/CarritoContext";
 import API_URL from '../config';
 
 
@@ -9,22 +10,24 @@ const { Meta } = AntCard;
 const Reclamar = () => {
     const [products, setProducts] = useState([]);
     const [recompensasProductos, setRecompensasProductos] = useState([]);
-   
+    const { cart, setCart, totalPoints2, calcularTotalPoints } = useContext(CartContext);
     const [recompensa, setrecompensa] = useContext(RecompensaContext);
     const addToCart = (productId, productName, productImage, productPoints) => {
-      console.log('userData:', userData);
+      console.log('userData:', totalPoints2);
       console.log('productPoints:', productPoints);
-      const userPoints = parseInt(userData.cpuntos);
+      const userPoints = parseInt(totalPoints2);
       const pointsNeeded = parseInt(productPoints);
+      
+
       if (!isNaN(userPoints) && !isNaN(pointsNeeded) && userPoints >= pointsNeeded) {
+        calcularTotalPoints(-pointsNeeded);
         setrecompensa((currItems) => {
           const isItemFound = currItems.find((item) => item.id === productId);
-    
           if (isItemFound) {
             console.log('Item encontrado en el carrito. Actualizando cantidad...');
             return currItems.map((item) => {
               if (item.id === productId) {
-                return { ...item, quantity: item.quantity + 1 };
+                return { ...item, quantity: item.quantity + 1  };
               } else {
                 return item;
               }
@@ -43,6 +46,7 @@ const Reclamar = () => {
                 puntos: productPoints,
               },
             ];
+            
           }
         });
       } else {
@@ -179,8 +183,10 @@ return(
                 <div className="d-grid gap-2">
                 <Button style={{marginTop:'10px'}}
                 onClick={() => {
-                  addToCart(recompensa.id_recompensa_producto, producto.nombreproducto, producto.imagenp, recompensa.puntos_recompensa_producto);
-                  reclamarPuntos(recompensa);
+                  addToCart(recompensa.id_recompensa_producto, producto.nombreproducto, 
+                    producto.imagenp, 
+                    recompensa.puntos_recompensa_producto);
+                    reclamarPuntos(recompensa);
                 }}
                 >Reclamar</Button>
                 </div>
