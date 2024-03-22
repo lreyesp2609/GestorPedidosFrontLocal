@@ -11,9 +11,14 @@ import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CartContext } from "../context/CarritoContext";
 import { RecompensaContext } from "../context/RecompensaContext"
 
-import { TimePicker, InputNumber, Divider, Space, Card, Upload, message, Segmented, Badge, notification, Alert, Tooltip, Pagination, Spin } from 'antd';
+import { TimePicker, InputNumber, Divider, 
+  Space,Card,Input
+  , Upload, message, Segmented, 
+  Badge, notification, Alert, Tooltip, 
+  Pagination, Spin } from 'antd';
+  const { TextArea } = Input;
+
 import ImgCrop from 'antd-img-crop';
-import { LoadingOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import PayPal from "./Paypal";
 import PayPal2 from "./Paypal2";
 import Map3 from "./Map3";
@@ -28,7 +33,7 @@ import imgdividir from "./res/dividirpagos.png";
 import imgpaypal from "./res/paypal.png";
 import API_URL from '../config';
 const Pedidos = ({ regresar }) => {
-  const [cart, setCart] = useContext(CartContext);
+  const { cart, setCart, totalPoints2, calcularTotalPoints } = useContext(CartContext);
   const [recompensa, setrecompensa] = useContext(RecompensaContext);
 
   const [mostrarPedido, setMostrarPedido] = useState(false);
@@ -43,7 +48,6 @@ const Pedidos = ({ regresar }) => {
   const [mostrarComponente, setMostrarComponente] = useState(false);
   const [modoPedido, setModoPedido] = useState(null);
   const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
-  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const [sucursalesData, setSucursalesData] = useState([]);
   const [sucursal, setSucursal] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(1);
@@ -436,7 +440,7 @@ const Pedidos = ({ regresar }) => {
       formData.append('precio', valor);
       formData.append('tipo_de_pedido', modoPedido);
       formData.append('metodo_de_pago', 'E');
-      formData.append('puntos', 0);
+
       formData.append('estado_del_pedido', 'O');
       formData.append('impuesto', 0);
       formData.append('estado_pago', 'En revisión');
@@ -465,6 +469,10 @@ const Pedidos = ({ regresar }) => {
               message: 'Pedido Exitoso',
               description: '¡El pedido se ha completado con éxito!',
             });
+            // Calcula los puntos ganados en el pedido actual
+            const puntosGanados = cart.reduce((acc, curr) => acc + curr.quantity * curr.puntos, 0);
+
+            calcularTotalPoints(puntosGanados);
             setCart([]);
             setrecompensa([]);
             regresar();
@@ -1048,8 +1056,10 @@ const Pedidos = ({ regresar }) => {
                 </Row>
               )}
               {modoPago === 'E' && (
+                <>
+                 <TextArea rows={4} style={{ marginTop: '10px' }} />
                 <div className="d-grid gap-2">
-                  <Button style={{ marginTop: '50px', marginBottom: '10px' }}
+                  <Button style={{ marginTop: '10px', marginBottom: '10px' }}
                     disabled={modoPago !== 'E' || Permitido}
                     onClick={PagarPorEfectivo2}
                   >
@@ -1057,6 +1067,7 @@ const Pedidos = ({ regresar }) => {
                   </Button>
                   <p>puntos totales: {totalPoints}</p>
                 </div>
+                </>
               )}
               <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
                 {modoPago === 'F' && (
@@ -1170,7 +1181,9 @@ const Pedidos = ({ regresar }) => {
                             <strong>{item.Name}</strong>
                             <br />
                             <span>{`Cantidad: ${item.quantity} - Precio: $${item.price} - Puntos: ${item.puntos}`}</span>
+                           
                           </div>
+             
                         </td>
                       </tr>
                     </tbody>
@@ -1178,7 +1191,7 @@ const Pedidos = ({ regresar }) => {
                 </div>
 
               ))}
-            </div>
+           </div>
             <Container style={{ marginTop: '10px' }}>
               <Col style={{
                 backgroundColor: 'rgb(255, 255, 255)', borderRadius: '5px'
