@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Input, Button, Table, Select, DatePicker } from "antd";
+import { Modal, Input, Button, Table, Select, DatePicker, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import GenerarReportePDF from "./generarReporte";
 import moment from 'moment';
@@ -54,6 +54,10 @@ const ReportManagement = () => {
   const [selectedReverso, setSelectedReverso] = useState(null);
   const [fechaMinima, setFechaMinima] = useState(null);
   const [fechaMaxima, setFechaMaxima] = useState(null);
+  const [fechaMinimaV, setFechaMinimaV] = useState(null);
+  const [fechaMaximaV, setFechaMaximaV] = useState(null);
+  const [fechaMinimaI, setFechaMinimaI] = useState(null);
+  const [fechaMaximaI, setFechaMaximaI] = useState(null);
 
   const [startMonthYear, setStartMonthYear] = useState(null);
   const [endMonthYear, setEndMonthYear] = useState(null);
@@ -85,17 +89,15 @@ const ReportManagement = () => {
 
   const [modalVisibleFacturas, setModalVisibleFacturas] = useState(false);
   const [selectedFacturas, setSelectedFacturas] = useState(null);
-  const [showTodosOptions, setShowTodosOptions] = useState(false);
+  const [showTodosOptions, setShowTodosOptions] = useState(null);
   const [modalVisibleClientes, setModalVisibleClientes] = useState(false);
   const [selectedClientes, setSelectedClientes] = useState(null);
-  const [showCliOptions, setShowCliOptions] = useState(false);
-  const [showCliDiaOptions, setShowCliDiaOptions] = useState(false);
-  const [showCliMesOptions, setShowCliMesOptions] = useState(false);
+  const [showCliOptions, setShowCliOptions] = useState(null);
+  const [showCliDMOptions, setShowCliDMOptions] = useState(null);
   const [modalVisiblePagos, setModalVisiblePagos] = useState(false);
   const [selectedPagos, setSelectedPagos] = useState(null);
   const [showPagOptions, setShowPagOptions] = useState(false);
-  const [showPagDiaOptions, setShowPagDiaOptions] = useState(false);
-  const [showPagMesOptions, setShowPagMesOptions] = useState(false);
+  const [showPagDMOptions, setShowPagDMOptions] = useState(null);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -173,6 +175,8 @@ const ReportManagement = () => {
     fetchProductos();
     fetchTipoProductos();
     obtenerFechasReverso();
+    obtenerFechasReversoI();
+    obtenerFechasReversoV();
     obtenerFechasVentas();
     obtenerFechasSucursal();
     obtenerFechasMesero();
@@ -185,20 +189,47 @@ const ReportManagement = () => {
     obtenerFechasPagos();
   }, []);
 
-  const handleCancel = () => {
-    setModalVisible(false);
-    setSelectedSucursal(null);
-    setSelectedTipoEmpleado(null);
-  };
 
   const obtenerFechasReverso = async () => {
     try {
-      const response = await fetch(API_URL + "/Mesero/fechareverso/");
+      const response = await fetch(API_URL + "/Mesero/lista_reverso_factura/");
       const data = await response.json();
 
       if (response.ok) {
         setFechaMinima(data.fecha_minima ? moment(data.fecha_minima) : null);
         setFechaMaxima(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+      } else {
+        console.error('Error al obtener las fechas de reverso:', data.error);
+      }
+    } catch (error) {
+      console.error('Error al obtener las fechas de reverso:', error);
+    }
+  };
+
+  const obtenerFechasReversoI = async () => {
+    try {
+      const response = await fetch(API_URL + "/Mesero/factura_n_report/");
+      const data = await response.json();
+
+      if (response.ok) {
+        setFechaMinimaI(data.fecha_minima ? moment(data.fecha_minima) : null);
+        setFechaMaximaI(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+      } else {
+        console.error('Error al obtener las fechas de reverso:', data.error);
+      }
+    } catch (error) {
+      console.error('Error al obtener las fechas de reverso:', error);
+    }
+  };
+
+  const obtenerFechasReversoV = async () => {
+    try {
+      const response = await fetch(API_URL + "/Mesero/factura_v_report/");
+      const data = await response.json();
+
+      if (response.ok) {
+        setFechaMinimaV(data.fecha_minima ? moment(data.fecha_minima) : null);
+        setFechaMaximaV(data.fecha_maxima ? moment(data.fecha_maxima) : null);
       } else {
         console.error('Error al obtener las fechas de reverso:', data.error);
       }
@@ -498,7 +529,35 @@ const ReportManagement = () => {
     });
   };
 
+  const validateFormEmpleados = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado una opción de reverso
+    if (!selectedSucursal) {
+      isFormValid = false;
+      missingFields.push('Sucursal');
+    }
+
+    // Verificar si se ha seleccionado un rango de fechas
+    if (!selectedTipoEmpleado) {
+      isFormValid = false;
+      missingFields.push('Tipo empleado');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleEmpleados = () => {
+    if (!validateFormEmpleados()) {
+      return;
+    }
     console.log("Sucursal seleccionada:", selectedSucursal);
     let url;
 
@@ -541,8 +600,42 @@ const ReportManagement = () => {
     }
   };
 
+  const validateFormPagos = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado un filtro
+    if (!selectedPagos) {
+      isFormValid = false;
+      missingFields.push('Tipo de filtro');
+    }
+
+    // Verificar si se ha seleccionado un tipo de opción
+    if (showPagOptions === 'rango' && !showPagDMOptions) {
+      isFormValid = false;
+      missingFields.push('Tipo de rango');
+    }
+
+    // Verificar si se ha seleccionado un tipo de día o mes (si es necesario)
+    if (showPagOptions === 'rango' && showPagDMOptions && !dateRange) {
+      isFormValid = false;
+      missingFields.push('Rango de fechas');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
 
   const handlePagos = () => {
+    if (!validateFormPagos()) {
+      return;
+    }
+
     let url;
     if (selectedPagos === "todas") {
       url = `${API_URL}/pagos/ConsultarPagos/`;
@@ -561,14 +654,60 @@ const ReportManagement = () => {
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
-        setModalVisiblePagos(false);
+        cerrarModal();
       })
       .catch((error) =>
         console.error("Error al obtener las pagos", error)
       );
   };
 
+  const validateFormFacturas = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado un tipo de opción
+    if (!showTodosOptions) {
+      isFormValid = false;
+      missingFields.push('Tipo de filtro');
+    }
+
+    // Verificar si se ha seleccionado una opción de facturas
+    if (!selectedFacturas) {
+      isFormValid = false;
+      missingFields.push('Tipo de facturas');
+    }
+
+    // Verificar si se ha seleccionado un mesero (si es necesario)
+    if (showMeseroOptions === 'mesero' && !selectedMesero) {
+      isFormValid = false;
+      missingFields.push('Mesero');
+    }
+
+    // Verificar si se ha seleccionado una sucursal (si es necesario)
+    if (showSucursalOptions === 'sucursal' && !selectedSucursal) {
+      isFormValid = false;
+      missingFields.push('Sucursal');
+    }
+
+    // Verificar si se ha seleccionado un rango de fechas (si es necesario)
+    if (showTodosOptions === 'rango' && !dateRange) {
+      isFormValid = false;
+      missingFields.push('Rango de fechas');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleGenerateFacturas = () => {
+    if (!validateFormFacturas()) {
+      return;
+    }
     let url;
     if (selectedFacturas === "mesero") {
       url = `${API_URL}/Mesero/lista_facturas_m/${selectedMesero}/`;
@@ -594,14 +733,49 @@ const ReportManagement = () => {
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
-        setModalVisibleFacturas(false);
+        cerrarModal();
       })
       .catch((error) =>
         console.error("Error al obtener las facturas emitidas:", error)
       );
   };
 
+  const validateFormClientes = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado un filtro
+    if (!selectedClientes) {
+      isFormValid = false;
+      missingFields.push('Tipo de filtro');
+    }
+
+    // Verificar si se ha seleccionado un tipo de opción
+    if (showCliOptions === 'rango' && !showCliDMOptions) {
+      isFormValid = false;
+      missingFields.push('Tipo de rango');
+    }
+
+    // Verificar si se ha seleccionado un tipo de día o mes (si es necesario)
+    if (showCliOptions === 'rango' && showCliDMOptions && !dateRange) {
+      isFormValid = false;
+      missingFields.push('Rango de fechas');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const generateClientesReport = () => {
+    if (!validateFormClientes()) {
+      return;
+    }
+
     let url;
     if (selectedClientes === "todas") {
       url = `${API_URL}/cliente/ver_clientes/`;
@@ -621,14 +795,37 @@ const ReportManagement = () => {
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
-        setModalVisibleClientes(false);
+        cerrarModal();
       })
       .catch((error) => {
         console.error("Error fetching clientes:", error);
       });
   };
 
+  const validateFormProd = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado una opción de reverso
+    if (!selectedProducto) {
+      isFormValid = false;
+      missingFields.push('Producto');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const HandleProductos = () => {
+    if (!validateFormProd()) {
+      return;
+    }
+
     console.log("Categoría seleccionada:", selectedOption);
 
     if (selectedOption != null) {
@@ -652,7 +849,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
-          setModalVisibleProductos(false);
+          cerrarModal();
         })
         .catch((error) =>
           console.error("Error al obtener los productos:", error)
@@ -662,7 +859,30 @@ const ReportManagement = () => {
     }
   };
 
+  const validateFormCom = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado una opción de reverso
+    if (!selectedCombos) {
+      isFormValid = false;
+      missingFields.push('Combo');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const HandleCombos = () => {
+    if (!validateFormCom()) {
+      return;
+    }
+
     console.log("Combo seleccionada:", selectedCombos);
 
     if (selectedCombos != null) {
@@ -686,7 +906,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
-          setModalVisibleCombos(false);
+          cerrarModal();
         })
         .catch((error) =>
           console.error("Error al obtener los combos:", error)
@@ -695,14 +915,83 @@ const ReportManagement = () => {
       console.log("No se ha seleccionado ninguna categoría");
     }
   }
+
   //Const para los meses en los reportes 
-  const formatDate = (dateString) => {
-    const [month, year] = dateString.split('/');
-    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    return `${monthNames[parseInt(month) - 1]}/${year}`;
+  const formatDate = (date) => {
+    if (date instanceof Date) {
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const month = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      return `${month}/${year}`;
+    } else {
+      return '';
+    }
+  };
+
+  const validateForm = () => {
+    let isFormValid = true;
+    let missingFields = [];
+  
+    // Verificar si se ha seleccionado un tipo de reporte
+    if (!selectedVenta) {
+      isFormValid = false;
+      missingFields.push('Tipo de reporte');
+    }
+  
+    // Verificar si se ha seleccionado un rango de fechas (excepto para el caso "mes")
+    if (selectedVenta !== 'mes' && !dateRange) {
+      isFormValid = false;
+      missingFields.push('Rango de fechas');
+    }
+  
+    // Verificar campos adicionales según el tipo de reporte seleccionado
+    switch (selectedVenta) {
+      case 'mesero':
+        if (!selectedMesero) {
+          isFormValid = false;
+          missingFields.push('Mesero');
+        }
+        break;
+      case 'sucursal':
+        if (!selectedSucursal) {
+          isFormValid = false;
+          missingFields.push('Sucursal');
+        }
+        break;
+      case 'productos':
+        if (!selectedProducto) {
+          isFormValid = false;
+          missingFields.push('Producto');
+        }
+        break;
+      case 'tipoproducto':
+        if (!selectedTipoProducto) {
+          isFormValid = false;
+          missingFields.push('Tipo de producto');
+        }
+        break;
+      case 'mes':
+        if (!startMonthYear || !endMonthYear) {
+          isFormValid = false;
+          missingFields.push('Mes y Año');
+        }
+        break;
+      default:
+        break;
+    }
+  
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+    return true;
   };
 
   const handleVentas = () => {
+    if (!validateForm()) {
+      return;
+    }
     console.log("Tipo de Reporte Seleccionado:", selectedVenta);
     console.log("Mesero seleccionado:", selectedMesero);
     console.log("Sucursal seleccionada:", selectedSucursal);
@@ -735,7 +1024,13 @@ const ReportManagement = () => {
       }
     } else if (selectedVenta === "mes") {
       if (startMonthYear && endMonthYear) {
-        url = API_URL + `/Mesero/listapedidosmes/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+        const startMonthDate = new Date(startMonthYear);
+        const endMonthDate = new Date(endMonthYear);
+        const startMonth = startMonthDate.getMonth() + 1; // Los meses en JavaScript comienzan desde 0
+        const startYear = startMonthDate.getFullYear();
+        const endMonth = endMonthDate.getMonth() + 1;
+        const endYear = endMonthDate.getFullYear();
+        url = `${API_URL}/Mesero/listapedidosmes/?start_month=${startMonth}&end_month=${endMonth}&start_year=${startYear}&end_year=${endYear}`;
       }
     }
 
@@ -744,7 +1039,7 @@ const ReportManagement = () => {
       .then((data) => {
         console.log("Datos de pedidos obtenidos:", data.pedidos);
         console.log("Rango fecha:", dateRange);
-        const selectedMesName = selectedVenta === 'mes' ? `${formatDate(startMonthYear)} - ${formatDate(endMonthYear)}` : '';
+        const selectedMesName = selectedVenta === 'mes' ? `${formatDate(new Date(startMonthYear))} - ${formatDate(new Date(endMonthYear))}` : '';
         GenerarReportePDF({
           empresaInfo: empresaInfo,
           logoEmpresa: logoEmpresa,
@@ -760,12 +1055,40 @@ const ReportManagement = () => {
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
-        setModalVisibleVentas(false);
+        cerrarModal();
       })
       .catch((error) => console.error("Error al obtener los datos de pedidos:", error));
   };
 
+  const validateFormReverso = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado una opción de reverso
+    if (!selectedReverso) {
+      isFormValid = false;
+      missingFields.push('Tipo de reverso');
+    }
+
+    // Verificar si se ha seleccionado un rango de fechas
+    if (!dateRanges) {
+      isFormValid = false;
+      missingFields.push('Rango de fechas');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleReverso = () => {
+    if (!validateFormReverso()) {
+      return;
+    }
     console.log("Reverso seleccionada:", selectedReverso);
     if (selectedReverso != null) {
       let url;
@@ -790,7 +1113,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
-          setModalVisibleReverso(false);
+          cerrarModal();
         })
         .catch((error) =>
           console.error("Error al obtener los reversos:", error)
@@ -800,23 +1123,63 @@ const ReportManagement = () => {
     }
   }
 
+  const validateFormTop = () => {
+    let isFormValid = true;
+    let missingFields = [];
+
+    // Verificar si se ha seleccionado una opción de reverso
+    if (!selectedTop) {
+      isFormValid = false;
+      missingFields.push('Top ventas');
+    }
+
+    // Verificar si se ha seleccionado un rango de fechas
+    if (!startMonthYear || !endMonthYear) {
+      isFormValid = false;
+      missingFields.push('Rango de fechas');
+    }
+
+    if (!isFormValid) {
+      const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
+      message.error(missingFieldsMessage);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleTop = () => {
+    if (!validateFormTop()) {
+      return;
+    }
     // Generar informe para el top de ventas por mesero
     let url;
     if (selectedTop === 'top_mesero') {
       if (startMonthYear && endMonthYear) {
-        url = API_URL + `/Mesero/listaventasmesero/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+        const startMonthDate = new Date(startMonthYear);
+        const endMonthDate = new Date(endMonthYear);
+        const startMonth = startMonthDate.getMonth() + 1; // Los meses en JavaScript comienzan desde 0
+        const startYear = startMonthDate.getFullYear();
+        const endMonth = endMonthDate.getMonth() + 1;
+        const endYear = endMonthDate.getFullYear();
+        url = `${API_URL}/Mesero/listaventasmesero/?start_month=${startMonth}&end_month=${endMonth}&start_year=${startYear}&end_year=${endYear}`;
       }
     } else if (selectedTop === 'top_sucursal') {
       if (startMonthYear && endMonthYear) {
-        url = API_URL + `/Mesero/listaventassucursal/?start_month=${startMonthYear.split('/')[0]}&end_month=${endMonthYear.split('/')[0]}&start_year=${startMonthYear.split('/')[1]}&end_year=${endMonthYear.split('/')[1]}`;
+        const startMonthDate = new Date(startMonthYear);
+        const endMonthDate = new Date(endMonthYear);
+        const startMonth = startMonthDate.getMonth() + 1;
+        const startYear = startMonthDate.getFullYear();
+        const endMonth = endMonthDate.getMonth() + 1;
+        const endYear = endMonthDate.getFullYear();
+        url = `${API_URL}/Mesero/listaventassucursal/?start_month=${startMonth}&end_month=${endMonth}&start_year=${startYear}&end_year=${endYear}`;
       }
     }
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos del mesero con mayores ventas:", data);
-        const selectedMesName = selectedReport === 'top' ? `${formatDate(startMonthYear)} - ${formatDate(endMonthYear)}` : '';
+        const selectedMesName = selectedReport === 'top' ? `${formatDate(new Date(startMonthYear))} - ${formatDate(new Date(endMonthYear))}` : '';
         if (data.mesero_mayor_ventas) {
           const meseroData = data.mesero_mayor_ventas;
           GenerarReportePDF({
@@ -828,7 +1191,7 @@ const ReportManagement = () => {
             handleShowViewer: handleShowViewer,
             setPdfBlob: setPdfBlob
           });
-          setModalVisibleTop(false);
+          cerrarModal();
         } else {
           console.log("No se encontraron meseros con pedidos pagados");
         }
@@ -868,8 +1231,15 @@ const ReportManagement = () => {
     setSelectedFacturas(null);
     setSelectedClientes(null);
     setShowCliOptions(null);
+    setShowCliDMOptions(null);
     setSelectedPagos(null);
     setShowPagOptions(null);
+    setShowPagDMOptions(null);
+    setShowMeseroOptions(null);
+    setShowSucursalOptions(null);
+    setShowMesOptions(null);
+    setShowProductoOptions(null);
+    setShowTipoProductoOptions(null);
   };
 
   return (
@@ -1013,7 +1383,6 @@ const ReportManagement = () => {
         </div>
       </Modal>
 
-
       <Modal
         title="Reporte de Combos"
         open={modalVisibleCombos}
@@ -1046,7 +1415,6 @@ const ReportManagement = () => {
         </div>
       </Modal>
 
-
       <Modal
         title="Reporte de Top ventas"
         open={modalVisibleTop}
@@ -1072,7 +1440,7 @@ const ReportManagement = () => {
           <DatePicker.MonthPicker
             style={{ width: "100%" }}
             format="MM/YYYY"
-            onChange={(date, dateString, option) => {
+            onChange={(dateString, option) => {
               setStartMonthYear(dateString);
               setSelectedMesName(option?.children);
             }}
@@ -1091,7 +1459,7 @@ const ReportManagement = () => {
           <DatePicker.MonthPicker
             style={{ width: "100%" }}
             format="MM/YYYY"
-            onChange={(date, dateString, option) => {
+            onChange={(dateString, option) => {
               setEndMonthYear(dateString);
               setSelectedMesName(option?.children);
             }}
@@ -1114,11 +1482,21 @@ const ReportManagement = () => {
         </div>
       </Modal>
 
-
       <Modal
         title="Reporte de Ventas"
         open={modalVisibleVentas}
-        onCancel={() => cerrarModal()}
+        onCancel={() => {
+          cerrarModal();
+          setShowMeseroOptions(null);
+          setShowSucursalOptions(null);
+          setShowProductoOptions(null);
+          setShowTipoProductoOptions(null);
+          setShowMesOptions(null);
+          setSelectedMesero(null);
+          setSelectedSucursal(null);
+          setSelectedProducto(null);
+          setSelectedTipoProducto(null);
+        }}
         footer={null}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -1153,7 +1531,7 @@ const ReportManagement = () => {
               <DatePicker.MonthPicker
                 style={{ width: "100%" }}
                 format="MM/YYYY"
-                onChange={(date, dateString, option) => {
+                onChange={(dateString, option) => {
                   setStartMonthYear(dateString);
                   setSelectedMesName(option.children);
                 }}
@@ -1172,7 +1550,7 @@ const ReportManagement = () => {
               <DatePicker.MonthPicker
                 style={{ width: "100%" }}
                 format="MM/YYYY"
-                onChange={(date, dateString, option) => {
+                onChange={(dateString, option) => {
                   setEndMonthYear(dateString);
                   setSelectedMesName(option.children);
                 }}
@@ -1448,12 +1826,27 @@ const ReportManagement = () => {
             onChange={(dates) => setDateRanges(dates)}
             value={dateRanges}
             disabledDate={(current) => {
-              const minFecha = moment(fechaMinima);
-              const maxFecha = moment(fechaMaxima);
-              const estaFueraDeRango =
-                current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+              if (selectedReverso == "validas") {
+                const minFecha = moment(fechaMinimaV);
+                const maxFecha = moment(fechaMaximaV);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                return estaFueraDeRango;
 
-              return estaFueraDeRango;
+              } else if (selectedReverso == "invalidas") {
+                const minFecha = moment(fechaMinimaI);
+                const maxFecha = moment(fechaMaximaI);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                return estaFueraDeRango;
+
+              } else if (selectedReverso == "todas") {
+                const minFecha = moment(fechaMinima);
+                const maxFecha = moment(fechaMaxima);
+                const estaFueraDeRango =
+                  current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
+                return estaFueraDeRango;
+              }
             }}
           />
         </div>
@@ -1467,7 +1860,12 @@ const ReportManagement = () => {
       <Modal
         title="Reporte de facturas emitidas"
         open={modalVisibleFacturas}
-        onCancel={() => cerrarModal()}
+        onCancel={() => {
+          cerrarModal();
+          setShowMeseroOptions(null);
+          setShowSucursalOptions(null);
+          setSelectedMesero(null);
+        }}
         footer={null}
       >
         <div style={{ marginBottom: "20px" }}>
@@ -1503,7 +1901,7 @@ const ReportManagement = () => {
           </Select>
         </div>
 
-        {showMeseroOptions === "mesero" && (
+        {showMeseroOptions === 'mesero' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione un mesero:</p>
             <Select
@@ -1525,7 +1923,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showSucursalOptions === "sucursal" && (
+        {showSucursalOptions === 'sucursal' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione una sucursal:</p>
             <Select
@@ -1547,7 +1945,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showTodosOptions === "rango" && (
+        {showTodosOptions === 'rango' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.RangePicker
@@ -1555,23 +1953,24 @@ const ReportManagement = () => {
               onChange={(dates) => setDateRange(dates)}
               value={dateRange}
               disabledDate={(current) => {
-                if (showMeseroOptions) {
-                  const minFecha = moment(fechaMinimas);
-                  const maxFecha = moment(fechaMaximas);
+                if (selectedFacturas === 'todas') {
+                  const minFecha = moment(fechaMinimat);
+                  const maxFecha = moment(fechaMaximat);
                   const estaFueraDeRango =
                     current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
                   return estaFueraDeRango;
-
-                } else if (showSucursalOptions) {
+                }
+                if (showSucursalOptions === 'sucursal') {
                   const minFecha = moment(fechaMinimax);
                   const maxFecha = moment(fechaMaximax);
                   const estaFueraDeRango =
                     current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
                   return estaFueraDeRango;
 
-                } else if (selectedFacturas == "todas") {
-                  const minFecha = moment(fechaMinimat);
-                  const maxFecha = moment(fechaMaximat);
+                }
+                if (showMeseroOptions === 'mesero') {
+                  const minFecha = moment(fechaMinimas);
+                  const maxFecha = moment(fechaMaximas);
                   const estaFueraDeRango =
                     current.isBefore(minFecha, 'day') || current.isAfter(maxFecha, 'day');
                   return estaFueraDeRango;
@@ -1602,11 +2001,9 @@ const ReportManagement = () => {
             onChange={(value) => {
               setSelectedClientes(value);
               setShowCliOptions(value);
-              // Restablecer los estados de los componentes DatePicker
-              setShowCliDiaOptions(false);
-              setShowCliMesOptions(false);
-              // Restablecer el rango de fechas
-              setDateRange([]);
+              if (value !== 'rango') {
+                setShowCliDMOptions(null);
+              }
             }}
             value={selectedClientes}
           >
@@ -1615,17 +2012,16 @@ const ReportManagement = () => {
           </Select>
         </div>
 
-        {showCliOptions == "rango" && (
+        {showCliOptions === 'rango' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione un tipo:</p>
             <Select
               style={{ width: "100%" }}
               placeholder="Seleccione un tipo"
               onChange={(value) => {
-                setShowCliDiaOptions(value);
-                setShowCliMesOptions(value);
+                setShowCliDMOptions(value);
               }}
-              value={showCliDiaOptions}
+              value={showCliDMOptions}
             >
               <Option value="dia">Por día</Option>
               <Option value="mes">Por mes</Option>
@@ -1633,7 +2029,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showCliDiaOptions == "dia" && (
+        {showCliDMOptions === 'dia' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.RangePicker
@@ -1651,7 +2047,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showCliMesOptions == "mes" && (
+        {showCliDMOptions === 'mes' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.MonthPicker
@@ -1689,12 +2085,10 @@ const ReportManagement = () => {
             placeholder="Seleccione una opción"
             onChange={(value) => {
               setSelectedPagos(value);
-              setShowPagOptions(value == "rango");
-              // Restablecer los estados de los componentes DatePicker
-              setShowPagDiaOptions(false);
-              setShowPagMesOptions(false);
-              // Restablecer el rango de fechas
-              setDateRange([]);
+              setShowPagOptions(value);
+              if (value !== 'rango') {
+                setShowPagDMOptions(null);
+              }
             }}
             value={selectedPagos}
           >
@@ -1703,17 +2097,16 @@ const ReportManagement = () => {
           </Select>
         </div>
 
-        {showPagOptions && (
+        {showPagOptions === 'rango' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione un tipo:</p>
             <Select
               style={{ width: "100%" }}
               placeholder="Seleccione un tipo"
               onChange={(value) => {
-                setShowPagDiaOptions(value == "dia");
-                setShowPagMesOptions(value == "mes");
+                setShowPagDMOptions(value);
               }}
-              value={showPagOptions}
+              value={showPagDMOptions}
             >
               <Option value="dia">Por día</Option>
               <Option value="mes">Por mes</Option>
@@ -1721,7 +2114,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showPagDiaOptions && (
+        {showPagDMOptions === 'dia' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.RangePicker
@@ -1739,7 +2132,7 @@ const ReportManagement = () => {
           </div>
         )}
 
-        {showPagMesOptions && (
+        {showPagDMOptions === 'mes' && (
           <div style={{ marginBottom: "20px" }}>
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.MonthPicker
