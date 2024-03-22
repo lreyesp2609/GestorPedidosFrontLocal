@@ -12,7 +12,7 @@ const ListProductos = () => {
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [cart, setCart] = useContext(CartContext);
+  const { cart, setCart, totalPoints2, calcularTotalPoints } = useContext(CartContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
