@@ -179,58 +179,110 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
 
       // Cabeceras para la tabla de clientes
       const headers = ['Código', 'Nombres', 'RUC/Cédula', 'Teléfono', 'Puntos', 'Registro'];
-
       let data = [];
-
-      if (dateRange && dateRange.length >= 2) {
-        data = clientes.filter(cliente => {
-          const fechaEmision = new Date(cliente.cregistro);
+      if (dateRange && dateRange.length === 1) {
+        const fechaSeleccionada = new Date(dateRange[0]);
+        const mesSeleccionado = fechaSeleccionada.getMonth(); 
+        const añoSeleccionado = fechaSeleccionada.getFullYear(); 
+        const filteredData = clientes.filter(cliente => {
+          const fechaRegistro = new Date(cliente.cregistro);
+          return fechaRegistro.getMonth() === mesSeleccionado && fechaRegistro.getFullYear() === añoSeleccionado;
+        });
+      
+        if (filteredData.length === 0) {
+          doc.text('No hay clientes en el mes seleccionado.', 10, 48);
+        } else {
+          const data = filteredData.map(cliente => [
+            cliente.id_cliente,
+            cliente.nombre,
+            cliente.ruc_cedula,
+            cliente.ctelefono,
+            cliente.cpuntos,
+            cliente.cregistro
+          ]);
+      
+          doc.autoTable({
+            startY: 48,
+            head: [headers],
+            body: data,
+            margin: { left: 10, right: 10 }
+          });
+      
+          doc.setProperties({
+            title: 'Reporte de Clientes',
+            author: 'Hamburguesas al carbón',
+            subject: 'Reporte de clientes generado',
+            creator: 'Hamburguesas al carbón'
+          });
+      
+          const pdfBlob = doc.output('blob');
+          setPdfBlob(pdfBlob);
+          handleShowViewer();
+        }
+      } else if (dateRange && dateRange.length >= 2) {
+        const data = clientes.filter(cliente => {
+          const fechaRegistro = new Date(cliente.cregistro);
           const fechaDesde = new Date(dateRange[0]);
           const fechaHasta = new Date(dateRange[1]);
-
-          // Ajustar la comparación para incluir el límite superior del rango
-          return fechaEmision >= fechaDesde && fechaEmision <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
+          fechaHasta.setDate(fechaHasta.getDate() + 1); // Incluir el último día del rango
+          return fechaRegistro >= fechaDesde && fechaRegistro < fechaHasta;
         }).map(cliente => [
           cliente.id_cliente,
           cliente.nombre,
           cliente.ruc_cedula,
           cliente.ctelefono,
           cliente.cpuntos,
-          cliente.cregistro,
+          cliente.cregistro
         ]);
+      
+        if (data.length === 0) {
+          doc.text('No hay clientes en el rango de fechas seleccionado.', 10, 48);
+        } else {
+          doc.autoTable({
+            startY: 48,
+            head: [headers],
+            body: data,
+            margin: { left: 10, right: 10 }
+          });
+      
+          doc.setProperties({
+            title: 'Reporte de Clientes',
+            author: 'Hamburguesas al carbón',
+            subject: 'Reporte de clientes generado',
+            creator: 'Hamburguesas al carbón'
+          });
+      
+          const pdfBlob = doc.output('blob');
+          setPdfBlob(pdfBlob);
+          handleShowViewer();
+        }
       } else {
-        // Mostrar todas los clientes sin filtrar por rango de fechas
         data = clientes.map(cliente => [
           cliente.id_cliente,
           cliente.nombre,
           cliente.ruc_cedula,
           cliente.ctelefono,
           cliente.cpuntos,
-          cliente.cregistro,
+          cliente.cregistro
         ]);
+        doc.autoTable({
+          startY: 48,
+          head: [headers],
+          body: data,
+          margin: { left: 10, right: 10 }
+        });
+    
+        doc.setProperties({
+          title: 'Reporte de Clientes',
+          author: 'Hamburguesas al carbón',
+          subject: 'Reporte de clientes generado',
+          creator: 'Hamburguesas al carbón'
+        });
+    
+        const pdfBlob = doc.output('blob');
+        setPdfBlob(pdfBlob);
+        handleShowViewer();
       }
-
-      // Añadir la tabla de clientes al PDF
-      doc.autoTable({
-        startY: 48,
-        head: [headers],
-        body: data,
-        margin: { left: 10, right: 10 },
-      });
-      // Establecer el nombre del documento PDF
-      doc.setProperties({
-        title: 'Reporte de Clientes',
-        author: 'Hamburguesas al carbón',
-        subject: 'Reporte de clientes generado',
-        creator: 'Hamburguesas al carbón'
-      });
-
-      // Generar el PDF
-      const pdfBlob = doc.output('blob');
-
-      // Pasar el objeto Blob al visor
-      setPdfBlob(pdfBlob);
-      handleShowViewer();
     }
 
     if (selectedReport === 'productos') {
@@ -1268,38 +1320,115 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
         'M': 'Mensual',
         'T': 'Trimestral',
       };
-      // Transformar los datos de pagos en un array bidimensional para la tabla
-      const data = pagos.map(pago => [
-        pago.id_pago,
-        pago.idempleado,
-        pago.nombre,
-        pago.cantidad,
-        metodoPagoMap[pago.tipopago],
-        pago.idperiodo,
-        pago.horadepago,
-      ]);
+      let data = [];
 
-      // Añadir la tabla de clientes al PDF
-      doc.autoTable({
-        startY: 48,
-        head: [headers],
-        body: data,
-        margin: { left: 18, right: 18 },
-      });
+      if (dateRange && dateRange.length === 1) {
+        const fechaSeleccionada = new Date(dateRange[0]);
+        const mesSeleccionado = fechaSeleccionada.getMonth(); // Obtener el mes seleccionado (0 para enero, 1 para febrero, etc.)
+        const añoSeleccionado = fechaSeleccionada.getFullYear(); // Obtener el año seleccionado
+        const filteredData = pagos.filter(pago => {
+          const fechaPago = new Date(pago.horadepago);
+          return fechaPago.getMonth() === mesSeleccionado && fechaPago.getFullYear() === añoSeleccionado;
+        });
 
-      doc.setProperties({
-        title: 'Reporte de Pagos',
-        author: 'Hamburguesas al carbón',
-        subject: 'Reporte de pagos generado',
-        creator: 'Hamburguesas al carbón'
-      });
+        if (filteredData.length === 0) {
+          doc.text('No hay pagos en el mes seleccionado.', 10, 48);
+        } else {
+          const data = filteredData.map(pago => [
+            pago.id_pago,
+            pago.idempleado,
+            pago.nombre,
+            pago.cantidad,
+            metodoPagoMap[pago.tipopago],
+            pago.idperiodo,
+            pago.horadepago
+          ]);
 
-      // Generar el PDF
-      const pdfBlob = doc.output('blob');
+          doc.autoTable({
+            startY: 48,
+            head: [headers],
+            body: data,
+            margin: { left: 8, right: 8 },
+          });
 
-      // Pasar el objeto Blob al visor
-      setPdfBlob(pdfBlob);
-      handleShowViewer();
+          doc.setProperties({
+            title: 'Reporte de Pagos',
+            author: 'Hamburguesas al carbón',
+            subject: 'Reporte de pagos generado',
+            creator: 'Hamburguesas al carbón'
+          });
+
+          const pdfBlob = doc.output('blob');
+          setPdfBlob(pdfBlob);
+          handleShowViewer();
+        }
+      } else if (dateRange && dateRange.length >= 2) {
+        const data = pagos.filter(pago => {
+          const fechaPago = new Date(pago.horadepago);
+          const fechaDesde = new Date(dateRange[0]);
+          const fechaHasta = new Date(dateRange[1]);
+          fechaHasta.setDate(fechaHasta.getDate() + 1); // Incluir el último día del rango
+          return fechaPago >= fechaDesde && fechaPago <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
+        }).map(pago => [
+          pago.id_pago,
+          pago.idempleado,
+          pago.nombre,
+          pago.cantidad,
+          metodoPagoMap[pago.tipopago],
+          pago.idperiodo,
+          pago.horadepago
+        ]);
+
+        if (data.length === 0) {
+          doc.text('No hay pagos en el rango de fechas seleccionado.', 10, 48);
+        } else {
+          doc.autoTable({
+            startY: 48,
+            head: [headers],
+            body: data,
+            margin: { left: 8, right: 8 },
+          });
+
+          doc.setProperties({
+            title: 'Reporte de Pagos',
+            author: 'Hamburguesas al carbón',
+            subject: 'Reporte de pagos generado',
+            creator: 'Hamburguesas al carbón'
+          });
+
+          const pdfBlob = doc.output('blob');
+          setPdfBlob(pdfBlob);
+          handleShowViewer();
+        }
+      } else {
+        data = pagos.map(pago => [
+          pago.id_pago,
+          pago.idempleado,
+          pago.nombre,
+          pago.cantidad,
+          metodoPagoMap[pago.tipopago],
+          pago.idperiodo,
+          pago.horadepago
+        ]);
+        
+        doc.autoTable({
+          startY: 48,
+          head: [headers],
+          body: data,
+          margin: { left: 8, right: 8 },
+        });
+
+        doc.setProperties({
+          title: 'Reporte de Pagos',
+          author: 'Hamburguesas al carbón',
+          subject: 'Reporte de pagos generado',
+          creator: 'Hamburguesas al carbón'
+        });
+    
+        const pdfBlob = doc.output('blob');
+        setPdfBlob(pdfBlob);
+        handleShowViewer();
+      }
     }
 
     if (selectedReport === 'reverso') {
@@ -1348,10 +1477,10 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
             subject: 'Reporte de reverso generado',
             creator: 'Hamburguesas al carbón'
           });
-    
+
           // Generar el PDF
           const pdfBlob = doc.output('blob');
-    
+
           // Pasar el objeto Blob al visor
           setPdfBlob(pdfBlob);
           handleShowViewer();
@@ -1398,10 +1527,10 @@ const GenerarReportePDF = ({ empresaInfo, logoEmpresa, empleadosData, selectedSu
           subject: 'Reporte de top generado',
           creator: 'Hamburguesas al carbón'
         });
-  
+
         // Generar el PDF
         const pdfBlob = doc.output('blob');
-  
+
         // Pasar el objeto Blob al visor
         setPdfBlob(pdfBlob);
         handleShowViewer();

@@ -246,6 +246,8 @@ const ReportManagement = () => {
       if (response.ok) {
         setFechaMinVentas(data.fecha_minima ? moment(data.fecha_minima) : null);
         setFechaMaxVentas(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+        /*const nuevaFechaMaxima = fechaMaxima ? fechaMaxima.add(1, 'month') : null;
+        setFechaMaxVentas(nuevaFechaMaxima);*/
       } else {
         console.error('Error al obtener las fechas de reverso:', data.error);
       }
@@ -392,6 +394,8 @@ const ReportManagement = () => {
       if (response.ok) {
         setFechaMinClie(data.fecha_minima ? moment(data.fecha_minima) : null);
         setFechaMaxClie(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+        /*const nuevaFechaMaxima = fechaMaxima ? fechaMaxima.add(1, 'month') : null;
+        setFechaMaxClie(nuevaFechaMaxima);*/
       } else {
         console.error('Error al obtener las fechas del cliente:', data.error);
       }
@@ -408,6 +412,8 @@ const ReportManagement = () => {
       if (response.ok) {
         setFechaMinPag(data.fecha_minima ? moment(data.fecha_minima) : null);
         setFechaMaxPag(data.fecha_maxima ? moment(data.fecha_maxima) : null);
+        /*const nuevaFechaMaxima = fechaMaxima ? fechaMaxima.add(1, 'month') : null;
+        setFechaMaxPag(nuevaFechaMaxima);*/
       } else {
         console.error('Error al obtener las fechas de pagos:', data.error);
       }
@@ -646,11 +652,37 @@ const ReportManagement = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Datos de pagos:", data.pagos);
+        let filteredData = data.pagos;
+        if (showPagDMOptions) {
+          if (showPagDMOptions === 'mes') {
+            const fechaSeleccionada = new Date(dateRange[0]);
+            const mesSeleccionado = fechaSeleccionada.getMonth();
+            const añoSeleccionado = fechaSeleccionada.getFullYear();
+            filteredData = data.pagos.filter(pago => {
+              const fechaPago = new Date(pago.horadepago);
+              return fechaPago.getMonth() === mesSeleccionado && fechaPago.getFullYear() === añoSeleccionado;
+            });
+          } else if (showPagDMOptions === 'dia') {
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            fechaHasta.setDate(fechaHasta.getDate() + 1); 
+            filteredData = data.pagos.filter(pago => {
+              const fechaPago = new Date(pago.horadepago);
+              return fechaPago >= fechaDesde && fechaPago < fechaHasta;
+            });
+          }
+        }
+
+        if (filteredData.length === 0) {
+          message.error("No hay pagos disponibles en el rango de fechas seleccionado.");
+          return;
+        }
         GenerarReportePDF({
           empresaInfo: empresaInfo,
           logoEmpresa: logoEmpresa,
           selectedReport: "pagos",
           pagos: data.pagos,
+          dateRange: dateRange,
           handleShowViewer: handleShowViewer,
           setPdfBlob: setPdfBlob
         });
@@ -720,8 +752,21 @@ const ReportManagement = () => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Datos de facturas emitidas:", data);
+        console.log("Datos de facturas emitidas:", data.facturas_validadas);
         console.log("Rango fecha:", dateRange);
+        let filteredData = data.facturas_validadas;
+        if (showTodosOptions!='todas') {
+          filteredData = data.facturas_validadas.filter(factura => {
+            const fechaPedido = new Date(factura.fecha_emision);
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            return fechaPedido >= fechaDesde && fechaPedido <= fechaHasta.setDate(fechaHasta.getDate() + 1);
+          });
+        }
+        if (filteredData.length === 0) {
+          message.error("No hay facturas disponibles en el rango de fechas seleccionado.");
+          return;
+        }
         setFacturasEmitidas(data.facturas_validadas);
         setSelectedReport("facturas");
         GenerarReportePDF({
@@ -786,6 +831,33 @@ const ReportManagement = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Rango fecha:", dateRange);
+
+        let filteredData = data.clientes;
+        if (showCliDMOptions) {
+          if (showCliDMOptions === 'mes') {
+            const fechaSeleccionada = new Date(dateRange[0]);
+            const mesSeleccionado = fechaSeleccionada.getMonth();
+            const añoSeleccionado = fechaSeleccionada.getFullYear();
+            filteredData = data.clientes.filter(cliente => {
+              const fechaRegistro = new Date(cliente.cregistro);
+              return fechaRegistro.getMonth() === mesSeleccionado && fechaRegistro.getFullYear() === añoSeleccionado;
+            });
+          } else if (showCliDMOptions === 'dia') {
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            fechaHasta.setDate(fechaHasta.getDate() + 1); // Incluir el último día del rango
+            filteredData = data.clientes.filter(cliente => {
+              const fechaRegistro = new Date(cliente.cregistro);
+              return fechaRegistro >= fechaDesde && fechaRegistro < fechaHasta;
+            });
+          }
+        }
+
+        if (filteredData.length === 0) {
+          message.error("No hay clientes disponibles en el rango de fechas seleccionado.");
+          return;
+        }
+
         GenerarReportePDF({
           empresaInfo: empresaInfo,
           logoEmpresa: logoEmpresa,
@@ -931,19 +1003,19 @@ const ReportManagement = () => {
   const validateForm = () => {
     let isFormValid = true;
     let missingFields = [];
-  
+
     // Verificar si se ha seleccionado un tipo de reporte
     if (!selectedVenta) {
       isFormValid = false;
       missingFields.push('Tipo de reporte');
     }
-  
+
     // Verificar si se ha seleccionado un rango de fechas (excepto para el caso "mes")
     if (selectedVenta !== 'mes' && !dateRange) {
       isFormValid = false;
       missingFields.push('Rango de fechas');
     }
-  
+
     // Verificar campos adicionales según el tipo de reporte seleccionado
     switch (selectedVenta) {
       case 'mesero':
@@ -979,7 +1051,7 @@ const ReportManagement = () => {
       default:
         break;
     }
-  
+
     if (!isFormValid) {
       const missingFieldsMessage = `Por favor, seleccione los siguientes campos: ${missingFields.join(', ')}`;
       message.error(missingFieldsMessage);
@@ -1039,6 +1111,21 @@ const ReportManagement = () => {
       .then((data) => {
         console.log("Datos de pedidos obtenidos:", data.pedidos);
         console.log("Rango fecha:", dateRange);
+
+        let filteredData = data.pedidos;
+        if (selectedVenta !== "mes") {
+          filteredData = data.pedidos.filter(venta => {
+            const fechaPedido = new Date(venta.fecha_pedido);
+            const fechaDesde = new Date(dateRange[0]);
+            const fechaHasta = new Date(dateRange[1]);
+            return fechaPedido >= fechaDesde && fechaPedido <= fechaHasta.setDate(fechaHasta.getDate() + 1);
+          });
+        }
+        if (filteredData.length === 0) {
+          message.error("No hay ventas disponibles en el rango de fechas seleccionado.");
+          return;
+        }
+
         const selectedMesName = selectedVenta === 'mes' ? `${formatDate(new Date(startMonthYear))} - ${formatDate(new Date(endMonthYear))}` : '';
         GenerarReportePDF({
           empresaInfo: empresaInfo,
@@ -1104,6 +1191,18 @@ const ReportManagement = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Factura reverso obtenidos:", data.reverso);
+          //Filtro para verificar si hay datos disponibles
+          const filteredData = data.reverso.filter(factura => {
+            const fechaEmisionNotaCredito = new Date(factura.fecha_emision_nota_credito);
+            const fechaDesde = new Date(dateRanges[0]);
+            const fechaHasta = new Date(dateRanges[1]);
+            return fechaEmisionNotaCredito >= fechaDesde && fechaEmisionNotaCredito <= new Date(fechaHasta.setDate(fechaHasta.getDate() + 1));
+          });
+
+          if (filteredData.length === 0) {
+            message.error("No hay reversos disponibles en el rango de fechas seleccionado.");
+            return;
+          }
           GenerarReportePDF({
             empresaInfo: empresaInfo,
             logoEmpresa: logoEmpresa,
@@ -2052,8 +2151,8 @@ const ReportManagement = () => {
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.MonthPicker
               style={{ width: "100%" }}
-              onChange={(dates) => setDateRange(dates)}
-              value={dateRange}
+              onChange={(date, dateString) => setDateRange([date])}
+              value={dateRange?.[0]}
               disabledDate={(current) => {
                 const minFecha = moment(fechaMinCli);
                 const maxFecha = moment(fechaMaxCli);
@@ -2137,8 +2236,8 @@ const ReportManagement = () => {
             <p>Seleccione el rango de fechas:</p>
             <DatePicker.MonthPicker
               style={{ width: "100%" }}
-              onChange={(dates) => setDateRange(dates)}
-              value={dateRange}
+              onChange={(date, dateString) => setDateRange([date])}
+              value={dateRange?.[0]}
               disabledDate={(current) => {
                 const minFecha = moment(fechaMinPag);
                 const maxFecha = moment(fechaMaxPag);
