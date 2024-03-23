@@ -807,7 +807,7 @@ const ReportManagement = () => {
     let missingFields = [];
 
     // Verificar si se ha seleccionado una opción de reverso
-    if (!selectedProducto) {
+    if (!selectedOption) {
       isFormValid = false;
       missingFields.push('Producto');
     }

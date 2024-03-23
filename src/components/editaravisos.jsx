@@ -38,9 +38,23 @@ const EditarAvisos = () => {
   const [editAvisoId, setEditAvisoId] = useState(null);
   const [selectedOpcion, setSelectedOpcion] = useState('Avisos');
 
+  useEffect(() => {
+    if (editAvisoId) {
+      const aviso = avisos.find(aviso => aviso.id_aviso === editAvisoId);
+      if (aviso) {
+        const base64Image = aviso.imagen ? base64ToUrl(aviso.imagen, "image/png") : null;
+        form.setFieldsValue({
+          titulo: aviso.titulo,
+          descripcion: aviso.descripcion,
+          nueva_imagen: base64Image ? { file: { origin: base64Image } } : null,
+        });
+      }
+    }
+  }, [editAvisoId, avisos, form]);
+
   const obtenerAvisos = async () => {
     try {
-      const response = await fetch(API_URL +"/avisos/avisos/");
+      const response = await fetch(API_URL + "/avisos/avisos/");
       const data = await response.json();
       if (response.ok) {
         setAvisos(data.avisos_principales);
@@ -92,7 +106,7 @@ const EditarAvisos = () => {
       formData.append("nueva_imagen", nueva_imagen.file);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/avisos/editar/${editAvisoId}/`,
+        `http://127.0.0.1:8000/avisos/editaraviso/${editAvisoId}/`,
         {
           method: "POST",
           body: formData,
@@ -183,10 +197,10 @@ const EditarAvisos = () => {
             </Col>
             <Col md={12}>
               <Row>
-                <Table dataSource={avisos} columns={columns} rowKey="id_mesa" />
+              <Table dataSource={avisos} rowKey="id_aviso" columns={columns} />
                 <Modal
                   title="Editar Aviso"
-                  visible={visible}
+                  open={visible}
                   onCancel={handleCancel}
                   footer={null}
                 >
@@ -269,7 +283,7 @@ const EditarAvisos = () => {
       </Drawer>
     </div>
   );
-  
+
 };
 
 export default EditarAvisos;
