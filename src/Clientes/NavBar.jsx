@@ -332,7 +332,7 @@ const NavBar = () => {
           {ComponenteSeleccionado === "Historial" && <Historial />}
           {ComponenteSeleccionado === "Carrito" && <ShoppingCart/>}
           {ComponenteSeleccionado === "ReclamarR" && <Reclamar/>}
-          {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
+          {ComponenteSeleccionado === 'Reserva' && <Reserva/>}
           {ComponenteSeleccionado != "Carrusel" && (
             <Row>
               <Col md={12}>

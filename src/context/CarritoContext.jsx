@@ -20,8 +20,9 @@ export const ShoppingCartProvider = ({ children }) => {
     setTotalPoints(newTotalPoints);
     localStorage.setItem("totalPoints", newTotalPoints.toString()); // Actualiza el valor en el almacenamiento local
   };
+  
   return (
-    <CartContext.Provider value={{ cart, setCart, totalPoints2, calcularTotalPoints, restarTotalPoints }}>
+    <CartContext.Provider value={{ cart, setCart, totalPoints2,setTotalPoints ,calcularTotalPoints, restarTotalPoints }}>
       {children}
     </CartContext.Provider>
   );

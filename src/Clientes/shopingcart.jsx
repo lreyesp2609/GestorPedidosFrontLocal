@@ -22,7 +22,7 @@ import Pedidos from "./pedido";
 import API_URL from '../config';
 
 const ShoppingCart = () => {
-  const { cart, setCart, totalPoints2, calcularTotalPoints } = useContext(CartContext);
+  const { cart, setCart, totalPoints2, calcularTotalPoints,  restarTotalPoints  } = useContext(CartContext);
   const [recompensa, setRecompensa] = useContext(RecompensaContext);
   const [mostrarPedido, setMostrarPedido] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -190,11 +190,47 @@ const ShoppingCart = () => {
       return updatedCart.filter((item) => item.quantity > 0);
     });
   };
+  const reclamarPuntos = async (item) => {
+    try {
+      const formData = new FormData();
+      formData.append('puntos_recompensa_producto', item.puntos);
+      formData.append('id_recompensa_producto',item.id );
+      console.log('puntos restados')
+      // Realiza la solicitud POST a la API
+      const response = await fetch(API_URL +`/Recompensas/Sumar_puntos/${id_cuenta}/`, {
+        method: 'POST',
+        body: formData,
+      });
+  
+      // Verifica si la solicitud fue exitosa
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+      }
+  
+      // Devuelve true si todo fue exitoso
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      
+      // Devuelve false si hubo un error
+      return false;
+    }
+  };
+  
+
+
+
+
   const removeItem2 = (productId) => {
     setRecompensa((currItems) => {
       const updatedCart = currItems.map((item) => {
         if (item.id === productId) {
-          return { ...item, quantity: Math.max(item.quantity - 1, 0) };
+          console.log('puntos del item:', item.puntos)
+          const userPoints = parseInt(item.puntos);
+          calcularTotalPoints(userPoints);
+          
+          return { ...item, quantity: Math.max(item.quantity - 1, 0)};
+         
         } else {
           return item;
         }
@@ -203,7 +239,7 @@ const ShoppingCart = () => {
       return updatedCart.filter((item) => item.quantity > 0);
     });
   };
-
+  
   const totalQuantity = cart.reduce((acc, curr) => acc + curr.quantity, 0) + recompensa.reduce((acc, curr) => acc + curr.quantity, 0);
 
 
@@ -333,7 +369,9 @@ const ShoppingCart = () => {
                         </Col>
                         <Col md={5} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                           <Button
-                              onClick={() => removeItem2(item.id)}
+                              onClick={() => {removeItem2(item.id);
+                                reclamarPuntos(item);
+                              }}
                               size="lg"
                               style={{
                                   marginBottom: "10px",
@@ -450,6 +488,7 @@ const ShoppingCart = () => {
                             (e.target.style.backgroundColor = "#000")
                           }
                         >
+                          
                           Realizar pedido
                         </Button>
                       </div>
