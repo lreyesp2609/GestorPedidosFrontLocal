@@ -33,6 +33,7 @@ import MenuComandas from "./components/menucomandas";
 import MapaUbicacion from "./components/MapaUbicacion";
 import LocationCard from "./components/cards";
 import Sucursalescliente from "./Clientes/sucursales";
+import Sucursales from "./Clientes/sucursal";
 
 function App() {
   const {
@@ -75,7 +76,7 @@ function App() {
               <Route path="/Registro" element={<RegisterForm/>} />
               <Route path="/Comandas" element={<MenuComandas/>} />
               <Route path="/Sucursales" element={<Sucursalescliente/>} />
-           
+              <Route path="/sucursal" element={<Sucursales />} />
             </Routes>
               </RecompensasProvider>
             </ShoppingCartProvider>

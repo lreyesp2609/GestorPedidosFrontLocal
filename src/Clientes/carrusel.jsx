@@ -122,7 +122,7 @@ const Carrusel = () => {
     { url: 'https://static.wikia.nocookie.net/bokunoheroacademia/images/1/13/Ochaco_Uraraka_Traje_de_Heroe_actual.png/revision/latest/scale-to-width-down/249?cb=20200722000332&path-prefix=es' }
   ];
   const openSucursal = () => {
-    window.open('/sucursales', '_self');
+    window.open('/sucursal', '_self');
   };
   return (
     <>
