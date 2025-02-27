@@ -60,15 +60,17 @@ const LoginForm = ({ onLogin }) => {
       console.log(data); // Verifica si el token está presente en la respuesta
 
       if (response.ok) {
-        const { token, nombreusuario, id_cuenta } = data;
+        const { token, nombreusuario, id_cuenta, id_motorizado } = data;
         console.log("Token almacenado:", token);
         console.log("Nombre de usuario almacenado:", nombreusuario);
         console.log("ID de cuenta almacenado:", id_cuenta);
+        console.log("ID de motorizado almacenado:", id_motorizado);
 
 
         localStorage.setItem("token", token);
         localStorage.setItem("username", nombreusuario);
         localStorage.setItem("id_cuenta", id_cuenta);
+        localStorage.setItem("id_motorizado", id_motorizado); // Almacena el id_motorizado
         setTimeout(() => {
           localStorage.removeItem("token");
           console.log("Token eliminado después de 24 horas.");
@@ -99,6 +101,10 @@ const LoginForm = ({ onLogin }) => {
           } else if (rol === "X") {
             console.log("Redirigiendo a /cocina");
             navigate("/cocina"); // Utiliza navigate para redirigir a la ruta deseada
+          }
+          else if (rol === "D") {
+            console.log("Redirigiendo a /motorizado");
+            navigate("/motorizado"); // Utiliza navigate para redirigir a la ruta deseada
           }
         } else {
           console.log("Error al obtener el rol");

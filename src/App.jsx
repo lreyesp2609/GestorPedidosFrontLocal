@@ -34,7 +34,7 @@ import MapaUbicacion from "./components/MapaUbicacion";
 import LocationCard from "./components/cards";
 import Sucursalescliente from "./Clientes/sucursales";
 import Sucursales from "./Clientes/sucursal";
-
+import MenuMotorizados from "./components/Motorizados/MenuMotorizados";
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -70,6 +70,7 @@ function App() {
               <Route path="/home" element={<AdminMenu />} />
               <Route path="/homemesero" element={<MenuMesero />} />
               <Route path="/cocina" element={<MenuCocina/>} />
+              <Route path="/motorizado" element={<MenuMotorizados/>} />
               <Route path="/S" element={<LocationCard/>} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
