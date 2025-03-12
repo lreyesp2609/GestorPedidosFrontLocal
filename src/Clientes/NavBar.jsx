@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Badge, Avatar  } from 'antd';
 import {
   Container,
   Nav,
@@ -10,14 +9,11 @@ import {
   Col,
   Button,
 } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import LoginForm from "../components/login";
 import { Link } from "react-router-dom";
 import RegistroForm from "../components/registro";
 import ShoppingCart from "./shopingcart";
 import Historial from "./Historial";
-import ValidarPedido from "./Validarpedido";
 import Carrusel from "./carrusel";
 import { CartContext } from "../context/CarritoContext";
 import {RecompensaContext} from "../context/RecompensaContext"
@@ -54,31 +50,80 @@ const NavBar = () => {
 
   const navbarStyle = {
     backgroundColor: "#A80000",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   };
 
+  // Estilo común para todos los elementos de navegación
   const estiloNavLink = {
-    fontSize: "12px",
-    borderRadius: "15px",
+    fontSize: "14px",
     textDecoration: "none",
     color: "white",
     transition: "background-color 0.3s, color 0.3s",
     fontFamily: "Arial, sans-serif",
+    padding: "8px 15px",
+    margin: "0 5px",
+    display: "inline-block",
+    textTransform: "uppercase",
   };
 
+  // Estilo para el contenedor Nav
+  const navContainerStyle = {
+    display: "flex",
+    alignItems: "center",
+    height: "100%",
+  };
+
+  // Estilo específico para el dropdown que hereda del estiloNavLink
+  const navDropdownStyle = {
+    color: "white",
+    padding: "0",
+  };
+
+  const dropdownStyle = {
+    color: "white",
+    borderRadius: "15px",
+    transition: "background-color 0.3s, color 0.3s",
+    fontFamily: "Arial, sans-serif",
+    padding: "8px 15px",
+    margin: "0 5px",
+    display: "inline-flex",
+    alignItems: "center"
+  };
+
+  const dropdownItemStyle = {
+    fontSize: "15px",
+    padding: "10px 15px",
+    transition: "background-color 0.2s, color 0.2s",
+    borderLeft: "3px solid transparent",
+  };
 
   const manejarMouseOver = (e) => {
-    e.target.style.backgroundColor = "black";
+    e.target.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
     e.target.style.color = "white";
   };
 
   const manejarMouseOut = (e) => {
     e.target.style.backgroundColor = "";
-    e.target.style.color = "black";
+    e.target.style.color = "white";
   };
+
+  const manejarMouseOverDropdownItem = (e) => {
+    e.target.style.backgroundColor = "#f8f9fa";
+    e.target.style.color = "#A80000";
+    e.target.style.borderLeft = "3px solid #A80000";
+  };
+
+  const manejarMouseOutDropdownItem = (e) => {
+    e.target.style.backgroundColor = "";
+    e.target.style.color = "";
+    e.target.style.borderLeft = "3px solid transparent";
+  };
+
   const logoStyle = {
     color: "white",
     width: "50px",
     borderRadius: "50%",
+    border: "2px solid white",
   };
   const [MostrarModal, setMostrarModal] = useState(false);
   const [Logeado, setLogeado] = useState(() => {
@@ -211,7 +256,7 @@ const NavBar = () => {
         </Row>
         <Navbar expand="lg" style={navbarStyle}>
           <Container>
-            <Navbar.Brand className="d-flex align-items-center" href="/" onClick={localStorage.removeItem("ComponenteSeleccionado")}>
+            <Navbar.Brand className="d-flex align-items-center" href="/" onClick={() => {localStorage.removeItem("ComponenteSeleccionado"); MostrarComponente("Carrusel");}}>
               <img
                 src={`data:image/png;base64,${logoEmpresa}`}
                 alt="Logo"
@@ -220,9 +265,10 @@ const NavBar = () => {
               <span
                 style={{
                   color: "white",
-                  fontSize: "20px",
+                  fontSize: "22px",
                   fontFamily: "Merienda",
-                  marginLeft: "5px",
+                  marginLeft: "10px",
+                  fontWeight: "bold",
                 }}
               >
                 {nombreEmpresa}
@@ -232,7 +278,7 @@ const NavBar = () => {
           </Container>
           <Container>
             <Navbar.Collapse className="justify-content-end">
-              <Nav className="ml-auto">
+              <Nav className="ml-auto" style={navContainerStyle}>
                 <Nav.Link
                   onClick={() => MostrarComponente("Menu")}
                   style={estiloNavLink}
@@ -243,29 +289,38 @@ const NavBar = () => {
                 </Nav.Link>
                 {Logeado && (
                   <NavDropdown
-                    style={{ ...estiloNavLink, borderRadius: "50%", color: "white" }}
-                    onMouseOver={manejarMouseOver}
-                    onMouseOut={manejarMouseOut}
-                    title="Perfil"
+                    style={estiloNavLink}
+                    title="PERFIL"
+                    id="basic-nav-dropdown"
                   >
                     <NavDropdown.Item
                       onClick={() => MostrarComponente("Perfil")}
-                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                      style={dropdownItemStyle}
+                      onMouseOver={manejarMouseOverDropdownItem}
+                      onMouseOut={manejarMouseOutDropdownItem}
                     >
                       Ver perfil
                     </NavDropdown.Item>
                     <NavDropdown.Item
                       onClick={() => MostrarComponente("Historial")}
-                      style={{ marginLeft: "auto", fontSize: "18px" }}
+                      style={dropdownItemStyle}
+                      onMouseOver={manejarMouseOverDropdownItem}
+                      onMouseOut={manejarMouseOutDropdownItem}
                     >
                       Ver Historial
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item
                       onClick={CerrarSesion}
-                      style={{ fontSize: "18px" }}
+                      style={{...dropdownItemStyle, color: "#dc3545"}}
+                      onMouseOver={(e) => {
+                        e.target.style.backgroundColor = "#dc3545";
+                        e.target.style.color = "white";
+                        e.target.style.borderLeft = "3px solid #b02a37";
+                      }}
+                      onMouseOut={manejarMouseOutDropdownItem}
                     >
-                      Cerrar sesion
+                      Cerrar sesión
                     </NavDropdown.Item>
                   </NavDropdown>
                 )}
@@ -276,7 +331,7 @@ const NavBar = () => {
                     onMouseOver={manejarMouseOver}
                     onMouseOut={manejarMouseOut}
                   >
-                    Reserva
+                    RESERVA
                   </Nav.Link>
                 )}
                 {Logeado && (
@@ -290,26 +345,14 @@ const NavBar = () => {
                   </Nav.Link>
                 )}
                 {Logeado && (
-                  <Link
-                  onClick={() => MostrarComponente("Carrito")}
-                    style={{
-                      textDecoration: "none",
-                      color: "inherit",
-                      fontSize: "18px",
-                    }}
-
+                  <Nav.Link
+                    onClick={() => MostrarComponente("Carrito")}
+                    style={estiloNavLink}
+                    onMouseOver={manejarMouseOver}
+                    onMouseOut={manejarMouseOut}
                   >
-                    {" "}
-                    <Nav.Link
-                      style={estiloNavLink}
-                      onMouseOver={manejarMouseOver}
-                      onMouseOut={manejarMouseOut}
-                      to="/Carrito"
-                    >
-                    
-                       CARRITO: {totalQuantity}
-                    </Nav.Link>
-                  </Link>
+                    CARRITO: {totalQuantity}
+                  </Nav.Link>
                 )}
                 {!Logeado && (
                   <Nav.Link

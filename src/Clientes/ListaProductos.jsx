@@ -85,189 +85,228 @@ const ListProductos = () => {
     return cart.find((item) => item.id === productId)?.quantity || 0;
   };
 
+  // Add new styles
+  // Update the page style to a more appealing background color
+  const pageStyle = {
+    backgroundColor: '#2b1e1e', // Darker, richer background that complements the red theme
+    minHeight: '100vh',
+    padding: '20px'
+  };
+
+  const cardStyle = {
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    boxShadow: '0 4px 8px rgba(168, 0, 0, 0.2)',
+    border: 'none',
+    transition: 'transform 0.3s ease',
+    height: '100%',
+    width: '100%' // Make cards fill their container
+  };
+
+  const modalStyle = {
+    backgroundColor: '#2b1e1e',
+    padding: '20px',
+    borderRadius: '15px'
+  };
+
   return (
-    <>
-      <Spin spinning={loading} tip="Cargando..." style={{height:'500px'}}>
-        <div style={{ marginTop: "30px", marginLeft: "5px", display: "flex" }}>
-          <Row>
-            {products.map((product, index) => (
-              <Col >
-                <AntCard
-                  hoverable
-                  key={product.id}
-                  style={{
-                    width: "100%",
-                    cursor: "pointer",
-                    marginRight: index < products.length - 1 ? "20px" : "0",
-                  }}
-                  onClick={() => handleCardClick(product)}
-                  cover={
-                    <img
-                      alt={`Imagen de ${product.nombreproducto}`}
-                      src={`data:image/png;base64,${product.imagenp}`}
-                      style={{ width: "100%", height: "270px" }}
-                    />
-                  }
-                >
-                  <Meta title={product.nombreproducto} description={product.descripcionproducto} />
-                  <div style={{ display: 'flex' }}>
-                    <p
-                      style={{
-                        marginTop: '10px',
-                        width: '50px',
-                        backgroundColor: "#0a2e02",
-                        marginRight: '10px',
-                        color: "#fff",
-                        borderRadius: "10px",
-                        textAlign: 'center',
-                      }}
-                    >{`$${product.preciounitario}`}</p>
-                    <p
-                      style={{
-                        marginTop: '10px',
-                        width: '50px',
-                        backgroundColor: "#5a0a03",
-                        color: "#fff",
-                        borderRadius: "10px",
-                        textAlign: 'center',
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faStar}
-                        style={{
-                          color: "#FFD700",
-                          marginRight: '1px',
-                        }}
-                      />
-                      {`${product.puntosp}`}</p>
-                  </div>
-                </AntCard>
-              </Col>
-            ))}
-          </Row>
-
-        </div>
-      </Spin>
-
-      <Modal visible={showModal} onCancel={handleCloseModal}
-        footer={null}
-        width={800}  // Ajusta el ancho del modal según tus necesidades
-      >
-        <div>
-          {selectedProduct && (
-            <>
-              <h5 style={{ textAlign: 'center' }}>{selectedProduct.nombreproducto}</h5>
-              <Row style={{ marginBottom: '10px' }}>
-                <Col style={{ paddingRight: '10px', marginRight: '100px' }}>
+    <div style={pageStyle}>
+      <Spin spinning={loading} tip="Cargando..." style={{height:'500px', color: 'white'}}>
+        <Row className="g-2">
+          {products.map((product) => (
+            <Col xs={6} sm={4} md={3} lg={3} key={product.id_producto || product.id} className="mb-3">
+              <AntCard
+                hoverable
+                style={cardStyle}
+                onClick={() => handleCardClick(product)}
+                cover={
                   <img
-                    src={`data:image/png;base64,${selectedProduct.imagenp}`}
-                    alt={`Imagen de ${selectedProduct.nombreproducto}`}
-                    style={{ width: '360px', height: '440px' }}
-                  />
-                </Col>
-                <Col>
-                  <h5 style={{ borderBottom: '1px solid #9b9b9b', paddingBottom: '10px', }}>
-                    Descripción
-                  </h5>
-                  <p>{selectedProduct.descripcionproducto}</p>
-                  <h5 style={{ borderBottom: '1px solid #9b9b9b', paddingBottom: '10px', }}>
-                    Precio Unitario
-                  </h5>
-                  <p
-                    style={{
-                      backgroundColor: "#0a2e02",
-                      width: '70px',
-                      color: "#fff",
-                      borderRadius: "10px",
-                      textAlign: 'center',
+                    alt={`Imagen de ${product.nombreproducto}`}
+                    src={`data:image/png;base64,${product.imagenp}`}
+                    style={{ 
+                      width: "100%", 
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "12px 12px 0 0"
                     }}
-                  >{`$${selectedProduct.preciounitario}`}</p>
-                  <h5 style={{ borderBottom: '1px solid #9b9b9b', paddingBottom: '10px', }}>
-                    Puntos
-                  </h5>
+                  />
+                }
+              >
+                <Meta 
+                  title={<span style={{color: '#333', fontSize: '16px'}}>{product.nombreproducto}</span>}
+                  description={<span style={{color: '#666'}}>{product.descripcionproducto}</span>}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px' }}>
                   <p
                     style={{
-                      backgroundColor: "#5a0a03",
-                      width: '40px',
+                      margin: '0',
+                      padding: '5px 15px',
+                      backgroundColor: "#0a2e02",
                       color: "#fff",
-                      borderRadius: "10px",
-                      textAlign: 'center',
+                      borderRadius: "20px",
+                      fontSize: '14px'
+                    }}
+                  >{`$${product.preciounitario}`}</p>
+                  <p
+                    style={{
+                      margin: '0',
+                      padding: '5px 15px',
+                      backgroundColor: "#5a0a03",
+                      color: "#fff",
+                      borderRadius: "20px",
+                      fontSize: '14px'
                     }}
                   >
                     <FontAwesomeIcon
                       icon={faStar}
                       style={{
                         color: "#FFD700",
-                        marginRight: '1px',
+                        marginRight: '5px'
                       }}
                     />
-                    {selectedProduct.puntosp}</p>
-                  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-                    {selectedProduct && (
-                      <>
-                        {getQuantityById(selectedProduct.id_producto) === 0 ? (
-                          <Button style={{
+                    {product.puntosp}
+                  </p>
+                </div>
+              </AntCard>
+            </Col>
+          ))}
+        </Row>
+      </Spin>
+
+      <Modal 
+        visible={showModal} 
+        onCancel={handleCloseModal}
+        footer={null}
+        width={800}
+        bodyStyle={modalStyle}
+      >
+        {selectedProduct && (
+          <div style={{backgroundColor: '#fff', padding: '20px', borderRadius: '12px'}}>
+            <h3 style={{ 
+              textAlign: 'center', 
+              color: '#333',
+              marginBottom: '20px',
+              fontWeight: 'bold'
+            }}>{selectedProduct.nombreproducto}</h3>
+            <Row gutter={[24, 24]}>
+              <Col xs={24} md={12}>
+                <img
+                  src={`data:image/png;base64,${selectedProduct.imagenp}`}
+                  alt={`Imagen de ${selectedProduct.nombreproducto}`}
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }}
+                />
+              </Col>
+              <Col xs={24} md={12}>
+                <div style={{padding: '0 20px'}}>
+                  <h5 style={{ 
+                    borderBottom: '2px solid #eee', 
+                    paddingBottom: '10px',
+                    color: '#333'
+                  }}>Descripción</h5>
+                  <p style={{color: '#666'}}>{selectedProduct.descripcionproducto}</p>
+                  
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '20px'
+                  }}>
+                    <div>
+                      <h5 style={{color: '#333'}}>Precio</h5>
+                      <p style={{
+                        backgroundColor: "#0a2e02",
+                        padding: '5px 15px',
+                        color: "#fff",
+                        borderRadius: "20px",
+                        display: 'inline-block'
+                      }}>{`$${selectedProduct.preciounitario}`}</p>
+                    </div>
+                    <div>
+                      <h5 style={{color: '#333'}}>Puntos</h5>
+                      <p style={{
+                        backgroundColor: "#5a0a03",
+                        padding: '5px 15px',
+                        color: "#fff",
+                        borderRadius: "20px",
+                        display: 'inline-block'
+                      }}>
+                        <FontAwesomeIcon icon={faStar} style={{color: "#FFD700", marginRight: '5px'}}/>
+                        {selectedProduct.puntosp}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ 
+                    display: "flex", 
+                    justifyContent: "center", 
+                    alignItems: "center",
+                    marginTop: '30px'
+                  }}>
+                    {getQuantityById(selectedProduct.id_producto) === 0 ? (
+                      <Button style={{
+                        backgroundColor: "#000000",
+                        color: "#fff",
+                        border: 'none',
+                        borderRadius: '20px',
+                        padding: '0 25px',
+                        height: '40px'
+                      }}
+                      icon={<FontAwesomeIcon icon={faShoppingCart} style={{marginRight: '8px'}}/>}
+                      onClick={() => addToCart(selectedProduct.id_producto)}>
+                        Añadir al carrito
+                      </Button>
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Button
+                          style={{
+                            marginLeft: "1px",
+                            backgroundColor: "#050138",
+                            color: "#fff",
+                            border: 'none'
+                          }}
+                          onClick={() => addToCart(selectedProduct.id_producto)}
+                        >
+                          +
+                        </Button>
+                        <div
+                          style={{
+                            padding: "5px",
+                            width: '57px',
+                            marginLeft: "10px",
                             backgroundColor: "#000000",
                             color: "#fff",
-                            border: 'none',
+                            borderRadius: "10px",
+                            textAlign: 'center'
                           }}
-                            icon={<FontAwesomeIcon icon={faShoppingCart} />}
-                            onClick={() => addToCart(selectedProduct.id_producto)}>
-                            Añadir al carrito
-                          </Button>
-                        ) : (
-                          <Button
-                            style={{
-                              marginLeft: "1px",
-                              backgroundColor: "#050138",
-                              color: "#fff",
-                              border: 'none'
-                            }}
-                            onClick={() => addToCart(selectedProduct.id_producto)}
-                          >
-                            +
-                          </Button>
-                        )}
-                        {getQuantityById(selectedProduct.id_producto) > 0 && (
-                          <div
-                            style={{
-                              padding: "5px",
-                              width: '57px',
-                              marginLeft: "10px",
-                              backgroundColor: "#000000",
-                              color: "#fff",
-                              borderRadius: "10px",
-                              textAlign: 'center'
-                            }}
-                          >
-                            {getQuantityById(selectedProduct.id_producto)}
-                          </div>
-                        )}
-                        {getQuantityById(selectedProduct.id_producto) > 0 && (
-                          <Button
-                            style={{
-                              marginLeft: "10px",
-                              backgroundColor: "#A80000",
-                              color: "#fff",
-                              border: 'none'
-                            }}
-                            onClick={() => removeItem(selectedProduct.id_producto)}
-                          >
-                            -
-                          </Button>
-                        )}
-                      </>
-
+                        >
+                          {getQuantityById(selectedProduct.id_producto)}
+                        </div>
+                        <Button
+                          style={{
+                            marginLeft: "10px",
+                            backgroundColor: "#A80000",
+                            color: "#fff",
+                            border: 'none'
+                          }}
+                          onClick={() => removeItem(selectedProduct.id_producto)}
+                        >
+                          -
+                        </Button>
+                      </div>
                     )}
-
                   </div>
-                </Col>
-              </Row>
-            </>
-          )}
-        </div>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        )}
       </Modal>
-    </>
+    </div>
   );
 };
 

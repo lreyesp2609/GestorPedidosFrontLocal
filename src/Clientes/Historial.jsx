@@ -174,7 +174,13 @@ const Historial = () => {
   };
 
   return (
-    <div style={{ marginLeft: "30px", marginRight: "50px", marginTop: '20px' }} >
+    <div style={{ 
+      padding: '30px', 
+      backgroundColor: '#f8f9fa',
+      borderRadius: '12px',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+      margin: '20px'
+    }}>
       {facturaData && (
         <GenerarFacturaPDF
           facturaData={facturaData}
@@ -187,17 +193,46 @@ const Historial = () => {
           obtenerMetodoDePago={obtenerMetodoDePago}
         />
       )}
-      <div class="table-responsive">
-        <Table dataSource={pedidos} pagination={{ pageSize: 5 }} class="table">
-          <Column title="Pedido" dataIndex="id_pedido" key="id_pedido" />
+      
+      <h2 style={{ 
+        marginBottom: '20px', 
+        color: '#333',
+        fontWeight: '600',
+        fontSize: '24px'
+      }}>Historial de Pedidos</h2>
+      
+      <div className="table-responsive">
+        <Table 
+          dataSource={pedidos} 
+          pagination={{ 
+            pageSize: 5,
+            showSizeChanger: false,
+            style: { marginTop: '20px' }
+          }} 
+          className="table"
+          rowKey="id_pedido"
+          style={{ 
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            overflow: 'hidden'
+          }}
+        >
+          <Column 
+            title="Pedido" 
+            dataIndex="id_pedido" 
+            key="id_pedido"
+            render={(id) => (
+              <span style={{ fontWeight: '500' }}>#{id}</span>
+            )}
+          />
           <Column
             title="Fecha"
             dataIndex="fecha_pedido"
             key="fecha_pedido"
             render={(fecha_pedido) => (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Tag color="blue">{new Date(fecha_pedido).toLocaleDateString()}</Tag>
-              </div>
+              <Tag color="#e6f7ff" style={{ color: '#1890ff', border: 'none', padding: '4px 8px' }}>
+                {new Date(fecha_pedido).toLocaleDateString()}
+              </Tag>
             )}
           />
           <Column
@@ -205,115 +240,115 @@ const Historial = () => {
             dataIndex="fecha_pedido"
             key="fecha_pedido"
             render={(fecha_pedido) => (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Tag color="green">{new Date(fecha_pedido).toLocaleTimeString()}</Tag>
-              </div>
+              <Tag color="#f6ffed" style={{ color: '#52c41a', border: 'none', padding: '4px 8px' }}>
+                {new Date(fecha_pedido).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              </Tag>
             )}
           />
           <Column
-            title="Metodo de pago"
+            title="Método de pago"
             dataIndex="tipo_pago"
             key="tipo_pago"
-            render={(tipo) => (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Tag
-                  color={
-                    tipo === "E"
-                      ? "rgb(17,54, 11)"
-                      : tipo === "T"
-                        ? "#0080C0"
-                        : tipo === "X"
-                          ? "#F46A0F"
-                          : tipo === "F"
-                            ? "#004080"
-                            : "default"
-                  }
-                >
-                  {tipo === "E"
-                    ? "Pago en efectivo"
-                    : tipo === "T"
-                      ? "Pago por transferencia"
-                      : tipo === "X"
-                        ? "Pago por tarjeta"
-                        : tipo === "F"
-                          ? "Pagos divididos"
-                          : tipo}
+            render={(tipo) => {
+              let color, text, bgColor;
+              
+              if (tipo === "E") {
+                color = '#135200';
+                text = "Efectivo";
+                bgColor = '#f6ffed';
+              } else if (tipo === "T") {
+                color = '#0050b3';
+                text = "Transferencia";
+                bgColor = '#e6f7ff';
+              } else if (tipo === "X") {
+                color = '#ad4e00';
+                text = "Tarjeta";
+                bgColor = '#fff7e6';
+              } else if (tipo === "F") {
+                color = '#003a8c';
+                text = "Dividido";
+                bgColor = '#e6f4ff';
+              }
+              
+              return (
+                <Tag color={bgColor} style={{ color, border: 'none', padding: '4px 8px' }}>
+                  {text}
                 </Tag>
-              </div>
-            )}
+              );
+            }}
           />
           <Column
             title="Estado del pedido"
             dataIndex="estado_del_pedido"
             key="estado_del_pedido"
-            render={(estado) => (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Tag
-                  color={
-                    estado === "O"
-                      ? "rgb(6, 0, 94)"
-                      : estado === "P"
-                        ? "rgb(62, 0, 100)"
-                        : estado === "C"
-                          ? "rgb(211, 116, 0)"
-                          : estado === "E"
-                            ? "#008080"
-                            : "default"
-                  }
-                  icon={
-                    estado === "E"
-                      ? <CheckCircleOutlined />
-                      : estado === "P"
-                        ? <SyncOutlined spin />
-                        : ""
-                  }
-                >
-                  {estado === "O"
-                    ? "Ordenado"
-                    : estado === "P"
-                      ? "En Proceso"
-                      : estado === "C"
-                        ? "En camino"
-                        : estado === "E"
-                          ? "Entregado"
-                          : estado}
+            render={(estado) => {
+              let color, text, bgColor, icon;
+              
+              if (estado === "O") {
+                color = '#030075';
+                text = "Ordenado";
+                bgColor = '#f0f5ff';
+                icon = null;
+              } else if (estado === "P") {
+                color = '#531dab';
+                text = "En Proceso";
+                bgColor = '#f9f0ff';
+                icon = <SyncOutlined spin style={{ marginRight: '5px' }} />;
+              } else if (estado === "C") {
+                color = '#ad4e00';
+                text = "En camino";
+                bgColor = '#fff7e6';
+                icon = null;
+              } else if (estado === "E") {
+                color = '#006d75';
+                text = "Entregado";
+                bgColor = '#e6fffb';
+                icon = <CheckCircleOutlined style={{ marginRight: '5px' }} />;
+              }
+              
+              return (
+                <Tag color={bgColor} style={{ color, border: 'none', padding: '4px 8px' }}>
+                  {icon}{text}
                 </Tag>
-              </div>
-            )}
+              );
+            }}
           />
           <Column
             title="Estado del pago"
             dataIndex="Pago"
             key="Pago"
-            render={(estado) => (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Tag
-                  color={
-                    estado === "En revisón"
-                      ? "rgb(6, 0, 94)"
-                      : estado === "Pagado"
-                        ? "rgb(17, 54, 11)"
-                        : estado === "Denegado"
-                          ? "rgb(110, 1, 1)"
-                          : "default"
-                  }
-                  icon={
-                    estado === "Pagado"
-                      ? <CheckCircleOutlined />
-                      : estado === "Denegado"
-                        ? <CloseCircleOutlined />
-                        : ""
-                  }
-                >
-                  {estado === "En revisón"
-                    ? "En revisón"
-                    : estado === "Pagado"
-                      ? "Pagado"
-                      : estado === "Denegado"
-                        ? "Denegado"
-                        : estado}
+            render={(estado) => {
+              let color, bgColor, icon;
+              
+              if (estado === "En revisón") {
+                color = '#030075';
+                bgColor = '#f0f5ff';
+                icon = null;
+              } else if (estado === "Pagado") {
+                color = '#135200';
+                bgColor = '#f6ffed';
+                icon = <CheckCircleOutlined style={{ marginRight: '5px' }} />;
+              } else if (estado === "Denegado") {
+                color = '#a8071a';
+                bgColor = '#fff1f0';
+                icon = <CloseCircleOutlined style={{ marginRight: '5px' }} />;
+              }
+              
+              return (
+                <Tag color={bgColor} style={{ color, border: 'none', padding: '4px 8px' }}>
+                  {icon}{estado}
                 </Tag>
-              </div>
+              );
+            }}
+          />
+          <Column
+            title="Total"
+            dataIndex="Total"
+            key="precio_unitario"
+            render={(total) => (
+              <span style={{ fontWeight: '600', color: '#135200' }}>
+                ${total}
+              </span>
             )}
           />
           <Column
@@ -321,39 +356,79 @@ const Historial = () => {
             key="acciones"
             render={(text, record) => (
               <Space size="middle">
-                <Button onClick={() => generarFactura(record)}>
-                  Generar factura
+                <Button 
+                  onClick={() => generarFactura(record)}
+                  type="primary"
+                  style={{ 
+                    backgroundColor: '#722ed1',
+                    borderColor: '#722ed1',
+                    borderRadius: '6px',
+                    boxShadow: 'none'
+                  }}
+                  size="small"
+                >
+                  Factura
                 </Button>
-                <Button onClick={() => mostrarModal(record)}>
-                  Mostrar QR
+                <Button 
+                  onClick={() => mostrarModal(record)}
+                  style={{ 
+                    backgroundColor: '#13c2c2',
+                    borderColor: '#13c2c2',
+                    color: 'white',
+                    borderRadius: '6px',
+                    boxShadow: 'none'
+                  }}
+                  size="small"
+                >
+                  QR
                 </Button>
               </Space>
             )}
           />
-          <Column title="Total" dataIndex="Total" key="precio_unitario" />
         </Table>
       </div>
-      <Modal visible={MostrarModal} onCancel={() => setMostrarModal(false)} footer={null} title={"Codigo de pedido"}>
-        <Row>
-          <Col md={12} style={{padding:"25px"}}>
-            <Alert
-              message="¡Escanea este código QR para confirmar la entrega o retirar tu pedido!"
-              description="
-              Muestra el código al motorizado o en el local según sea necesario."
-              type="success"
-              showIcon
-            />
-            <div style={{ display: 'flex', justifyContent: 'center',marginTop: "10px"}}>
-            <QRCode
-              errorLevel="H"
-              size={250}
-              value={datosQR}
-              icon={logoEmpresa}
-            />
-            </div>
-            
-          </Col>
-        </Row>
+
+      <Modal 
+        visible={MostrarModal} 
+        onCancel={() => setMostrarModal(false)} 
+        footer={null} 
+        title="Código de pedido"
+        width={400}
+        bodyStyle={{ padding: '20px' }}
+        style={{ top: 20 }}
+      >
+        <div style={{ 
+          backgroundColor: '#f6ffed', 
+          padding: '15px', 
+          borderRadius: '8px',
+          marginBottom: '20px'
+        }}>
+          <Alert
+            message="¡Escanea este código QR!"
+            description="Muestra el código al motorizado o en el local para confirmar la entrega o retirar tu pedido."
+            type="success"
+            showIcon
+            style={{ border: 'none', backgroundColor: 'transparent' }}
+          />
+        </div>
+        
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center',
+          padding: '10px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        }}>
+          <QRCode
+            errorLevel="H"
+            size={200}
+            value={datosQR}
+            icon={logoEmpresa}
+            iconSize={40}
+            style={{ margin: '10px 0' }}
+          />
+        </div>
       </Modal>
     </div>
   );

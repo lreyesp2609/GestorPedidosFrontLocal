@@ -8,8 +8,6 @@ import masvendidos from './res/maspedidos.png'
 import imgrecompensas from './res/recompensas.png'
 import API_URL from '../config';
 
-
-
 const Carrusel = () => {
   const [avisos, setAvisos] = useState([]);
   const [hovered, setHovered] = useState(false);
@@ -63,206 +61,201 @@ const Carrusel = () => {
     fetchAvisosPrincipales();
   }, []); // Se ejecutará solo una vez al montar el componente
 
-  const buttonStyle = {
-    marginTop: '10px',
-    height: '40px', // Ajusta la altura según tus preferencias
+  // Estilos mejorados para los botones
+  const createButtonStyle = (baseColor, isHovered) => ({
+    marginTop: '15px',
+    height: '44px',
     width: '100%',
-    backgroundColor: hovered ? 'black' : '#A80000',
+    backgroundColor: isHovered ? '#333333' : baseColor,
     color: 'white',
     border: 'none',
-    borderRadius: '5px', // Ajusta el radio de la esquina según tus preferencias
+    borderRadius: '8px',
     cursor: 'pointer',
     textTransform: 'uppercase',
-    fontSize: '15px', // Ajusta el tamaño de la fuente según tus preferencias
-    fontWeight: 'bold',
-  };
-  const buttonStyle2 = {
-    marginTop: '10px',
-    width: '100%',
-    height: '40px', // Ajusta la altura según tus preferencias
-    backgroundColor: hovered2 ? 'black' : '#2E7651',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px', // Ajusta el radio de la esquina según tus preferencias
-    cursor: 'pointer',
-    textTransform: 'uppercase',
-    fontSize: '15px', // Ajusta el tamaño de la fuente según tus preferencias
-    fontWeight: 'bold',
-  };
-  const buttonStyle3 = {
-    marginTop: '10px',
-    width: '100%',
-    height: '40px', // Ajusta la altura según tus preferencias
-    backgroundColor: hovered3 ? 'black' : '#0B4362',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px', // Ajusta el radio de la esquina según tus preferencias
-    cursor: 'pointer',
-    textTransform: 'uppercase',
-    fontSize: '15px', // Ajusta el tamaño de la fuente según tus preferencias
-    fontWeight: 'bold',
-  };
-  const buttonStyle4 = {
-    marginTop: '10px',
-    width: '100%',
-    height: '40px', // Ajusta la altura según tus preferencias
-    backgroundColor: hovered4 ? 'black' : '#C03E62',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px', // Ajusta el radio de la esquina según tus preferencias
-    cursor: 'pointer',
-    textTransform: 'uppercase',
-    fontSize: '15px', // Ajusta el tamaño de la fuente según tus preferencias
-    fontWeight: 'bold',
-  };
-  const imagenes = [
-    { url: descar },
-    { url: imgsucur },
-    { url: 'https://www.santevet.es/uploads/images/es_ES/razas/gatocomuneuropeo.jpeg' },
-    { url: 'https://static.wikia.nocookie.net/bokunoheroacademia/images/1/13/Ochaco_Uraraka_Traje_de_Heroe_actual.png/revision/latest/scale-to-width-down/249?cb=20200722000332&path-prefix=es' }
-  ];
+    fontSize: '14px',
+    fontWeight: '600',
+    letterSpacing: '1px',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  });
+
+  const buttonStyle = createButtonStyle('#A80000', hovered);
+  const buttonStyle2 = createButtonStyle('#2E7651', hovered2);
+  const buttonStyle3 = createButtonStyle('#0B4362', hovered3);
+  const buttonStyle4 = createButtonStyle('#C03E62', hovered4);
+
   const openSucursal = () => {
     window.open('/sucursal', '_self');
   };
+
+  const cardStyle = {
+    height: "100%",
+    width: "auto",
+    borderRadius: "12px",
+    border: "1px solid #EEEEEE",
+    boxShadow: "0 6px 16px rgba(0, 0, 0, 0.08)",
+    overflow: "hidden",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  };
+
+  const cardImageStyle = {
+    objectFit: "cover",
+    height: "200px",
+    width: "100%",
+  };
+
+  const cardTextStyle = {
+    fontWeight: '600',
+    color: '#333333',
+    display: 'block',
+    fontSize: '16px',
+    marginBottom: '5px',
+  };
+
   return (
     <>
-
       <div style={{ overflow: 'hidden' }}>
-
-        <Carousel fade nextIcon={null} prevIcon={null}>
+        <Carousel 
+          fade 
+          nextIcon={null} 
+          prevIcon={null}
+          indicators={true}
+          interval={5000}
+        >
           {avisos.map((aviso) => (
-            <Carousel.Item >
+            <Carousel.Item key={aviso.id}>
               <img
                 src={`data:image/png;base64, ${aviso.imagen}`}
                 alt={aviso.titulo}
-                style={{ width: '100%', height: '500px' }} />
-              <Carousel.Caption>
-                <h3>{aviso.titulo}</h3>
+                style={{ 
+                  width: '100%', 
+                  height: '500px',
+                  objectFit: 'cover',
+                  filter: 'brightness(0.9)'
+                }} />
+              <Carousel.Caption style={{
+                background: 'rgba(0,0,0,0.5)',
+                padding: '20px',
+                borderRadius: '8px',
+                maxWidth: '80%',
+                margin: '0 auto'
+              }}>
+                <h3 style={{ fontWeight: '700' }}>{aviso.titulo}</h3>
                 <p>{aviso.descripcion}</p>
               </Carousel.Caption>
             </Carousel.Item>
           ))}
         </Carousel>
       </div>
-      <Row style={{ marginTop: 20 }}>
-        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
-
-          <Card
-            hoverable
-            style={{
-              height: "100%",
-              width: "auto",
-              borderRadius: "5%",
-              border: "1px solid #A4A4A4"
-            }}
-            cover={
-              <img
-                alt="Descarga la aplicación movil"
-                src={descar}
-
-              />
-            }
-            className="text-center"
-          >
-            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Lleva tus pedidos contigo, descarga la app ahora</spam>
-            <button
-              style={buttonStyle}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+      
+      <div style={{ 
+        maxWidth: '1200px', 
+        margin: '40px auto', 
+        padding: '0 20px'
+      }}>
+        <Row gutter={[24, 24]} style={{ marginTop: 30 }}>
+          <Col xs={24} sm={12} lg={6}>
+            <Card
+              hoverable
+              style={cardStyle}
+              cover={
+                <img
+                  alt="Descarga la aplicación movil"
+                  src={descar}
+                  style={cardImageStyle}
+                />
+              }
+              className="text-center"
+              bodyStyle={{ padding: '20px' }}
             >
-              PROXIMAMENTE
-            </button>
-          </Card>
-        </Col>
-        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
-
-          <Card
-            hoverable
-            style={{
-              height: "100%",
-              width: "auto",
-              borderRadius: "5%",
-              border: "1px solid #A4A4A4"
-            }}
-            cover={
-              <img
-                alt="Encuentra tu sucursal más cercana"
-                src={imgsucur}
-
-              />
-            }
-            className="text-center"
-          >
-            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Encuentra tu sucursal más cercana</spam>
-            <button
-              style={buttonStyle2}
-              onMouseEnter={handleMouseEnter2}
-              onMouseLeave={handleMouseLeave2}
-              onClick={openSucursal}
+              <span style={cardTextStyle}>Lleva tus pedidos contigo, descarga la app ahora</span>
+              <button
+                style={buttonStyle}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                PROXIMAMENTE
+              </button>
+            </Card>
+          </Col>
+          
+          <Col xs={24} sm={12} lg={6}>
+            <Card
+              hoverable
+              style={cardStyle}
+              cover={
+                <img
+                  alt="Encuentra tu sucursal más cercana"
+                  src={imgsucur}
+                  style={cardImageStyle}
+                />
+              }
+              className="text-center"
+              bodyStyle={{ padding: '20px' }}
             >
-              VER SUCURSALES
-            </button>
-          </Card>
-        </Col>
-        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
-
-          <Card
-            hoverable
-            style={{
-              height: "100%",
-              width: "auto",
-              borderRadius: "5%",
-              border: "1px solid #A4A4A4"
-            }}
-            cover={
-              <img
-                alt="Encuentra tu sucursal más cercana"
-                src={masvendidos}
-
-              />
-            }
-            className="text-center"
-          >
-            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Descubre los favoritos de nuestros clientes</spam>
-            <button
-              style={buttonStyle3}
-              onMouseEnter={handleMouseEnter3}
-              onMouseLeave={handleMouseLeave3}
+              <span style={cardTextStyle}>Encuentra tu sucursal más cercana</span>
+              <button
+                style={buttonStyle2}
+                onMouseEnter={handleMouseEnter2}
+                onMouseLeave={handleMouseLeave2}
+                onClick={openSucursal}
+              >
+                VER SUCURSALES
+              </button>
+            </Card>
+          </Col>
+          
+          <Col xs={24} sm={12} lg={6}>
+            <Card
+              hoverable
+              style={cardStyle}
+              cover={
+                <img
+                  alt="Descubre los favoritos"
+                  src={masvendidos}
+                  style={cardImageStyle}
+                />
+              }
+              className="text-center"
+              bodyStyle={{ padding: '20px' }}
             >
-              MAS VENDIDOS
-            </button>
-          </Card>
-        </Col>
-        <Col md={5} style={{ margin: 25, marginTop: 5 }}>
-
-          <Card
-            hoverable
-            style={{
-              height: "100%",
-              width: "auto",
-              borderRadius: "5%",
-              border: "1px solid #A4A4A4"
-            }}
-            cover={
-              <img
-                alt="Encuentra tu sucursal más cercana"
-                src={imgrecompensas}
-
-              />
-            }
-            className="text-center"
-          >
-            <spam style={{ fontWeight: 'bold', color: 'black', display: 'block' }}>Más compras, más regalos: canjea tus puntos</spam>
-            <button
-              style={buttonStyle4}
-              onMouseEnter={handleMouseEnter4}
-              onMouseLeave={handleMouseLeave4}
+              <span style={cardTextStyle}>Descubre los favoritos de nuestros clientes</span>
+              <button
+                style={buttonStyle3}
+                onMouseEnter={handleMouseEnter3}
+                onMouseLeave={handleMouseLeave3}
+              >
+                MAS VENDIDOS
+              </button>
+            </Card>
+          </Col>
+          
+          <Col xs={24} sm={12} lg={6}>
+            <Card
+              hoverable
+              style={cardStyle}
+              cover={
+                <img
+                  alt="Recompensas"
+                  src={imgrecompensas}
+                  style={cardImageStyle}
+                />
+              }
+              className="text-center"
+              bodyStyle={{ padding: '20px' }}
             >
-              VER RECOMPENSAS
-            </button>
-          </Card>
-        </Col>
-      </Row>
+              <span style={cardTextStyle}>Más compras, más regalos: canjea tus puntos</span>
+              <button
+                style={buttonStyle4}
+                onMouseEnter={handleMouseEnter4}
+                onMouseLeave={handleMouseLeave4}
+              >
+                VER RECOMPENSAS
+              </button>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </>
   );
 }
